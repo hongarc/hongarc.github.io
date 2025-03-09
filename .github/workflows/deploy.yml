@@ -1,0 +1,30 @@
+name: Deploy Docusaurus to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Deploy when pushing to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Docusaurus
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        env:
+          GIT_USER: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run deploy
+
