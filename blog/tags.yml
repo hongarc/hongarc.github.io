@@ -17,3 +17,15 @@ hola:
   label: Hola
   permalink: /hola
   description: Hola tag description
+
+github-actions:
+  label: GitHub Actions
+  description: Automate workflows using GitHub Actions.
+
+automation:
+  label: Automation
+  description: Automating processes to improve efficiency.
+
+release-management:
+  label: Release Management
+  description: Strategies and tools for managing software releases.
