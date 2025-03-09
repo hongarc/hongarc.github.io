@@ -1,30 +1,58 @@
-name: Deploy Docusaurus to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # Deploy when pushing to main branch
+      - main
+    # This workflow runs when changes are pushed to the main branch.
+    # You can customize triggers based on paths, tags, or pull requests.
+    # Docs: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
 jobs:
-  deploy:
+  build:
+    name: Build Docusaurus
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensures full git history for accurate builds
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 18 # Ensure compatibility with the project
+          cache: npm # Cache dependencies for faster builds
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm ci # Ensures a clean install using package-lock.json
 
-      - name: Build Docusaurus
-        run: npm run build
+      - name: Build website
+        run: npm run build # Generates the static files for deployment
 
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build # Upload the built website for deployment
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build # Ensures deployment runs only after the build job succeeds
+
+    # Grant GITHUB_TOKEN necessary permissions for GitHub Pages deployment
+    permissions:
+      pages: write # Required to publish to GitHub Pages
+      id-token: write # Enables authentication for secure deployments
+
+    # Deploy to GitHub Pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # URL of the deployed site
+
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Deploy to GitHub Pages
-        env:
-          GIT_USER: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run deploy
-
+        id: deployment
+        uses: actions/deploy-pages@v4 # Official GitHub Pages deployment action

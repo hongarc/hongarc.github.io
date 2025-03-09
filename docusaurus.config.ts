@@ -19,6 +19,7 @@ const config: Config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'hongarc', // Usually your GitHub org/user name.
   projectName: 'hongarc.github.io', // Usually your repo name.
+  deploymentBranch: 'gh-pages', // Explicitly set the deployment branch for GitHub pages
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
