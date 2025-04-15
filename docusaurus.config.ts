@@ -67,12 +67,12 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/blame-social.png',
     navbar: {
       title: 'Hongarc\'s doc',
       logo: {
         alt: 'Hongarc Logo',
-        src: 'img/logo.svg',
+        src: 'img/arc.png',
       },
       items: [
         {
