@@ -64,7 +64,7 @@ Now, let’s enhance the command to **exclude** commits related to:
 Here’s the full command:
 
 ```bash
-git log --since="2 months ago" --pretty=format:"commit %H%nAuthor: %an <%ae>%nCommitter: %cn <%ce>%n%s%n" \
+git log --since="2 months ago" --pretty=format:"commit %H%nAuthor: %an <%ae>%nCommitter: %cn <%ce>%nDate: %ad%n%s%n" \
   | awk '
     BEGIN { IGNORECASE = 1 }
     /^commit / {commit=$0; author=""; date=""; message=""}
