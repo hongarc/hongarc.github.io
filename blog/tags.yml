@@ -29,3 +29,56 @@ automation:
 release-management:
   label: Release Management
   description: Strategies and tools for managing software releases.
+
+# New tags to fix warnings
+git:
+  label: Git
+  description: Distributed version control system for source code.
+
+github:
+  label: GitHub
+  description: Hosting platform for Git repositories and collaboration.
+
+commits:
+  label: Commits
+  description: Individual changes or updates to a codebase.
+
+merge:
+  label: Merge
+  description: Combining changes from different branches in Git.
+
+pr:
+  label: Pull Request
+  description: A request to merge code changes into a repository branch.
+
+neovim:
+  label: Neovim
+  description: Modern Vim-based text editor for developers.
+
+vim:
+  label: Vim
+  description: Highly configurable text editor for efficient development.
+
+lazyvim:
+  label: LazyVim
+  description: A Neovim starter template focused on speed and plugin management.
+
+productivity:
+  label: Productivity
+  description: Tips and tools to boost developer productivity.
+
+development:
+  label: Development
+  description: Software development practices, tools, and environments.
+
+eslint:
+  label: ESLint
+  description: Tool for identifying and fixing problems in JavaScript code.
+
+nodejs:
+  label: Node.js
+  description: JavaScript runtime built on Chrome's V8 engine.
+
+continuous-integration:
+  label: Continuous Integration
+  description: Automating the integration of code changes to improve software quality.

@@ -14,6 +14,7 @@ Linting tools like **ESLint** are critical in maintaining code quality and enfor
 In this guide, we will show you how to configure **GitHub Actions** to run ESLint only on the files modified in a PR. This setup improves feedback speed and ensures that merged code does not introduce new linting errors.
 
 ---
+<!-- truncate -->
 
 ## Why This Workflow Matters
 

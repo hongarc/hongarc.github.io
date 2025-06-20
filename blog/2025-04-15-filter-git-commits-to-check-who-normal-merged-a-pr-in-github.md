@@ -13,6 +13,7 @@ In this post, I’ll show you how to filter **Git commits** to **check who merge
 - **Exclude** merges from `master`, `pick` code, or releases.
 
 ---
+<!-- truncate -->
 
 ### 1. **Why Use This?**
 

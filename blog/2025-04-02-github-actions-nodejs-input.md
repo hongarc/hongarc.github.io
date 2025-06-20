@@ -12,6 +12,7 @@ authors: [Hongarc]
 GitHub Actions provides a powerful way to automate workflows, including running a Node.js application with user-entered inputs. In this guide, we will create a GitHub Actions workflow that allows users to enter a **date** manually, pass it to a **Node.js script**, and validate the input format.
 
 ---
+<!-- truncate -->
 
 ## Step 1: Define the GitHub Actions Workflow
 
