@@ -83,6 +83,12 @@ const config: Config = {
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
+          type: 'docSidebar',
+          sidebarId: 'converterSidebar',
+          position: 'left',
+          label: 'Converter Tools',
+        },
+        {
           href: 'https://github.com/hongarc/hongarc.github.io',
           label: 'GitHub',
           position: 'right',
