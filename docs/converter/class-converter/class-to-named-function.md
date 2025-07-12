@@ -7,7 +7,7 @@ sidebar_position: 1
 Convert static class methods to named functions with exports.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertClassToNamedFunction, convertClassToNamedFunctionExample } from '@site/src/converters/classToNamedFunction';
+import { convertClassToNamedFunction, convertClassToNamedFunctionExample } from '@site/src/converters/class-to-named-function';
 
 <SimpleConverter
   conversion={convertClassToNamedFunction}

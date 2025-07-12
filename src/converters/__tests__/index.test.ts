@@ -1,5 +1,5 @@
-import { convertToUppercase, convertToLowercase } from '../stringConverters';
-import { convertClassToNamedFunction } from '../classToNamedFunction';
+import { convertToUppercase, convertToLowercase } from '../string-converter';
+import { convertClassToNamedFunction } from '../class-to-named-function';
 
 describe('Converters Integration Tests', () => {
   describe('stringConverters integration', () => {

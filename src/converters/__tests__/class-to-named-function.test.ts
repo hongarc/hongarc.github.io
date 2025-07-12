@@ -1,4 +1,4 @@
-import { convertClassToNamedFunction } from '../classToNamedFunction';
+import { convertClassToNamedFunction } from '../class-to-named-function';
 
 describe('convertClassToNamedFunction', () => {
   describe('basic static method conversion', () => {

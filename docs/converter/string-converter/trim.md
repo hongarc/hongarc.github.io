@@ -7,7 +7,7 @@ sidebar_position: 10
 Remove whitespace from both ends of a string with real-time conversion.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertToTrim, convertToTrimExample } from '@site/src/converters/stringConverters';
+import { convertToTrim, convertToTrimExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter
   conversion={convertToTrim}

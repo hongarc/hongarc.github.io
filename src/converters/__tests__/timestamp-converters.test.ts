@@ -10,7 +10,7 @@ import {
   convertTimestamp,
   getAvailableTimestampFormats,
   timestampConverterExamples
-} from '../timestampConverters';
+} from '../timestamp-converters';
 
 describe('timestampConverters', () => {
   describe('timestampToIso', () => {

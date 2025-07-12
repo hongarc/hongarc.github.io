@@ -7,7 +7,7 @@ sidebar_position: 3
 Convert your text to camelCase format with real-time conversion.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertToCamelCase, convertToCamelCaseExample } from '@site/src/converters/stringConverters';
+import { convertToCamelCase, convertToCamelCaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter
   conversion={convertToCamelCase}

@@ -1,14 +1,14 @@
 import {
   generateUuidV4,
-  generateUuidV1,
   generateNanoId,
   generateCuid,
+  generateCuid2,
   generateUlid,
   generateHexId,
   generateId,
   getAvailableIdTypes,
   idGeneratorExamples
-} from '../idGenerators';
+} from '../id-generators';
 
 describe('idGenerators', () => {
   describe('generateUuidV4', () => {
@@ -24,18 +24,7 @@ describe('idGenerators', () => {
     });
   });
 
-  describe('generateUuidV1', () => {
-    it('should generate a valid UUID v1', () => {
-      const uuid = generateUuidV1();
-      expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
-    });
 
-    it('should generate unique UUIDs', () => {
-      const uuid1 = generateUuidV1();
-      const uuid2 = generateUuidV1();
-      expect(uuid1).not.toBe(uuid2);
-    });
-  });
 
   describe('generateNanoId', () => {
     it('should generate a NanoID with default length', () => {
@@ -109,9 +98,9 @@ describe('idGenerators', () => {
       expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
     });
 
-    it('should generate UUID v1', () => {
-      const id = generateId('uuidv1');
-      expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    it('should generate CUID2', () => {
+      const id = generateId('cuid2');
+      expect(id).toMatch(/^c[a-z0-9]+$/);
     });
 
     it('should generate NanoID', () => {
@@ -148,9 +137,9 @@ describe('idGenerators', () => {
 
       const typeNames = types.map(t => t.name);
       expect(typeNames).toContain('UUID v4');
-      expect(typeNames).toContain('UUID v1');
       expect(typeNames).toContain('NanoID');
       expect(typeNames).toContain('CUID');
+      expect(typeNames).toContain('CUID2');
       expect(typeNames).toContain('ULID');
       expect(typeNames).toContain('HEX');
     });

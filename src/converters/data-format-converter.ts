@@ -1,8 +1,5 @@
 import * as yaml from 'yaml';
-import * as jsYaml from 'js-yaml';
-import { parse as csvParse } from 'csv-parse/sync';
-import { stringify as csvStringify } from 'csv-stringify/sync';
-import * as xml2js from 'xml2js';
+import Papa from 'papaparse';
 
 export interface DataFormatConverter {
   name: string;
@@ -13,6 +10,11 @@ export interface DataFormatConverter {
 // Auto-detect input format
 export function detectInputFormat(input: string): string {
   const trimmed = input.trim();
+
+  // Return 'unknown' for empty or whitespace-only input
+  if (!trimmed) {
+    return 'unknown';
+  }
 
   // Try to parse as JSON
   try {
@@ -57,6 +59,8 @@ export function convertFromJson(input: string, targetFormat: string): string {
       return convertObjectToCsv(data);
     case 'query':
       return convertObjectToQueryString(data);
+    case 'json':
+      return JSON.stringify(data, null, 2);
     case 'minified':
       return JSON.stringify(data);
     case 'pretty':
@@ -79,49 +83,40 @@ export function convertFromYaml(input: string, targetFormat: string): string {
       return convertObjectToCsv(data);
     case 'query':
       return convertObjectToQueryString(data);
+    case 'yaml':
+      return yaml.stringify(data);
     default:
       throw new Error(`Unsupported target format: ${targetFormat}`);
   }
 }
 
-// Convert XML to other formats
-export function convertFromXml(input: string, targetFormat: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    xml2js.parseString(input, { explicitArray: false }, (err, result) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+// Convert XML to other formats (simplified browser-compatible version)
+export function convertFromXml(input: string, targetFormat: string): string {
+  // Simple XML to object conversion for browser
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(input, 'text/xml');
+  const result = xmlToObject(xmlDoc.documentElement);
 
-      try {
-        let output: string;
-        switch (targetFormat.toLowerCase()) {
-          case 'json':
-            output = JSON.stringify(result, null, 2);
-            break;
-          case 'yaml':
-            output = yaml.stringify(result);
-            break;
-          case 'csv':
-            output = convertObjectToCsv(result);
-            break;
-          case 'query':
-            output = convertObjectToQueryString(result);
-            break;
-          default:
-            throw new Error(`Unsupported target format: ${targetFormat}`);
-        }
-        resolve(output);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  });
+  switch (targetFormat.toLowerCase()) {
+    case 'json':
+      return JSON.stringify(result, null, 2);
+    case 'yaml':
+      return yaml.stringify(result);
+    case 'csv':
+      return convertObjectToCsv(result);
+    case 'query':
+      return convertObjectToQueryString(result);
+    case 'xml':
+      return input; // Return original XML
+    default:
+      throw new Error(`Unsupported target format: ${targetFormat}`);
+  }
 }
 
 // Convert CSV to other formats
 export function convertFromCsv(input: string, targetFormat: string): string {
-  const records = csvParse(input, { columns: true });
+  const result = Papa.parse(input, { header: true });
+  const records = result.data;
 
   switch (targetFormat.toLowerCase()) {
     case 'json':
@@ -132,6 +127,8 @@ export function convertFromCsv(input: string, targetFormat: string): string {
       return convertObjectToXml(records);
     case 'query':
       return convertObjectToQueryString(records);
+    case 'csv':
+      return input; // passthrough
     default:
       throw new Error(`Unsupported target format: ${targetFormat}`);
   }
@@ -155,25 +152,83 @@ export function convertFromQueryString(input: string, targetFormat: string): str
       return convertObjectToXml(data);
     case 'csv':
       return convertObjectToCsv(data);
+    case 'query':
+      return input; // Return original query string
     default:
       throw new Error(`Unsupported target format: ${targetFormat}`);
   }
 }
 
+
+
 // Helper functions
 function convertObjectToXml(obj: any, rootName: string = 'root'): string {
-  const builder = new xml2js.Builder({ rootName, headless: true });
-  return builder.buildObject(obj);
+  return objectToXml(obj, rootName);
+}
+
+function objectToXml(obj: any, rootName: string): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<${rootName}>`;
+
+  if (Array.isArray(obj)) {
+    obj.forEach((item, index) => {
+      xml += objectToXml(item, `item${index}`);
+    });
+  } else if (typeof obj === 'object' && obj !== null) {
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'object' && value !== null) {
+        xml += objectToXml(value, key);
+      } else {
+        xml += `<${key}>${value}</${key}>`;
+      }
+    }
+  } else {
+    xml += obj;
+  }
+
+  xml += `</${rootName}>`;
+  return xml;
+}
+
+function xmlToObject(element: Element): any {
+  const result: any = {};
+
+  // Handle attributes
+  for (let i = 0; i < element.attributes.length; i++) {
+    const attr = element.attributes[i];
+    result[`@${attr.name}`] = attr.value;
+  }
+
+  // Handle child nodes
+  for (let i = 0; i < element.childNodes.length; i++) {
+    const child = element.childNodes[i];
+
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      const childElement = child as Element;
+      const childName = childElement.tagName;
+      const childValue = xmlToObject(childElement);
+
+      if (result[childName]) {
+        if (!Array.isArray(result[childName])) {
+          result[childName] = [result[childName]];
+        }
+        result[childName].push(childValue);
+      } else {
+        result[childName] = childValue;
+      }
+    } else if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) {
+      result['#text'] = child.textContent.trim();
+    }
+  }
+
+  return result;
 }
 
 function convertObjectToCsv(obj: any): string {
   if (Array.isArray(obj)) {
     if (obj.length === 0) return '';
-    const headers = Object.keys(obj[0]);
-    return csvStringify(obj, { header: true });
+    return Papa.unparse(obj);
   } else {
-    const headers = Object.keys(obj);
-    return csvStringify([obj], { header: true });
+    return Papa.unparse([obj]);
   }
 }
 
@@ -197,7 +252,7 @@ function convertObjectToQueryString(obj: any): string {
 }
 
 // Main converter function
-export async function convertDataFormat(input: string, targetFormat: string): Promise<string> {
+export function convertDataFormat(input: string, targetFormat: string): string {
   const sourceFormat = detectInputFormat(input);
 
   switch (sourceFormat) {
@@ -206,7 +261,7 @@ export async function convertDataFormat(input: string, targetFormat: string): Pr
     case 'yaml':
       return convertFromYaml(input, targetFormat);
     case 'xml':
-      return await convertFromXml(input, targetFormat);
+      return convertFromXml(input, targetFormat);
     case 'csv':
       return convertFromCsv(input, targetFormat);
     case 'query':
@@ -218,25 +273,24 @@ export async function convertDataFormat(input: string, targetFormat: string): Pr
 
 // Examples
 export const dataConverterExamples = {
-  jsonToYaml: {
-    input: '{"name": "John", "age": 30, "city": "New York"}',
-    output: `name: John
-age: 30
-city: New York`,
-    description: "Convert JSON to YAML format"
+  json: {
+    input: '{"name": "John", "age": 30}',
+    output: 'name: John\nage: 30',
+    description: 'Convert JSON to YAML'
   },
-  yamlToJson: {
-    input: `name: John
-age: 30
-city: New York`,
-    output: '{\n  "name": "John",\n  "age": 30,\n  "city": "New York"\n}',
-    description: "Convert YAML to JSON format"
+  yaml: {
+    input: 'name: John\nage: 30',
+    output: '{"name":"John","age":30}',
+    description: 'Convert YAML to JSON'
   },
-  csvToJson: {
-    input: `name,age,city
-John,30,New York
-Jane,25,Boston`,
-    output: '[\n  {\n    "name": "John",\n    "age": "30",\n    "city": "New York"\n  },\n  {\n    "name": "Jane",\n    "age": "25",\n    "city": "Boston"\n  }\n]',
-    description: "Convert CSV to JSON format"
+  csv: {
+    input: 'name,age\nJohn,30\nJane,25',
+    output: '[{"name":"John","age":"30"},{"name":"Jane","age":"25"}]',
+    description: 'Convert CSV to JSON'
+  },
+  query: {
+    input: 'name=John&age=30&city=NYC',
+    output: '{"name":"John","age":"30","city":"NYC"}',
+    description: 'Convert query string to JSON'
   }
 };

@@ -7,7 +7,7 @@ sidebar_position: 12
 Escape HTML entities in text with real-time conversion.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertToEscape, convertToEscapeExample } from '@site/src/converters/stringConverters';
+import { convertToEscape, convertToEscapeExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter
   conversion={convertToEscape}

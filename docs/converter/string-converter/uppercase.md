@@ -7,7 +7,7 @@ sidebar_position: 1
 Convert your text to uppercase letters with real-time conversion.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertToUppercase, convertToUppercaseExample } from '@site/src/converters/stringConverters';
+import { convertToUppercase, convertToUppercaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter
   conversion={convertToUppercase}

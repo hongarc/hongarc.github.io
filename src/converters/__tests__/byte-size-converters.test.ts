@@ -8,7 +8,7 @@ import {
   parseFriendlySize,
   getAvailableByteSizeFormats,
   byteSizeConverterExamples
-} from '../byteSizeConverters';
+} from '../byte-size-converters';
 
 describe('byteSizeConverters', () => {
   describe('parseSize', () => {

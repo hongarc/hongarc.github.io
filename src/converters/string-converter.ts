@@ -4,16 +4,18 @@ import {
   startCase,
   snakeCase,
   capitalize,
-  toUpper,
-  toLower,
+  upperCase,
+  lowerCase,
   trim,
   deburr,
   escape,
-  unescape
+  unescape,
+  toUpper,
+  toLower
 } from 'lodash';
 
 export function convertToUppercase(input: string): string {
-  return input.toUpperCase();
+  return toUpper(input);
 }
 
 export const convertToUppercaseExample = {
@@ -23,7 +25,7 @@ export const convertToUppercaseExample = {
 };
 
 export function convertToLowercase(input: string): string {
-  return input.toLowerCase();
+  return toLower(input);
 }
 
 export const convertToLowercaseExample = {
@@ -83,7 +85,7 @@ export const convertToCapitalizeExample = {
 };
 
 export function convertToUpperCase(input: string): string {
-  return toUpper(input);
+  return upperCase(input);
 }
 
 export const convertToUpperCaseExample = {
@@ -93,7 +95,7 @@ export const convertToUpperCaseExample = {
 };
 
 export function convertToLowerCase(input: string): string {
-  return toLower(input);
+  return lowerCase(input);
 }
 
 export const convertToLowerCaseExample = {

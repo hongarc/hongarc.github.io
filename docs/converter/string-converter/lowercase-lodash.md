@@ -7,7 +7,7 @@ sidebar_position: 9
 Convert text to lower case using Lodash with real-time conversion.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertToLowerCase, convertToLowerCaseExample } from '@site/src/converters/stringConverters';
+import { convertToLowerCase, convertToLowerCaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter
   conversion={convertToLowerCase}

@@ -7,7 +7,7 @@ sidebar_position: 5
 Convert your text to Start Case format with real-time conversion.
 
 import SimpleConverter from '@site/src/components/SimpleConverter';
-import { convertToStartCase, convertToStartCaseExample } from '@site/src/converters/stringConverters';
+import { convertToStartCase, convertToStartCaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter
   conversion={convertToStartCase}

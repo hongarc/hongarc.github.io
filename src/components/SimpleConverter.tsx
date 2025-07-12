@@ -41,6 +41,7 @@ export default function SimpleConverter({
   }, [debouncedInput, conversion]);
 
   const handleCopy = async () => {
+    if ((output || exampleOutput).startsWith('Error:')) return;
     try {
       await navigator.clipboard.writeText(output || exampleOutput);
       setCopied(true);
@@ -162,19 +163,21 @@ export default function SimpleConverter({
           </label>
           <button
             onClick={handleCopy}
+            disabled={(output || exampleOutput).startsWith('Error:')}
             style={{
               padding: '0.5rem 1rem',
               border: '1px solid var(--ifm-color-emphasis-300)',
               borderRadius: '4px',
               backgroundColor: copied ? 'var(--ifm-color-success)' : 'var(--ifm-background-color)',
               color: copied ? 'white' : 'var(--ifm-color-emphasis-900)',
-              cursor: 'pointer',
+              cursor: (output || exampleOutput).startsWith('Error:') ? 'not-allowed' : 'pointer',
               fontSize: '0.8rem',
               fontWeight: '500',
               transition: 'all 0.2s ease',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: '0.5rem',
+              opacity: (output || exampleOutput).startsWith('Error:') ? 0.5 : 1
             }}
             title="Copy to clipboard"
           >

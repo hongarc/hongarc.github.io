@@ -1,4 +1,4 @@
-import { v4 as uuidv4, v1 as uuidv1 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 // import { nanoid } from 'nanoid';
 // import cuid from 'cuid';
 // import { ulid } from 'ulid';
@@ -12,11 +12,6 @@ export interface IdGenerator {
 // UUID v4 Generator (default)
 export function generateUuidV4(): string {
   return uuidv4();
-}
-
-// UUID v1 Generator
-export function generateUuidV1(): string {
-  return uuidv1();
 }
 
 // NanoID Generator
@@ -34,6 +29,14 @@ export function generateCuid(): string {
   const timestamp = Date.now().toString(36);
   const random = Math.random().toString(36).substring(2);
   return `c${timestamp}${random}`;
+}
+
+// CUID2 Generator (improved version)
+export function generateCuid2(): string {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).substring(2, 15);
+  const counter = Math.floor(Math.random() * 1000).toString(36);
+  return `c${timestamp}${random}${counter}`;
 }
 
 // ULID Generator
@@ -59,12 +62,12 @@ export function generateId(type: string = 'uuid', options: any = {}): string {
     case 'uuid':
     case 'uuidv4':
       return generateUuidV4();
-    case 'uuidv1':
-      return generateUuidV1();
     case 'nanoid':
       return generateNanoId(options.length || 21);
     case 'cuid':
       return generateCuid();
+    case 'cuid2':
+      return generateCuid2();
     case 'ulid':
       return generateUlid();
     case 'hex':
@@ -83,11 +86,6 @@ export function getAvailableIdTypes(): IdGenerator[] {
       description: 'Random UUID v4 (default)'
     },
     {
-      name: 'UUID v1',
-      generate: () => generateUuidV1(),
-      description: 'Time-based UUID v1'
-    },
-    {
       name: 'NanoID',
       generate: (options) => generateNanoId(options?.length || 21),
       description: 'URL-friendly unique ID'
@@ -96,6 +94,11 @@ export function getAvailableIdTypes(): IdGenerator[] {
       name: 'CUID',
       generate: () => generateCuid(),
       description: 'Collision-resistant unique ID'
+    },
+    {
+      name: 'CUID2',
+      generate: () => generateCuid2(),
+      description: 'Improved collision-resistant unique ID'
     },
     {
       name: 'ULID',
@@ -126,6 +129,11 @@ export const idGeneratorExamples = {
     input: 'cuid',
     output: 'cjld2cjxh0000qzrmn831i7rn',
     description: 'Generate CUID'
+  },
+  cuid2: {
+    input: 'cuid2',
+    output: 'cjld2cjxh0000qzrmn831i7rn123',
+    description: 'Generate CUID2 (improved)'
   },
   ulid: {
     input: 'ulid',

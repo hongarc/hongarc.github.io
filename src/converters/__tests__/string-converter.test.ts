@@ -12,7 +12,7 @@ import {
   convertToDeburr,
   convertToEscape,
   convertToUnescape
-} from '../stringConverters';
+} from '../string-converter';
 
 describe('stringConverters', () => {
   describe('convertToUppercase', () => {
@@ -332,7 +332,7 @@ describe('stringConverters', () => {
 
     it('should handle string with special characters', () => {
       const input = 'hello-world';
-      const expected = 'HELLO-WORLD';
+      const expected = 'HELLO WORLD';
       expect(convertToUpperCase(input)).toBe(expected);
     });
   });
@@ -364,7 +364,7 @@ describe('stringConverters', () => {
 
     it('should handle string with special characters', () => {
       const input = 'HELLO-WORLD';
-      const expected = 'hello-world';
+      const expected = 'hello world';
       expect(convertToLowerCase(input)).toBe(expected);
     });
   });
