@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { convertTimestamp } from '../converters/timestamp-converters';
+import useThrottle from '../hooks/useThrottle';
 
 const FORMAT_OPTIONS = [
   { value: 'timestamp', label: 'Unix Timestamp' },
@@ -32,6 +33,7 @@ export default function TimestampConverter() {
   const [timezoneInput, setTimezoneInput] = useState('UTC');
   const [showTimezoneSuggestions, setShowTimezoneSuggestions] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const throttledInput = useThrottle(input, 300);
 
   // Load saved preferences from localStorage
   useEffect(() => {
@@ -49,13 +51,13 @@ export default function TimestampConverter() {
 
   // Convert input when it changes
   useEffect(() => {
-    if (input.trim()) {
+    if (throttledInput.trim()) {
       const newOutputs: Record<string, string> = {};
       let hasAnyError = false;
 
       FORMAT_OPTIONS.forEach(option => {
         try {
-          newOutputs[option.value] = convertTimestamp(input, option.value);
+          newOutputs[option.value] = convertTimestamp(throttledInput, option.value);
         } catch (error) {
           newOutputs[option.value] = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
           hasAnyError = true;
@@ -68,7 +70,7 @@ export default function TimestampConverter() {
       setOutputs({});
       setHasError(false);
     }
-  }, [input]);
+  }, [throttledInput]);
 
   const handleCopy = async (text: string) => {
     if (text.startsWith('Error:')) return; // Disable copy for errors

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
-import useDebounce from '../hooks/useDebounce';
+import useThrottle from '../hooks/useThrottle';
 
 interface SimpleConverterProps {
   conversion: (input: string) => string;
@@ -22,15 +22,15 @@ export default function SimpleConverter({
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [copied, setCopied] = useState(false);
-  const debouncedInput = useDebounce(input, 300);
+  const throttledInput = useThrottle(input, 300);
 
   // Calculate example output if example input is provided
   const exampleOutput = exampleInput ? conversion(exampleInput) : '';
 
   useEffect(() => {
-    if (debouncedInput) {
+    if (throttledInput) {
       try {
-        const result = conversion(debouncedInput);
+        const result = conversion(throttledInput);
         setOutput(result);
       } catch (error) {
         setOutput('Error: Invalid input');
@@ -38,7 +38,7 @@ export default function SimpleConverter({
     } else {
       setOutput('');
     }
-  }, [debouncedInput, conversion]);
+  }, [throttledInput, conversion]);
 
   const handleCopy = async () => {
     if ((output || exampleOutput).startsWith('Error:')) return;

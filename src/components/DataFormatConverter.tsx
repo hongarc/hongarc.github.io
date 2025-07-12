@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
 import { convertDataFormat } from '../converters/data-format-converter';
+import useThrottle from '../hooks/useThrottle';
 
 const FORMAT_OPTIONS = ['json', 'yaml', 'xml', 'csv', 'query'];
 
@@ -9,6 +10,7 @@ export default function DataFormatConverter() {
   const [output, setOutput] = useState('');
   const [fromFormat, setFromFormat] = useState('json');
   const [toFormat, setToFormat] = useState('yaml');
+  const throttledInput = useThrottle(input, 300);
 
   // Load saved preferences from localStorage
   useEffect(() => {
@@ -31,9 +33,9 @@ export default function DataFormatConverter() {
 
   // Convert input when it changes
   useEffect(() => {
-    if (input.trim()) {
+    if (throttledInput.trim()) {
       try {
-        const result = convertDataFormat(input, toFormat);
+        const result = convertDataFormat(throttledInput, toFormat);
         setOutput(result);
       } catch (error) {
         setOutput(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -41,7 +43,7 @@ export default function DataFormatConverter() {
     } else {
       setOutput('');
     }
-  }, [input, toFormat]);
+  }, [throttledInput, toFormat]);
 
   const handleCopy = async () => {
     try {
