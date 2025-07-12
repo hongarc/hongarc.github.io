@@ -29,7 +29,103 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+/* Prism syntax highlighting styles */
+.prism-code {
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+}
 
+/* Ensure proper contrast for syntax highlighting */
+[data-theme='light'] .prism-code {
+  color: #24292e !important;
+}
+
+[data-theme='dark'] .prism-code {
+  color: #f6f8fa !important;
+}
+
+/* Token colors for better visibility */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a737d !important;
+}
+
+.token.punctuation {
+  color: #24292e !important;
+}
+
+[data-theme='dark'] .token.punctuation {
+  color: #f6f8fa !important;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #d73a49 !important;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #032f62 !important;
+}
+
+[data-theme='dark'] .token.selector,
+[data-theme='dark'] .token.attr-name,
+[data-theme='dark'] .token.string,
+[data-theme='dark'] .token.char,
+[data-theme='dark'] .token.builtin,
+[data-theme='dark'] .token.inserted {
+  color: #79b8ff !important;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #d73a49 !important;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #d73a49 !important;
+}
+
+.token.function,
+.token.class-name {
+  color: #6f42c1 !important;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #e36209 !important;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold !important;
+}
+
+.token.italic {
+  font-style: italic !important;
+}
+
+.token.entity {
+  cursor: help !important;
+}
 
 /* Converter component styles */
 .converter-container {

@@ -23,3 +23,19 @@ exports.${methodName} = ${methodName};\n`;
     trim
   )(inputString);
 }
+
+export const convertClassToNamedFunctionExample = {
+  input: `class Test {
+  static getData(id) {
+    return dataService.getData(id);
+  }
+}
+module.exports = Test;`,
+  output: `function getData(id) {
+  return dataService.getData(id);
+}
+exports.getData = getData;
+
+//injection`,
+  description: "Converts static class methods to named functions with exports"
+};
