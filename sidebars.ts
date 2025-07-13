@@ -52,17 +52,7 @@ const sidebars: SidebarsConfig = {
         'converter/string-converter/unescape',
       ],
     },
-    {
-      type: 'category',
-      label: 'Class Converters',
-      link: {
-        type: 'doc',
-        id: 'converter/class-converter/class-to-named-function',
-      },
-      items: [
-        'converter/class-converter/class-to-named-function',
-      ],
-    },
+    'converter/class-to-named-function',
   ],
 };
 

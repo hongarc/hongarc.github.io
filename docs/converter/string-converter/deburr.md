@@ -6,7 +6,7 @@ sidebar_position: 11
 
 Remove accents and diacritics from text with real-time conversion.
 
-import SimpleConverter from '@site/src/components/SimpleConverter';
+import SimpleConverter from '@site/src/components/simple-converter';
 import { convertToDeburr, convertToDeburrExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter

@@ -9,13 +9,13 @@ import {
   toRelativeTime,
   convertTimestamp,
   getAvailableTimestampFormats,
-  timestampConverterExamples
+  timestampConverterExamples,
 } from '../timestamp-converters';
 
 describe('timestampConverters', () => {
   describe('timestampToIso', () => {
     it('should convert Unix timestamp to ISO date', () => {
-      const timestamp = 1640995200; // 2022-01-01T00:00:00.000Z
+      const timestamp = 1_640_995_200; // 2022-01-01T00:00:00.000Z
       const expected = '2022-01-01T00:00:00.000Z';
       expect(timestampToIso(timestamp)).toBe(expected);
     });
@@ -29,7 +29,7 @@ describe('timestampConverters', () => {
 
   describe('timestampToLocal', () => {
     it('should convert Unix timestamp to local date string', () => {
-      const timestamp = 1640995200;
+      const timestamp = 1_640_995_200;
       const result = timestampToLocal(timestamp);
       expect(result).toContain('2022');
       expect(result).toContain('Jan');
@@ -38,7 +38,7 @@ describe('timestampConverters', () => {
 
   describe('timestampToUtc', () => {
     it('should convert Unix timestamp to UTC string', () => {
-      const timestamp = 1640995200;
+      const timestamp = 1_640_995_200;
       const result = timestampToUtc(timestamp);
       expect(result).toContain('2022');
       expect(result).toContain('GMT');
@@ -48,7 +48,7 @@ describe('timestampConverters', () => {
   describe('isoToTimestamp', () => {
     it('should convert ISO date to Unix timestamp', () => {
       const isoString = '2022-01-01T00:00:00.000Z';
-      const expected = 1640995200;
+      const expected = 1_640_995_200;
       expect(isoToTimestamp(isoString)).toBe(expected);
     });
   });
@@ -93,7 +93,7 @@ describe('timestampConverters', () => {
     });
 
     it('should handle years ago', () => {
-      const oldTimestamp = Math.floor(Date.now() / 1000) - (365 * 24 * 3600 * 2); // 2 years ago
+      const oldTimestamp = Math.floor(Date.now() / 1000) - 365 * 24 * 3600 * 2; // 2 years ago
       const result = toRelativeTime(oldTimestamp);
       expect(result).toContain('year');
       expect(result).toContain('ago');
@@ -135,11 +135,13 @@ describe('timestampConverters', () => {
     it('should return current timestamp for "now"', () => {
       const result = convertTimestamp('now', 'now');
       expect(typeof result).toBe('string');
-      expect(parseInt(result)).toBeGreaterThan(0);
+      expect(Number.parseInt(result)).toBeGreaterThan(0);
     });
 
     it('should throw error for unsupported format', () => {
-      expect(() => convertTimestamp('1640995200', 'invalid')).toThrow('Unsupported target format: invalid');
+      expect(() => convertTimestamp('1640995200', 'invalid')).toThrow(
+        'Unsupported target format: invalid'
+      );
     });
   });
 
@@ -159,25 +161,25 @@ describe('timestampConverters', () => {
 
     it('should have valid descriptions', () => {
       const formats = getAvailableTimestampFormats();
-      formats.forEach(format => {
+      for (const format of formats) {
         expect(format.description).toBeTruthy();
         expect(typeof format.description).toBe('string');
-      });
+      }
     });
 
     it('should have working convert functions', () => {
       const formats = getAvailableTimestampFormats();
-      formats.forEach(format => {
+      for (const format of formats) {
         if (format.name === 'Current Time') {
           const result = format.convert('now');
           expect(typeof result).toBe('string');
-          expect(parseInt(result)).toBeGreaterThan(0);
+          expect(Number.parseInt(result)).toBeGreaterThan(0);
         } else {
           const result = format.convert('1640995200');
           expect(result).toBeTruthy();
           expect(typeof result).toBe('string');
         }
-      });
+      }
     });
   });
 
@@ -199,7 +201,7 @@ describe('timestampConverters', () => {
     it('should have valid current time example', () => {
       const example = timestampConverterExamples.currentTime;
       expect(example.input).toBe('now');
-      expect(parseInt(example.output)).toBeGreaterThan(0);
+      expect(Number.parseInt(example.output)).toBeGreaterThan(0);
       expect(example.description).toBe('Get current timestamp');
     });
 

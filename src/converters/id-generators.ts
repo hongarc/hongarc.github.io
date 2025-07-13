@@ -1,148 +1,127 @@
-import { v4 as uuidv4 } from 'uuid';
-// import { nanoid } from 'nanoid';
-// import cuid from 'cuid';
-// import { ulid } from 'ulid';
-
+// ID Generators
 export interface IdGenerator {
   name: string;
-  generate: (options?: any) => string;
   description: string;
+  generate: () => string;
+  example: string;
 }
 
-// UUID v4 Generator (default)
-export function generateUuidV4(): string {
-  return uuidv4();
-}
-
-// NanoID Generator
-export function generateNanoId(length: number = 21): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+// Custom nanoid implementation
+function customNanoid(size: number = 21): string {
+  const alphabet =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (let index = 0; index < size; index++) {
+    result += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
   }
   return result;
 }
 
-// CUID Generator
-export function generateCuid(): string {
+// Custom cuid implementation
+function customCuid(): string {
   const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2);
-  return `c${timestamp}${random}`;
-}
-
-// CUID2 Generator (improved version)
-export function generateCuid2(): string {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 15);
+  const random = Math.random().toString(36).slice(2);
   const counter = Math.floor(Math.random() * 1000).toString(36);
   return `c${timestamp}${random}${counter}`;
 }
 
-// ULID Generator
-export function generateUlid(): string {
+// Custom ulid implementation
+function customUlid(): string {
   const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 15);
-  return `${timestamp.toString(36)}${random}`.toUpperCase();
+  const time = timestamp.toString(36).padStart(10, '0');
+  const random = Math.random().toString(36).slice(2, 15);
+  return time + random;
 }
 
-// HEX string generator
-export function generateHexId(length: number = 32): string {
-  const chars = '0123456789abcdef';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+// Custom cuid2 implementation
+function customCuid2(): string {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).slice(2, 15);
+  return `c${timestamp}${random}`;
 }
 
-// Main ID generator function
-export function generateId(type: string = 'uuid', options: any = {}): string {
-  switch (type.toLowerCase()) {
-    case 'uuid':
-    case 'uuidv4':
-      return generateUuidV4();
-    case 'nanoid':
-      return generateNanoId(options.length || 21);
-    case 'cuid':
-      return generateCuid();
-    case 'cuid2':
-      return generateCuid2();
-    case 'ulid':
-      return generateUlid();
-    case 'hex':
-      return generateHexId(options.length || 32);
-    default:
-      throw new Error(`Unsupported ID type: ${type}`);
-  }
-}
-
-// Get all available ID types
-export function getAvailableIdTypes(): IdGenerator[] {
-  return [
-    {
-      name: 'UUID v4',
-      generate: () => generateUuidV4(),
-      description: 'Random UUID v4 (default)'
-    },
-    {
-      name: 'NanoID',
-      generate: (options) => generateNanoId(options?.length || 21),
-      description: 'URL-friendly unique ID'
-    },
-    {
-      name: 'CUID',
-      generate: () => generateCuid(),
-      description: 'Collision-resistant unique ID'
-    },
-    {
-      name: 'CUID2',
-      generate: () => generateCuid2(),
-      description: 'Improved collision-resistant unique ID'
-    },
-    {
-      name: 'ULID',
-      generate: () => generateUlid(),
-      description: 'Universally unique lexicographically sortable ID'
-    },
-    {
-      name: 'HEX',
-      generate: (options) => generateHexId(options?.length || 32),
-      description: 'Hexadecimal string ID'
+// UUID v4 implementation
+function generateUuidV4(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAll(
+    /[xy]/g,
+    function (c) {
+      const r = Math.trunc(Math.random() * 16);
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
     }
-  ];
+  );
 }
 
-// Examples
-export const idGeneratorExamples = {
-  uuid: {
-    input: 'uuid',
-    output: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'Generate UUID v4'
+// UUID v1 implementation
+function generateUuidV1(): string {
+  const timestamp = Date.now();
+  const timeLow = (timestamp & 4_294_967_295).toString(16).padStart(8, '0');
+  const timeMid = ((timestamp >> 32) & 65_535).toString(16).padStart(4, '0');
+  const timeHigh = ((timestamp >> 48) & 4095).toString(16).padStart(3, '0');
+  const random = Math.random().toString(16).slice(2, 14);
+  return `${timeLow}-${timeMid}-1${timeHigh}-${random.slice(0, 4)}-${random.slice(4)}`;
+}
+
+export const idGenerators: IdGenerator[] = [
+  {
+    name: 'nanoid',
+    description: 'URL-friendly unique string ID generator',
+    generate: () => customNanoid(),
+    example: customNanoid(),
   },
-  nanoid: {
-    input: 'nanoid',
-    output: 'V1StGXR8_Z5jdHi6B-myT',
-    description: 'Generate NanoID (21 chars)'
+  {
+    name: 'cuid',
+    description: 'Collision-resistant unique identifier',
+    generate: () => customCuid(),
+    example: customCuid(),
   },
-  cuid: {
-    input: 'cuid',
-    output: 'cjld2cjxh0000qzrmn831i7rn',
-    description: 'Generate CUID'
+  {
+    name: 'ulid',
+    description: 'Universally Unique Lexicographically Sortable Identifier',
+    generate: () => customUlid(),
+    example: customUlid(),
   },
-  cuid2: {
-    input: 'cuid2',
-    output: 'cjld2cjxh0000qzrmn831i7rn123',
-    description: 'Generate CUID2 (improved)'
+  {
+    name: 'cuid2',
+    description: 'Secure, collision-resistant unique identifier',
+    generate: () => customCuid2(),
+    example: customCuid2(),
   },
-  ulid: {
-    input: 'ulid',
-    output: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
-    description: 'Generate ULID'
+  {
+    name: 'uuid-v4',
+    description: 'Random UUID version 4',
+    generate: () => generateUuidV4(),
+    example: generateUuidV4(),
   },
-  hex: {
-    input: 'hex',
-    output: 'a1b2c3d4e5f678901234567890123456',
-    description: 'Generate 32-character HEX ID'
-  }
-};
+  {
+    name: 'uuid-v1',
+    description: 'Time-based UUID version 1',
+    generate: () => generateUuidV1(),
+    example: generateUuidV1(),
+  },
+  {
+    name: 'crypto-random-uuid',
+    description: 'Cryptographically secure random UUID',
+    generate: () => {
+      // Use global crypto if available, otherwise fallback to UUID v4
+      if (typeof globalThis !== 'undefined' && globalThis.crypto?.randomUUID) {
+        return globalThis.crypto.randomUUID();
+      }
+      return generateUuidV4();
+    },
+    example: generateUuidV4(),
+  },
+];
+
+export function generateId(type: string): string {
+  const generator = idGenerators.find(g => g.name === type);
+  return generator ? generator.generate() : '';
+}
+
+export function getAllIdTypes(): string[] {
+  return idGenerators.map(g => g.name);
+}
+
+export function getIdGeneratorInfo(type: string): IdGenerator | undefined {
+  return idGenerators.find(g => g.name === type);
+}

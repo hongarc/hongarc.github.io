@@ -6,6 +6,6 @@ sidebar_position: 1
 
 Convert between different data formats with a unified interface that remembers your preferences.
 
-import DataFormatConverter from '@site/src/components/DataFormatConverter';
+import DataFormatConverter from '@site/src/components/data-format-converter';
 
 <DataFormatConverter />

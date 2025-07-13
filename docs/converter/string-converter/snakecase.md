@@ -6,7 +6,7 @@ sidebar_position: 6
 
 Convert your text to snake_case format with real-time conversion.
 
-import SimpleConverter from '@site/src/components/SimpleConverter';
+import SimpleConverter from '@site/src/components/simple-converter';
 import { convertToSnakeCase, convertToSnakeCaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter

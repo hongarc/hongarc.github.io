@@ -6,6 +6,6 @@ sidebar_position: 4
 
 Convert between different color formats with precision and validation.
 
-import ColorConverter from '@site/src/components/ColorConverter';
+import ColorConverter from '@site/src/components/color-converter';
 
 <ColorConverter />

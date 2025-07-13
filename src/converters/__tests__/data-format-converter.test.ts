@@ -1,4 +1,8 @@
-import { convertDataFormat, detectInputFormat, dataConverterExamples } from '../data-format-converter';
+import {
+  convertDataFormat,
+  detectInputFormat,
+  dataConverterExamples,
+} from '../data-format-converter';
 
 describe('dataConverters', () => {
   describe('detectInputFormat', () => {
@@ -66,7 +70,8 @@ describe('dataConverters', () => {
     });
 
     it('should handle complex nested objects', () => {
-      const input = '{"user": {"name": "John", "profile": {"age": 30, "city": "NYC"}}}';
+      const input =
+        '{"user": {"name": "John", "profile": {"age": 30, "city": "NYC"}}}';
       const result = convertDataFormat(input, 'yaml');
       expect(result).toContain('user:');
       expect(result).toContain('name: John');
@@ -85,7 +90,9 @@ describe('dataConverters', () => {
     });
 
     it('should throw error for invalid input', () => {
-      expect(() => convertDataFormat('', 'json')).toThrow('Unable to detect input format');
+      expect(() => convertDataFormat('', 'json')).toThrow(
+        'Unable to detect input format'
+      );
     });
   });
 
@@ -98,11 +105,11 @@ describe('dataConverters', () => {
     });
 
     it('should have input and output for each example', () => {
-      Object.values(dataConverterExamples).forEach(example => {
+      for (const example of Object.values(dataConverterExamples)) {
         expect(example.input).toBeDefined();
         expect(example.output).toBeDefined();
         expect(example.description).toBeDefined();
-      });
+      }
     });
   });
 });

@@ -6,7 +6,7 @@ sidebar_position: 7
 
 Capitalize the first letter of a string with real-time conversion.
 
-import SimpleConverter from '@site/src/components/SimpleConverter';
+import SimpleConverter from '@site/src/components/simple-converter';
 import { convertToCapitalize, convertToCapitalizeExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter

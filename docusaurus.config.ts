@@ -1,6 +1,6 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import type { Config } from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -65,12 +65,11 @@ const config: Config = {
     ],
   ],
 
-
   themeConfig: {
     // Replace with your project's social card
     image: 'img/blame-social.png',
     navbar: {
-      title: 'Hongarc\'s doc',
+      title: "Hongarc's doc",
       logo: {
         alt: 'Hongarc Logo',
         src: 'img/arc.png',
@@ -82,7 +81,7 @@ const config: Config = {
           position: 'left',
           label: 'Tutorial',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        { to: '/blog', label: 'Blog', position: 'left' },
         {
           type: 'docSidebar',
           sidebarId: 'converterSidebar',

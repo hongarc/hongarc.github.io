@@ -5,7 +5,7 @@ import {
   darkenColor,
   convertColor,
   getAvailableColorFormats,
-  colorConverterExamples
+  colorConverterExamples,
 } from '../color-converters';
 
 describe('colorConverters', () => {
@@ -26,11 +26,9 @@ describe('colorConverters', () => {
     });
 
     it('should return null for unrecognized format', () => {
-      expect(detectColorFormat('invalid')).toBe(null);
+      expect(detectColorFormat('invalid')).toBe(undefined);
     });
   });
-
-
 
   describe('invertColor', () => {
     it('should invert red to cyan', () => {
@@ -94,19 +92,21 @@ describe('colorConverters', () => {
       expect(result).toBe('rgb(255, 0, 0)');
     });
 
-
-
     it('should throw error for unsupported format', () => {
-      expect(() => convertColor('#ff0000', 'invalid')).toThrow('Unsupported target format: invalid');
+      expect(() => convertColor('#ff0000', 'invalid')).toThrow(
+        'Unsupported target format: invalid'
+      );
     });
 
     it('should throw error for unsupported color format', () => {
-      expect(() => convertColor('invalid', 'rgb')).toThrow('Unable to detect color format');
+      expect(() => convertColor('invalid', 'rgb')).toThrow(
+        'Unable to detect color format'
+      );
     });
   });
 
   describe('getAvailableColorFormats', () => {
-        it('should return all available color formats', () => {
+    it('should return all available color formats', () => {
       const formats = getAvailableColorFormats();
       expect(formats).toHaveLength(6);
 
@@ -121,23 +121,27 @@ describe('colorConverters', () => {
 
     it('should have valid descriptions', () => {
       const formats = getAvailableColorFormats();
-      formats.forEach(format => {
+      for (const format of formats) {
         expect(format.description).toBeTruthy();
         expect(typeof format.description).toBe('string');
-      });
+      }
     });
 
     it('should have working convert functions', () => {
       const formats = getAvailableColorFormats();
-      formats.forEach(format => {
-        if (format.name === 'Invert' || format.name === 'Lighten' || format.name === 'Darken') {
+      for (const format of formats) {
+        if (
+          format.name === 'Invert' ||
+          format.name === 'Lighten' ||
+          format.name === 'Darken'
+        ) {
           // Skip these as they're not implemented in convertColor
-          return;
+          continue;
         }
         const result = format.convert('#ff0000');
         expect(result).toBeTruthy();
         expect(typeof result).toBe('string');
-      });
+      }
     });
   });
 

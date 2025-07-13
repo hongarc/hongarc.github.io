@@ -6,6 +6,6 @@ sidebar_position: 5
 
 Convert between different byte size units with binary and decimal options.
 
-import ByteSizeConverter from '@site/src/components/ByteSizeConverter';
+import ByteSizeConverter from '@site/src/components/byte-size-converter';
 
 <ByteSizeConverter />

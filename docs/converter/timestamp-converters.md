@@ -6,6 +6,6 @@ sidebar_position: 3
 
 Convert between different timestamp formats and human-readable dates.
 
-import TimestampConverter from '@site/src/components/TimestampConverter';
+import TimestampConverter from '@site/src/components/timestamp-converter';
 
 <TimestampConverter />

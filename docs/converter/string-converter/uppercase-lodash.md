@@ -6,7 +6,7 @@ sidebar_position: 8
 
 Convert text to UPPER CASE using Lodash with real-time conversion.
 
-import SimpleConverter from '@site/src/components/SimpleConverter';
+import SimpleConverter from '@site/src/components/simple-converter';
 import { convertToUpperCase, convertToUpperCaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter

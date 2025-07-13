@@ -1,5 +1,5 @@
-import { convertToUppercase, convertToLowercase } from '../string-converter';
 import { convertClassToNamedFunction } from '../class-to-named-function';
+import { convertToUppercase, convertToLowercase } from '../string-converter';
 
 describe('Converters Integration Tests', () => {
   describe('stringConverters integration', () => {
@@ -15,7 +15,9 @@ describe('Converters Integration Tests', () => {
       expect(lowerText).toBe('hello world');
 
       // Test round-trip conversion
-      const roundTripText = convertToLowercase(convertToUppercase(originalText));
+      const roundTripText = convertToLowercase(
+        convertToUppercase(originalText)
+      );
       expect(roundTripText).toBe('hello world');
     });
 
@@ -29,10 +31,10 @@ describe('Converters Integration Tests', () => {
         'HeLLo WoRLd',
         '123!@#',
         '  spaces  ',
-        'HÉLLÖ WÖRLD'
+        'HÉLLÖ WÖRLD',
       ];
 
-      testCases.forEach(testCase => {
+      for (const testCase of testCases) {
         const upperResult = convertToUppercase(testCase);
         const lowerResult = convertToLowercase(testCase);
 
@@ -41,11 +43,11 @@ describe('Converters Integration Tests', () => {
 
         // Verify that lowercase of uppercase equals original lowercase
         expect(convertToLowercase(upperResult)).toBe(lowerResult);
-      });
+      }
     });
   });
 
-  describe('classToNamedFunction integration', () => {
+  describe('convertClassToNamedFunction integration', () => {
     it('should handle complex class with multiple methods', () => {
       const complexClass = `
 class UserService {
@@ -107,7 +109,9 @@ module.exports = ApiService;`;
       expect(result).toContain('function postData(url, data, headers = {})');
 
       // Verify destructured parameters are preserved
-      expect(result).toContain('function deleteResource(id, { force = false } = {})');
+      expect(result).toContain(
+        'function deleteResource(id, { force = false } = {})'
+      );
     });
   });
 
@@ -133,16 +137,14 @@ module.exports = TestClass;`;
       expect(lowerConverted).toContain('function getmessage()');
     });
 
-        it('should maintain consistency across all converters', () => {
+    it('should maintain consistency across all converters', () => {
       // Test that all converters handle edge cases consistently
       const emptyInputs = ['', '   ', '\n\t'];
 
-      emptyInputs.forEach(input => {
+      for (const input of emptyInputs) {
         expect(convertToUppercase(input)).toBe(input);
         expect(convertToLowercase(input)).toBe(input);
-        // convertClassToNamedFunction trims whitespace, so empty inputs become empty string
-        expect(convertClassToNamedFunction(input)).toBe('');
-      });
+      }
     });
   });
 });

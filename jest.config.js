@@ -1,26 +1,27 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    '^@site/(.*)$': '<rootDir>/src/$1',
+    // Mock ESM modules that cause issues in Jest
+    '^nanoid$': '<rootDir>/src/__mocks__/nanoid.js',
+    '^uuid$': '<rootDir>/src/__mocks__/uuid.js',
+    '^crypto$': '<rootDir>/src/__mocks__/crypto.js',
+  },
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.json',
+      },
+    ],
   },
+  setupFilesAfterEnv: ['<rootDir>/src/setup-tests.ts'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  testMatch: ['**/__tests__/**/*.(ts|tsx)', '**/*.(test|spec).(ts|tsx)'],
   collectCoverageFrom: [
-    'src/**/*.ts',
+    'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
-    '!src/**/__tests__/**',
+    '!src/setup-tests.ts',
   ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  moduleFileExtensions: ['ts', 'js', 'json'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(nanoid|cuid|ulid|uuid)/)'
-  ],
-  extensionsToTreatAsEsm: ['.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-  },
 };

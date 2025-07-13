@@ -7,7 +7,7 @@ import {
   toHumanReadable,
   parseFriendlySize,
   getAvailableByteSizeFormats,
-  byteSizeConverterExamples
+  byteSizeConverterExamples,
 } from '../byte-size-converters';
 
 describe('byteSizeConverters', () => {
@@ -49,22 +49,22 @@ describe('byteSizeConverters', () => {
   describe('toBytes', () => {
     it('should convert KB to bytes (binary)', () => {
       const result = toBytes('1024 KB', 'binary');
-      expect(result).toBe(1048576); // 1024 * 1024
+      expect(result).toBe(1_048_576); // 1024 * 1024
     });
 
     it('should convert KB to bytes (decimal)', () => {
       const result = toBytes('1000 KB', 'decimal');
-      expect(result).toBe(1000000); // 1000 * 1000
+      expect(result).toBe(1_000_000); // 1000 * 1000
     });
 
     it('should convert MB to bytes (binary)', () => {
       const result = toBytes('1 MB', 'binary');
-      expect(result).toBe(1048576); // 1024 * 1024
+      expect(result).toBe(1_048_576); // 1024 * 1024
     });
 
     it('should convert MB to bytes (decimal)', () => {
       const result = toBytes('1 MB', 'decimal');
-      expect(result).toBe(1000000); // 1000 * 1000
+      expect(result).toBe(1_000_000); // 1000 * 1000
     });
 
     it('should convert bits to bytes', () => {
@@ -80,22 +80,22 @@ describe('byteSizeConverters', () => {
 
   describe('fromBytes', () => {
     it('should convert bytes to KB (binary)', () => {
-      const result = fromBytes(1048576, 'KB', 'binary');
+      const result = fromBytes(1_048_576, 'KB', 'binary');
       expect(result).toBe('1024');
     });
 
     it('should convert bytes to KB (decimal)', () => {
-      const result = fromBytes(1000000, 'KB', 'decimal');
+      const result = fromBytes(1_000_000, 'KB', 'decimal');
       expect(result).toBe('1000');
     });
 
     it('should convert bytes to MB (binary)', () => {
-      const result = fromBytes(1048576, 'MB', 'binary');
+      const result = fromBytes(1_048_576, 'MB', 'binary');
       expect(result).toBe('1.000');
     });
 
     it('should convert bytes to MB (decimal)', () => {
-      const result = fromBytes(1000000, 'MB', 'decimal');
+      const result = fromBytes(1_000_000, 'MB', 'decimal');
       expect(result).toBe('1.000');
     });
 
@@ -127,7 +127,9 @@ describe('byteSizeConverters', () => {
     });
 
     it('should throw error for unknown unit', () => {
-      expect(() => convertByteSize('1024 KB', 'INVALID')).toThrow('Unknown target unit: INVALID');
+      expect(() => convertByteSize('1024 KB', 'INVALID')).toThrow(
+        'Unknown target unit: INVALID'
+      );
     });
   });
 
@@ -147,8 +149,8 @@ describe('byteSizeConverters', () => {
   describe('toHumanReadable', () => {
     it('should convert bytes to human readable', () => {
       expect(toHumanReadable(1024)).toBe('1.00 KB');
-      expect(toHumanReadable(1048576)).toBe('1.00 MB');
-      expect(toHumanReadable(1073741824)).toBe('1.00 GB');
+      expect(toHumanReadable(1_048_576)).toBe('1.00 MB');
+      expect(toHumanReadable(1_073_741_824)).toBe('1.00 GB');
     });
 
     it('should handle small sizes', () => {
@@ -159,8 +161,8 @@ describe('byteSizeConverters', () => {
 
   describe('parseFriendlySize', () => {
     it('should parse friendly size strings', () => {
-      expect(parseFriendlySize('1.5MB')).toBe(1572864); // 1.5 * 1024 * 1024
-      expect(parseFriendlySize('2GB')).toBe(2147483648); // 2 * 1024 * 1024 * 1024
+      expect(parseFriendlySize('1.5MB')).toBe(1_572_864); // 1.5 * 1024 * 1024
+      expect(parseFriendlySize('2GB')).toBe(2_147_483_648); // 2 * 1024 * 1024 * 1024
     });
   });
 
@@ -185,19 +187,19 @@ describe('byteSizeConverters', () => {
 
     it('should have valid descriptions', () => {
       const formats = getAvailableByteSizeFormats();
-      formats.forEach(format => {
+      for (const format of formats) {
         expect(format.description).toBeTruthy();
         expect(typeof format.description).toBe('string');
-      });
+      }
     });
 
     it('should have working convert functions', () => {
       const formats = getAvailableByteSizeFormats();
-      formats.forEach(format => {
+      for (const format of formats) {
         const result = format.convert('1024 KB', 'MB');
         expect(result).toBeTruthy();
         expect(typeof result).toBe('string');
-      });
+      }
     });
   });
 

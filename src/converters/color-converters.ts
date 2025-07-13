@@ -11,33 +11,38 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
   // Handle shorthand hex (#fff -> #ffffff)
   if (hex.length === 3) {
-    hex = hex.split('').map(char => char + char).join('');
+    hex = [...hex].map(char => char + char).join('');
   }
 
   if (hex.length !== 6) {
     throw new Error('Invalid hex color format');
   }
 
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
+  const r = Number.parseInt(hex.slice(0, 2), 16);
+  const g = Number.parseInt(hex.slice(2, 4), 16);
+  const b = Number.parseInt(hex.slice(4, 6), 16);
 
-  if (isNaN(r) || isNaN(g) || isNaN(b)) {
-    throw new Error('Invalid hex color values');
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+    throw new TypeError('Invalid hex color values');
   }
 
   return { r, g, b };
 }
 
+const toHex = (n: number) => {
+  const hex = Math.round(n).toString(16);
+  return hex.length === 1 ? `0${hex}` : hex;
+};
+
 export function rgbToHex(r: number, g: number, b: number): string {
-  const toHex = (n: number) => {
-    const hex = Math.round(n).toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  };
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-export function rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
+export function rgbToHsl(
+  r: number,
+  g: number,
+  b: number
+): { h: number; s: number; l: number } {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -53,15 +58,18 @@ export function rgbToHsl(r: number, g: number, b: number): { h: number; s: numbe
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
     switch (max) {
-      case r:
+      case r: {
         h = (g - b) / d + (g < b ? 6 : 0);
         break;
-      case g:
+      }
+      case g: {
         h = (b - r) / d + 2;
         break;
-      case b:
+      }
+      case b: {
         h = (r - g) / d + 4;
         break;
+      }
     }
     h /= 6;
   }
@@ -69,43 +77,63 @@ export function rgbToHsl(r: number, g: number, b: number): { h: number; s: numbe
   return {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
-    l: Math.round(l * 100)
+    l: Math.round(l * 100),
   };
 }
 
-export function hslToRgb(h: number, s: number, l: number): { r: number; g: number; b: number } {
+export function hslToRgb(
+  h: number,
+  s: number,
+  l: number
+): { r: number; g: number; b: number } {
   s /= 100;
   l /= 100;
 
   const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
   const m = l - c / 2;
   let r = 0;
   let g = 0;
   let b = 0;
 
   if (h >= 0 && h < 60) {
-    r = c; g = x; b = 0;
+    r = c;
+    g = x;
+    b = 0;
   } else if (h >= 60 && h < 120) {
-    r = x; g = c; b = 0;
+    r = x;
+    g = c;
+    b = 0;
   } else if (h >= 120 && h < 180) {
-    r = 0; g = c; b = x;
+    r = 0;
+    g = c;
+    b = x;
   } else if (h >= 180 && h < 240) {
-    r = 0; g = x; b = c;
+    r = 0;
+    g = x;
+    b = c;
   } else if (h >= 240 && h < 300) {
-    r = x; g = 0; b = c;
+    r = x;
+    g = 0;
+    b = c;
   } else if (h >= 300 && h < 360) {
-    r = c; g = 0; b = x;
+    r = c;
+    g = 0;
+    b = x;
   }
 
   return {
     r: Math.round((r + m) * 255),
     g: Math.round((g + m) * 255),
-    b: Math.round((b + m) * 255)
+    b: Math.round((b + m) * 255),
   };
 }
 
-export function rgbToHsv(r: number, g: number, b: number): { h: number; s: number; v: number } {
+export function rgbToHsv(
+  r: number,
+  g: number,
+  b: number
+): { h: number; s: number; v: number } {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -119,15 +147,18 @@ export function rgbToHsv(r: number, g: number, b: number): { h: number; s: numbe
 
   if (max !== min) {
     switch (max) {
-      case r:
+      case r: {
         h = (g - b) / d + (g < b ? 6 : 0);
         break;
-      case g:
+      }
+      case g: {
         h = (b - r) / d + 2;
         break;
-      case b:
+      }
+      case b: {
         h = (r - g) / d + 4;
         break;
+      }
     }
     h /= 6;
   }
@@ -135,43 +166,63 @@ export function rgbToHsv(r: number, g: number, b: number): { h: number; s: numbe
   return {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
-    v: Math.round(v * 100)
+    v: Math.round(v * 100),
   };
 }
 
-export function hsvToRgb(h: number, s: number, v: number): { r: number; g: number; b: number } {
+export function hsvToRgb(
+  h: number,
+  s: number,
+  v: number
+): { r: number; g: number; b: number } {
   s /= 100;
   v /= 100;
 
   const c = v * s;
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
   const m = v - c;
   let r = 0;
   let g = 0;
   let b = 0;
 
   if (h >= 0 && h < 60) {
-    r = c; g = x; b = 0;
+    r = c;
+    g = x;
+    b = 0;
   } else if (h >= 60 && h < 120) {
-    r = x; g = c; b = 0;
+    r = x;
+    g = c;
+    b = 0;
   } else if (h >= 120 && h < 180) {
-    r = 0; g = c; b = x;
+    r = 0;
+    g = c;
+    b = x;
   } else if (h >= 180 && h < 240) {
-    r = 0; g = x; b = c;
+    r = 0;
+    g = x;
+    b = c;
   } else if (h >= 240 && h < 300) {
-    r = x; g = 0; b = c;
+    r = x;
+    g = 0;
+    b = c;
   } else if (h >= 300 && h < 360) {
-    r = c; g = 0; b = x;
+    r = c;
+    g = 0;
+    b = x;
   }
 
   return {
     r: Math.round((r + m) * 255),
     g: Math.round((g + m) * 255),
-    b: Math.round((b + m) * 255)
+    b: Math.round((b + m) * 255),
   };
 }
 
-export function rgbToCmyk(r: number, g: number, b: number): { c: number; m: number; y: number; k: number } {
+export function rgbToCmyk(
+  r: number,
+  g: number,
+  b: number
+): { c: number; m: number; y: number; k: number } {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -185,7 +236,7 @@ export function rgbToCmyk(r: number, g: number, b: number): { c: number; m: numb
     c: Math.round(c * 100),
     m: Math.round(m * 100),
     y: Math.round(y * 100),
-    k: Math.round(k * 100)
+    k: Math.round(k * 100),
   };
 }
 
@@ -201,51 +252,64 @@ export function convertColor(input: string, targetFormat: string): string {
   let rgb: { r: number; g: number; b: number };
 
   switch (inputFormat) {
-    case 'hex':
+    case 'hex': {
       rgb = hexToRgb(input);
       break;
-    case 'rgb':
+    }
+    case 'rgb': {
       rgb = parseRgb(input);
       break;
-    case 'hsl':
+    }
+    case 'hsl': {
       const hsl = parseHsl(input);
       rgb = hslToRgb(hsl.h, hsl.s, hsl.l);
       break;
-    case 'hsv':
+    }
+    case 'hsv': {
       const hsv = parseHsv(input);
       rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
       break;
-    default:
+    }
+    default: {
       throw new Error(`Unsupported input format: ${inputFormat}`);
+    }
   }
 
   // Convert to target format
   switch (targetFormat.toLowerCase()) {
-    case 'hex':
+    case 'hex': {
       return rgbToHex(rgb.r, rgb.g, rgb.b);
-    case 'rgb':
+    }
+    case 'rgb': {
       return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-    case 'rgba':
+    }
+    case 'rgba': {
       return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`;
-    case 'hsl':
+    }
+    case 'hsl': {
       const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
       return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
-    case 'hsla':
+    }
+    case 'hsla': {
       const hsl2 = rgbToHsl(rgb.r, rgb.g, rgb.b);
       return `hsla(${hsl2.h}, ${hsl2.s}%, ${hsl2.l}%, 1)`;
-    case 'hsv':
+    }
+    case 'hsv': {
       const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
       return `hsv(${hsv.h}, ${hsv.s}%, ${hsv.v}%)`;
-    case 'cmyk':
+    }
+    case 'cmyk': {
       const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
       return `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`;
-    default:
+    }
+    default: {
       throw new Error(`Unsupported target format: ${targetFormat}`);
+    }
   }
 }
 
 // Helper functions for parsing
-export function detectColorFormat(input: string): string | null {
+export function detectColorFormat(input: string): string | undefined {
   const trimmed = input.trim();
 
   if (trimmed.startsWith('#')) {
@@ -264,7 +328,7 @@ export function detectColorFormat(input: string): string | null {
     return 'hsv';
   }
 
-  return null;
+  return undefined;
 }
 
 function parseRgb(input: string): { r: number; g: number; b: number } {
@@ -273,8 +337,8 @@ function parseRgb(input: string): { r: number; g: number; b: number } {
     throw new Error('Invalid RGB format');
   }
 
-  const values = match[1].split(',').map(v => parseInt(v.trim()));
-  if (values.length < 3 || values.some(isNaN)) {
+  const values = match[1].split(',').map(v => Number.parseInt(v.trim()));
+  if (values.length < 3 || values.some(value => Number.isNaN(value))) {
     throw new Error('Invalid RGB values');
   }
 
@@ -287,8 +351,8 @@ function parseHsl(input: string): { h: number; s: number; l: number } {
     throw new Error('Invalid HSL format');
   }
 
-  const values = match[1].split(',').map(v => parseFloat(v.trim()));
-  if (values.length < 3 || values.some(isNaN)) {
+  const values = match[1].split(',').map(v => Number.parseFloat(v.trim()));
+  if (values.length < 3 || values.some(value => Number.isNaN(value))) {
     throw new Error('Invalid HSL values');
   }
 
@@ -301,8 +365,8 @@ function parseHsv(input: string): { h: number; s: number; v: number } {
     throw new Error('Invalid HSV format');
   }
 
-  const values = match[1].split(',').map(v => parseFloat(v.trim()));
-  if (values.length < 3 || values.some(isNaN)) {
+  const values = match[1].split(',').map(v => Number.parseFloat(v.trim()));
+  if (values.length < 3 || values.some(value => Number.isNaN(value))) {
     throw new Error('Invalid HSV values');
   }
 
@@ -343,34 +407,34 @@ export function getAvailableColorFormats(): ColorConverter[] {
   return [
     {
       name: 'HEX',
-      convert: (input) => convertColor(input, 'hex'),
-      description: 'Convert to hexadecimal color'
+      convert: input => convertColor(input, 'hex'),
+      description: 'Convert to hexadecimal color',
     },
     {
       name: 'RGB',
-      convert: (input) => convertColor(input, 'rgb'),
-      description: 'Convert to RGB color'
+      convert: input => convertColor(input, 'rgb'),
+      description: 'Convert to RGB color',
     },
     {
       name: 'HSL',
-      convert: (input) => convertColor(input, 'hsl'),
-      description: 'Convert to HSL color'
+      convert: input => convertColor(input, 'hsl'),
+      description: 'Convert to HSL color',
     },
     {
       name: 'Invert',
-      convert: (input) => convertColor(input, 'invert'),
-      description: 'Invert the color'
+      convert: input => convertColor(input, 'invert'),
+      description: 'Invert the color',
     },
     {
       name: 'Lighten',
-      convert: (input) => convertColor(input, 'lighten'),
-      description: 'Lighten the color by 10%'
+      convert: input => convertColor(input, 'lighten'),
+      description: 'Lighten the color by 10%',
     },
     {
       name: 'Darken',
-      convert: (input) => convertColor(input, 'darken'),
-      description: 'Darken the color by 10%'
-    }
+      convert: input => convertColor(input, 'darken'),
+      description: 'Darken the color by 10%',
+    },
   ];
 }
 
@@ -379,16 +443,16 @@ export const colorConverterExamples = {
   hex: {
     input: '#ff0000',
     output: 'rgb(255, 0, 0)',
-    description: 'Convert HEX to RGB'
+    description: 'Convert HEX to RGB',
   },
   rgb: {
     input: 'rgb(255, 0, 0)',
     output: '#ff0000',
-    description: 'Convert RGB to HEX'
+    description: 'Convert RGB to HEX',
   },
   hsl: {
     input: 'hsl(0, 100%, 50%)',
     output: '#ff0000',
-    description: 'Convert HSL to HEX'
-  }
+    description: 'Convert HSL to HEX',
+  },
 };

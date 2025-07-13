@@ -1,7 +1,14 @@
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+
 export interface TimestampConverter {
   name: string;
   convert: (input: string | number) => string;
   description: string;
+}
+
+// Get all available timezones dynamically
+export function getAvailableTimezones(): string[] {
+  return Intl.supportedValuesOf('timeZone');
 }
 
 // Convert Unix timestamp to ISO date
@@ -63,64 +70,121 @@ export function toRelativeTime(timestamp: number | string): string {
   return 'just now';
 }
 
-// Convert timezone
-export function convertTimezone(dateString: string, fromTimezone: string, toTimezone: string): string {
-  // This is a simplified implementation
-  // In a real application, you'd use a library like moment-timezone or date-fns-tz
-  const date = new Date(dateString);
-  return date.toLocaleString('en-US', { timeZone: toTimezone });
+// Convert timezone using date-fns-tz
+export function convertTimezone(
+  dateString: string,
+  fromTimezone: string,
+  toTimezone: string
+): string {
+  try {
+    // Parse the input date
+    const date = new Date(dateString);
+
+    // Convert from source timezone to target timezone
+    const zonedDate = toZonedTime(date, toTimezone);
+
+    // Format the result
+    return formatInTimeZone(zonedDate, toTimezone, 'yyyy-MM-dd HH:mm:ss zzz');
+  } catch (error) {
+    throw new Error(
+      `Timezone conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+// Convert to specific timezone
+export function convertToTimezone(
+  input: string | number,
+  timezone: string
+): string {
+  try {
+    // Handle different input types
+    const date =
+      typeof input === 'number' ? new Date(input * 1000) : new Date(input);
+
+    // Convert to the target timezone
+    const zonedDate = toZonedTime(date, timezone);
+
+    // Format with timezone info
+    return formatInTimeZone(zonedDate, timezone, 'yyyy-MM-dd HH:mm:ss zzz');
+  } catch (error) {
+    throw new Error(
+      `Timezone conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
 }
 
 // Main timestamp converter function
-export function convertTimestamp(input: string | number, targetFormat: string): string {
-  const inputStr = String(input).trim();
+export function convertTimestamp(
+  input: string | number,
+  targetFormat: string,
+  timezone?: string
+): string {
+  const inputString = String(input).trim();
 
   // Auto-detect input format
   let isTimestamp = false;
   let isIso = false;
 
   // Check if it's a Unix timestamp (numeric)
-  if (!isNaN(Number(inputStr)) && Number(inputStr) > 1000000000) {
+  if (
+    !Number.isNaN(Number(inputString)) &&
+    Number(inputString) > 1_000_000_000
+  ) {
     isTimestamp = true;
   }
 
   // Check if it's an ISO date
-  if (inputStr.includes('T') && inputStr.includes('Z')) {
+  if (inputString.includes('T') && inputString.includes('Z')) {
     isIso = true;
   }
 
   switch (targetFormat.toLowerCase()) {
     case 'timestamp':
-    case 'unix':
-      if (isTimestamp) return inputStr;
-      if (isIso) return String(isoToTimestamp(inputStr));
-      return String(localToTimestamp(inputStr));
+    case 'unix': {
+      if (isTimestamp) return inputString;
+      if (isIso) return String(isoToTimestamp(inputString));
+      return String(localToTimestamp(inputString));
+    }
 
-    case 'iso':
-      if (isTimestamp) return timestampToIso(Number(inputStr));
-      if (isIso) return inputStr;
-      return new Date(inputStr).toISOString();
+    case 'iso': {
+      if (isTimestamp) return timestampToIso(Number(inputString));
+      if (isIso) return inputString;
+      return new Date(inputString).toISOString();
+    }
 
-    case 'local':
-      if (isTimestamp) return timestampToLocal(Number(inputStr));
-      if (isIso) return new Date(inputStr).toString();
-      return new Date(inputStr).toString();
+    case 'local': {
+      if (isTimestamp) return timestampToLocal(Number(inputString));
+      if (isIso) return new Date(inputString).toString();
+      return new Date(inputString).toString();
+    }
 
-    case 'utc':
-      if (isTimestamp) return timestampToUtc(Number(inputStr));
-      if (isIso) return new Date(inputStr).toUTCString();
-      return new Date(inputStr).toUTCString();
+    case 'utc': {
+      if (isTimestamp) return timestampToUtc(Number(inputString));
+      if (isIso) return new Date(inputString).toUTCString();
+      return new Date(inputString).toUTCString();
+    }
 
-    case 'relative':
-      if (isTimestamp) return toRelativeTime(Number(inputStr));
-      if (isIso) return toRelativeTime(isoToTimestamp(inputStr));
-      return toRelativeTime(localToTimestamp(inputStr));
+    case 'relative': {
+      if (isTimestamp) return toRelativeTime(Number(inputString));
+      if (isIso) return toRelativeTime(isoToTimestamp(inputString));
+      return toRelativeTime(localToTimestamp(inputString));
+    }
 
-    case 'now':
+    case 'timezone': {
+      if (!timezone) {
+        throw new Error('Timezone is required for timezone conversion');
+      }
+      return convertToTimezone(input, timezone);
+    }
+
+    case 'now': {
       return String(getCurrentTimestamp());
+    }
 
-    default:
+    default: {
       throw new Error(`Unsupported target format: ${targetFormat}`);
+    }
   }
 }
 
@@ -129,34 +193,34 @@ export function getAvailableTimestampFormats(): TimestampConverter[] {
   return [
     {
       name: 'Unix Timestamp',
-      convert: (input) => convertTimestamp(input, 'timestamp'),
-      description: 'Convert to Unix timestamp (seconds since epoch)'
+      convert: input => convertTimestamp(input, 'timestamp'),
+      description: 'Convert to Unix timestamp (seconds since epoch)',
     },
     {
       name: 'ISO Date',
-      convert: (input) => convertTimestamp(input, 'iso'),
-      description: 'Convert to ISO 8601 date string'
+      convert: input => convertTimestamp(input, 'iso'),
+      description: 'Convert to ISO 8601 date string',
     },
     {
       name: 'Local Time',
-      convert: (input) => convertTimestamp(input, 'local'),
-      description: 'Convert to local date string'
+      convert: input => convertTimestamp(input, 'local'),
+      description: 'Convert to local date string',
     },
     {
       name: 'UTC',
-      convert: (input) => convertTimestamp(input, 'utc'),
-      description: 'Convert to UTC date string'
+      convert: input => convertTimestamp(input, 'utc'),
+      description: 'Convert to UTC date string',
     },
     {
       name: 'Relative Time',
-      convert: (input) => convertTimestamp(input, 'relative'),
-      description: 'Convert to relative time (e.g., "2 hours ago")'
+      convert: input => convertTimestamp(input, 'relative'),
+      description: 'Convert to relative time (e.g., "2 hours ago")',
     },
     {
       name: 'Current Time',
       convert: () => String(getCurrentTimestamp()),
-      description: 'Get current Unix timestamp'
-    }
+      description: 'Get current Unix timestamp',
+    },
   ];
 }
 
@@ -165,21 +229,26 @@ export const timestampConverterExamples = {
   timestampToIso: {
     input: '1640995200',
     output: '2022-01-01T00:00:00.000Z',
-    description: 'Convert Unix timestamp to ISO date'
+    description: 'Convert Unix timestamp to ISO date',
   },
   isoToTimestamp: {
     input: '2022-01-01T00:00:00.000Z',
     output: '1640995200',
-    description: 'Convert ISO date to Unix timestamp'
+    description: 'Convert ISO date to Unix timestamp',
   },
   currentTime: {
     input: 'now',
     output: String(Math.floor(Date.now() / 1000)),
-    description: 'Get current timestamp'
+    description: 'Get current timestamp',
   },
   relativeTime: {
     input: '1640995200',
     output: '2 years ago',
-    description: 'Convert to relative time'
-  }
+    description: 'Convert to relative time',
+  },
+  timezoneConversion: {
+    input: '2022-01-01T00:00:00.000Z',
+    output: '2022-01-01 00:00:00 UTC',
+    description: 'Convert to specific timezone',
+  },
 };

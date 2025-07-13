@@ -6,7 +6,7 @@ sidebar_position: 2
 
 Convert your text to lowercase letters with real-time conversion.
 
-import SimpleConverter from '@site/src/components/SimpleConverter';
+import SimpleConverter from '@site/src/components/simple-converter';
 import { convertToLowercase, convertToLowercaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter

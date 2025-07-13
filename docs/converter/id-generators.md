@@ -6,6 +6,6 @@ sidebar_position: 2
 
 Generate various types of unique identifiers for your applications.
 
-import IdGenerator from '@site/src/components/IdGenerator';
+import IdGenerator from '@site/src/components/id-generator';
 
 <IdGenerator />

@@ -6,7 +6,7 @@ sidebar_position: 4
 
 Convert your text to kebab-case format with real-time conversion.
 
-import SimpleConverter from '@site/src/components/SimpleConverter';
+import SimpleConverter from '@site/src/components/simple-converter';
 import { convertToKebabCase, convertToKebabCaseExample } from '@site/src/converters/string-converter';
 
 <SimpleConverter

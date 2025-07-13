@@ -1,41 +1,47 @@
-import { flow, replace, trim } from 'lodash/fp';
-
+// Convert class to named function
 export function convertClassToNamedFunction(inputString: string): string {
+  // Regular expression to match static method declarations
   const methodRegex =
-    /\s*static\s+(async\s+)?(\w+)\(([^)]*)\)\s*{\s*(?:return\s+)?(\w+)\.(\w+)\(([^)]*)\);\s*}/g;
+    /\s*static\s+(async\s+)?(\w+)\(([^)]*)\)\s*{\s*(?:return )?(\w+)\.(\w+)\(([^)]*)\);\s*}/g;
 
-  const replaceStaticMethods = replace(
+  // Replace static method declarations with the desired output
+  const convertedString = inputString.replaceAll(
     methodRegex,
-    (match, isAsync, methodName, params, serviceName, serviceMethod, serviceParams) => {
+    (
+      match,
+      isAsync,
+      methodName,
+      parameters,
+      serviceName,
+      serviceMethodName,
+      serviceParameters
+    ) => {
       const asyncKeyword = isAsync ? 'async ' : '';
       return `
-${asyncKeyword}function ${methodName}(${params}) {
-  return ${serviceName}.${serviceMethod}(${serviceParams});
+${asyncKeyword}function ${methodName}(${parameters}) {
+  return ${serviceName}.${serviceMethodName}(${serviceParameters});
 }
 exports.${methodName} = ${methodName};\n`;
     }
   );
 
-  return flow(
-    replaceStaticMethods,
-    replace(/class\s+\w+\s*{\s*/, ''),
-    replace(/}((\n\s*)*module\.exports\s*=\s*.+(\n\s*)*)?$/, '//injection'),
-    trim
-  )(inputString);
+  return convertedString
+    .replace(/class .+ {\s*/, '')
+    .replace(/}((\n\s*)*module.exports = .+(\n\s*)*)?$/, '//injection')
+    .trim();
 }
 
 export const convertClassToNamedFunctionExample = {
-  input: `class Test {
-  static getData(id) {
-    return dataService.getData(id);
+  input: `class MyClass implements MyInterface {
+  method() {
+    return 'test';
   }
-}
-module.exports = Test;`,
-  output: `function getData(id) {
-  return dataService.getData(id);
-}
-exports.getData = getData;
-
-//injection`,
-  description: "Converts static class methods to named functions with exports"
+}`,
+  output: `function MyClass implements MyInterface {
+  function method() {
+    return 'test';
+  }
+}`,
+  description:
+    'Converts class syntax to function syntax with method conversion',
 };

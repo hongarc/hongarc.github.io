@@ -11,7 +11,7 @@ import {
   convertToTrim,
   convertToDeburr,
   convertToEscape,
-  convertToUnescape
+  convertToUnescape,
 } from '../string-converter';
 
 describe('stringConverters', () => {

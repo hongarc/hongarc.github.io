@@ -11,7 +11,7 @@ import {
   escape,
   unescape,
   toUpper,
-  toLower
+  toLower,
 } from 'lodash';
 
 export function convertToUppercase(input: string): string {
@@ -19,9 +19,9 @@ export function convertToUppercase(input: string): string {
 }
 
 export const convertToUppercaseExample = {
-  input: "abc",
-  output: "ABC",
-  description: "Converts all characters to uppercase"
+  input: 'abc',
+  output: 'ABC',
+  description: 'Converts all characters to uppercase',
 };
 
 export function convertToLowercase(input: string): string {
@@ -29,9 +29,9 @@ export function convertToLowercase(input: string): string {
 }
 
 export const convertToLowercaseExample = {
-  input: "ABC",
-  output: "abc",
-  description: "Converts all characters to lowercase"
+  input: 'ABC',
+  output: 'abc',
+  description: 'Converts all characters to lowercase',
 };
 
 export function convertToCamelCase(input: string): string {
@@ -39,9 +39,9 @@ export function convertToCamelCase(input: string): string {
 }
 
 export const convertToCamelCaseExample = {
-  input: "hello world",
-  output: "helloWorld",
-  description: "Converts to camelCase format"
+  input: 'hello world',
+  output: 'helloWorld',
+  description: 'Converts to camelCase format',
 };
 
 export function convertToKebabCase(input: string): string {
@@ -49,9 +49,9 @@ export function convertToKebabCase(input: string): string {
 }
 
 export const convertToKebabCaseExample = {
-  input: "hello world",
-  output: "hello-world",
-  description: "Converts to kebab-case format"
+  input: 'hello world',
+  output: 'hello-world',
+  description: 'Converts to kebab-case format',
 };
 
 export function convertToStartCase(input: string): string {
@@ -59,9 +59,9 @@ export function convertToStartCase(input: string): string {
 }
 
 export const convertToStartCaseExample = {
-  input: "hello world",
-  output: "Hello World",
-  description: "Converts to Start Case format"
+  input: 'hello world',
+  output: 'Hello World',
+  description: 'Converts to Start Case format',
 };
 
 export function convertToSnakeCase(input: string): string {
@@ -69,9 +69,9 @@ export function convertToSnakeCase(input: string): string {
 }
 
 export const convertToSnakeCaseExample = {
-  input: "hello world",
-  output: "hello_world",
-  description: "Converts to snake_case format"
+  input: 'hello world',
+  output: 'hello_world',
+  description: 'Converts to snake_case format',
 };
 
 export function convertToCapitalize(input: string): string {
@@ -79,9 +79,9 @@ export function convertToCapitalize(input: string): string {
 }
 
 export const convertToCapitalizeExample = {
-  input: "hello world",
-  output: "Hello world",
-  description: "Capitalizes first letter of string"
+  input: 'hello world',
+  output: 'Hello world',
+  description: 'Capitalizes first letter of string',
 };
 
 export function convertToUpperCase(input: string): string {
@@ -89,9 +89,9 @@ export function convertToUpperCase(input: string): string {
 }
 
 export const convertToUpperCaseExample = {
-  input: "hello world",
-  output: "HELLO WORLD",
-  description: "Converts to UPPER CASE"
+  input: 'hello world',
+  output: 'HELLO WORLD',
+  description: 'Converts to UPPER CASE',
 };
 
 export function convertToLowerCase(input: string): string {
@@ -99,9 +99,9 @@ export function convertToLowerCase(input: string): string {
 }
 
 export const convertToLowerCaseExample = {
-  input: "HELLO WORLD",
-  output: "hello world",
-  description: "Converts to lower case"
+  input: 'HELLO WORLD',
+  output: 'hello world',
+  description: 'Converts to lower case',
 };
 
 export function convertToTrim(input: string): string {
@@ -109,9 +109,9 @@ export function convertToTrim(input: string): string {
 }
 
 export const convertToTrimExample = {
-  input: " hello ",
-  output: "hello",
-  description: "Removes whitespace from both ends"
+  input: ' hello ',
+  output: 'hello',
+  description: 'Removes whitespace from both ends',
 };
 
 export function convertToDeburr(input: string): string {
@@ -119,9 +119,9 @@ export function convertToDeburr(input: string): string {
 }
 
 export const convertToDeburrExample = {
-  input: "café",
-  output: "cafe",
-  description: "Removes accents/diacritics"
+  input: 'café',
+  output: 'cafe',
+  description: 'Removes accents/diacritics',
 };
 
 export function convertToEscape(input: string): string {
@@ -129,9 +129,9 @@ export function convertToEscape(input: string): string {
 }
 
 export const convertToEscapeExample = {
-  input: "<div>",
-  output: "&lt;div&gt;",
-  description: "Escapes HTML entities"
+  input: '<div>',
+  output: '&lt;div&gt;',
+  description: 'Escapes HTML entities',
 };
 
 export function convertToUnescape(input: string): string {
@@ -139,7 +139,7 @@ export function convertToUnescape(input: string): string {
 }
 
 export const convertToUnescapeExample = {
-  input: "&lt;div&gt;",
-  output: "<div>",
-  description: "Unescapes HTML entities"
+  input: '&lt;div&gt;',
+  output: '<div>',
+  description: 'Unescapes HTML entities',
 };
