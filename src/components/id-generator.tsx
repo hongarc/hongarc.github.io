@@ -11,7 +11,7 @@ const GENERATOR_TYPES = [
   { value: 'cuid', label: 'CUID' },
   { value: 'cuid2', label: 'CUID2' },
   { value: 'ulid', label: 'ULID' },
-  { value: 'crypto-random-uuid', label: 'Crypto UUID' },
+  { value: 'mongodbid', label: 'MongoDB ObjectId' },
 ];
 
 const Container = styled.div`

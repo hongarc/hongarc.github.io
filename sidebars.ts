@@ -36,7 +36,7 @@ const sidebars: SidebarsConfig = {
       label: 'String Converters',
       link: {
         type: 'doc',
-        id: 'converter/string-converter/lowercase',
+        id: 'converter/string-converter/index',
       },
       items: [
         'converter/string-converter/lowercase',

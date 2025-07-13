@@ -10,6 +10,9 @@ module.exports = {
   // Faster test execution
   bail: false,
   verbose: false,
+  globals: {
+    performance: 'readonly',
+  },
   moduleNameMapper: {
     '^@site/(.*)$': '<rootDir>/src/$1',
     // Mock ESM modules that cause issues in Jest
@@ -21,12 +24,12 @@ module.exports = {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
-        tsconfig: 'tsconfig.json',
-        // Performance optimizations for ts-jest
-        isolatedModules: true,
+        tsconfig: 'tsconfig.jest.json',
         diagnostics: {
           ignoreCodes: [1343], // Ignore dynamic import warnings
         },
+        // Add JSX support for coverage collection
+        jsx: 'react-jsx',
       },
     ],
   },
@@ -37,10 +40,14 @@ module.exports = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/setup-tests.ts',
+    '!src/**/*.stories.{ts,tsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/*.spec.{ts,tsx}',
   ],
   // Coverage optimization
   coverageReporters: ['text', 'lcov', 'html'],
   coverageDirectory: 'coverage',
   // Test timeout
   testTimeout: 10_000,
+  isolatedModules: true,
 };

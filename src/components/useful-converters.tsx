@@ -1,6 +1,14 @@
-import Link from '@docusaurus/Link';
 import React from 'react';
 import styled from 'styled-components';
+
+import ConverterCard from './common/card';
+import {
+  Container,
+  Title,
+  Description,
+  Grid,
+  BackButton,
+} from './common/layout';
 
 interface ConverterItem {
   title: string;
@@ -11,56 +19,44 @@ interface ConverterItem {
 
 const usefulConverters: ConverterItem[] = [
   {
-    title: 'Uppercase',
-    description: 'Convert text to uppercase letters',
-    link: '/docs/converter/string-converter/uppercase',
-    example: 'abc → ABC',
-  },
-  {
-    title: 'CamelCase',
-    description: 'Convert to camelCase format',
-    link: '/docs/converter/string-converter/camelcase',
-    example: 'hello world → helloWorld',
-  },
-  {
-    title: 'KebabCase',
-    description: 'Convert to kebab-case format',
-    link: '/docs/converter/string-converter/kebabcase',
-    example: 'hello world → hello-world',
-  },
-  {
-    title: 'SnakeCase',
-    description: 'Convert to snake_case format',
-    link: '/docs/converter/string-converter/snakecase',
-    example: 'hello world → hello_world',
-  },
-  {
-    title: 'Capitalize',
-    description: 'Capitalize first letter of string',
-    link: '/docs/converter/string-converter/capitalize',
-    example: 'hello world → Hello world',
-  },
-  {
-    title: 'Trim',
-    description: 'Remove whitespace from both ends',
-    link: '/docs/converter/string-converter/trim',
-    example: ' hello  → hello',
-  },
-  {
-    title: 'Deburr',
-    description: 'Remove accents and diacritics',
-    link: '/docs/converter/string-converter/deburr',
-    example: 'café → cafe',
-  },
-  {
     title: 'Class to Function',
     description: 'Convert static class methods to named functions',
     link: '/docs/converter/class-to-named-function',
     example: 'static method → function',
   },
+  {
+    title: 'Data Format Converter',
+    description: 'Convert between JSON, YAML, XML, CSV formats',
+    link: '/docs/converter/data-format-converters',
+    example: 'JSON ↔ YAML ↔ XML',
+  },
+  {
+    title: 'ID Generator',
+    description: 'Generate UUID, NanoID, CUID, and other IDs',
+    link: '/docs/converter/id-generators',
+    example: 'UUID v4, NanoID, CUID',
+  },
+  {
+    title: 'Timestamp Converter',
+    description: 'Convert between Unix timestamps and readable dates',
+    link: '/docs/converter/timestamp-converters',
+    example: 'Unix ↔ ISO ↔ Local',
+  },
+  {
+    title: 'Color Converter',
+    description: 'Convert between HEX, RGB, HSL, CMYK formats',
+    link: '/docs/converter/color-converters',
+    example: 'HEX ↔ RGB ↔ HSL',
+  },
+  {
+    title: 'Byte Size Converter',
+    description: 'Convert between bytes, KB, MB, GB, TB',
+    link: '/docs/converter/byte-size-converters',
+    example: '1 MB → 1024 KB',
+  },
 ];
 
-const Container = styled.div`
+const StyledContainer = styled(Container)`
   margin: 3rem 0;
   padding: 2rem;
   background-color: var(--ifm-color-emphasis-50);
@@ -68,65 +64,18 @@ const Container = styled.div`
   border: 1px solid var(--ifm-color-emphasis-200);
 `;
 
-const Title = styled.h2`
+const StyledTitle = styled(Title)`
   margin: 0 0 1.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--ifm-color-emphasis-900);
   text-align: center;
 `;
 
-const Description = styled.p`
+const StyledDescription = styled(Description)`
   text-align: center;
   margin: 0 0 2rem 0;
-  color: var(--ifm-color-emphasis-700);
-  font-size: 1rem;
 `;
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+const StyledGrid = styled(Grid)`
   margin-top: 1.5rem;
-`;
-
-const CardLink = styled(Link)`
-  display: block;
-  padding: 1.5rem;
-  background-color: var(--ifm-background-color);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-  text-align: center;
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const CardTitle = styled.h3`
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--ifm-color-primary);
-`;
-
-const CardDesc = styled.p`
-  margin: 0 0 1rem 0;
-  font-size: 0.9rem;
-  color: var(--ifm-color-emphasis-600);
-  line-height: 1.4;
-`;
-
-const CardExample = styled.div`
-  padding: 0.5rem;
-  background-color: var(--ifm-color-emphasis-100);
-  border-radius: 4px;
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.8rem;
-  color: var(--ifm-color-emphasis-800);
 `;
 
 const BottomSection = styled.div`
@@ -136,7 +85,7 @@ const BottomSection = styled.div`
   border-top: 1px solid var(--ifm-color-emphasis-200);
 `;
 
-const AllConvertersButton = styled(Link)`
+const AllConvertersButton = styled(BackButton)`
   display: inline-block;
   padding: 0.75rem 1.5rem;
   background-color: var(--ifm-color-primary);
@@ -152,25 +101,27 @@ const AllConvertersButton = styled(Link)`
 
 export default function UsefulConverters() {
   return (
-    <Container>
-      <Title>🚀 Useful Converters</Title>
-      <Description>
-        Quick access to the most frequently used converters
-      </Description>
-      <Grid>
+    <StyledContainer>
+      <StyledTitle>🚀 Popular Converters</StyledTitle>
+      <StyledDescription>
+        Quick access to the most popular converter tools
+      </StyledDescription>
+      <StyledGrid>
         {usefulConverters.map((converter, index) => (
-          <CardLink key={index} to={converter.link}>
-            <CardTitle>{converter.title}</CardTitle>
-            <CardDesc>{converter.description}</CardDesc>
-            <CardExample>{converter.example}</CardExample>
-          </CardLink>
+          <ConverterCard
+            key={index}
+            title={converter.title}
+            description={converter.description}
+            link={converter.link}
+            example={converter.example}
+          />
         ))}
-      </Grid>
+      </StyledGrid>
       <BottomSection>
         <AllConvertersButton to='/docs/converter'>
           View All Converters →
         </AllConvertersButton>
       </BottomSection>
-    </Container>
+    </StyledContainer>
   );
 }

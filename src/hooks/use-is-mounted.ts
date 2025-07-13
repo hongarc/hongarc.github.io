@@ -75,14 +75,14 @@ import { useRef, useEffect } from 'react';
  * ```
  */
 export default function useIsMounted(): React.RefObject<boolean> {
-  const reference = useRef(false);
+  const isMountedReference = useRef(true);
 
   useEffect(() => {
-    reference.current = true;
+    isMountedReference.current = true;
     return () => {
-      reference.current = false;
+      isMountedReference.current = false;
     };
   }, []);
 
-  return reference;
+  return isMountedReference;
 }

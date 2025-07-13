@@ -228,6 +228,17 @@ export function rgbToCmyk(
   b /= 255;
 
   const k = 1 - Math.max(r, g, b);
+
+  // Handle the case where k = 1 (black color)
+  if (k === 1) {
+    return {
+      c: 0,
+      m: 0,
+      y: 0,
+      k: 100,
+    };
+  }
+
   const c = (1 - r - k) / (1 - k);
   const m = (1 - g - k) / (1 - k);
   const y = (1 - b - k) / (1 - k);
@@ -312,7 +323,13 @@ export function convertColor(input: string, targetFormat: string): string {
 export function detectColorFormat(input: string): string | undefined {
   const trimmed = input.trim();
 
+  // Check for hex format (with or without #)
   if (trimmed.startsWith('#')) {
+    return 'hex';
+  }
+
+  // Check for hex without # (6 or 3 characters)
+  if (/^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/.test(trimmed)) {
     return 'hex';
   }
 

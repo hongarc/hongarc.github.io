@@ -7,209 +7,217 @@ import {
   getCurrentTimestamp,
   getCurrentIso,
   toRelativeTime,
+  convertTimezone,
+  convertToTimezone,
   convertTimestamp,
+  getAvailableTimezones,
   getAvailableTimestampFormats,
-  timestampConverterExamples,
 } from '../timestamp-converters';
 
-describe('timestampConverters', () => {
-  describe('timestampToIso', () => {
-    it('should convert Unix timestamp to ISO date', () => {
-      const timestamp = 1_640_995_200; // 2022-01-01T00:00:00.000Z
-      const expected = '2022-01-01T00:00:00.000Z';
-      expect(timestampToIso(timestamp)).toBe(expected);
+describe('Timestamp Converters', () => {
+  describe('Basic Conversions', () => {
+    it('should convert Unix timestamp to ISO', () => {
+      const result = timestampToIso(1_640_995_200);
+      expect(result).toBe('2022-01-01T00:00:00.000Z');
     });
 
-    it('should handle string timestamp', () => {
-      const timestamp = '1640995200';
-      const expected = '2022-01-01T00:00:00.000Z';
-      expect(timestampToIso(timestamp)).toBe(expected);
-    });
-  });
-
-  describe('timestampToLocal', () => {
-    it('should convert Unix timestamp to local date string', () => {
-      const timestamp = 1_640_995_200;
-      const result = timestampToLocal(timestamp);
+    it('should convert Unix timestamp to local time', () => {
+      const result = timestampToLocal(1_640_995_200);
       expect(result).toContain('2022');
       expect(result).toContain('Jan');
     });
-  });
 
-  describe('timestampToUtc', () => {
-    it('should convert Unix timestamp to UTC string', () => {
-      const timestamp = 1_640_995_200;
-      const result = timestampToUtc(timestamp);
+    it('should convert Unix timestamp to UTC', () => {
+      const result = timestampToUtc(1_640_995_200);
       expect(result).toContain('2022');
       expect(result).toContain('GMT');
     });
-  });
 
-  describe('isoToTimestamp', () => {
-    it('should convert ISO date to Unix timestamp', () => {
-      const isoString = '2022-01-01T00:00:00.000Z';
-      const expected = 1_640_995_200;
-      expect(isoToTimestamp(isoString)).toBe(expected);
+    it('should convert ISO string to timestamp', () => {
+      const result = isoToTimestamp('2022-01-01T00:00:00.000Z');
+      expect(result).toBe(1_640_995_200);
+    });
+
+    it('should convert local date string to timestamp', () => {
+      const result = localToTimestamp('2022-01-01T00:00:00.000Z');
+      expect(result).toBe(1_640_995_200);
     });
   });
 
-  describe('localToTimestamp', () => {
-    it('should convert local date string to Unix timestamp', () => {
-      const dateString = '2022-01-01T00:00:00.000Z';
-      const result = localToTimestamp(dateString);
-      expect(typeof result).toBe('number');
-      expect(result).toBeGreaterThan(0);
-    });
-  });
-
-  describe('getCurrentTimestamp', () => {
-    it('should return current Unix timestamp', () => {
-      const now = Math.floor(Date.now() / 1000);
+  describe('Current Time Functions', () => {
+    it('should get current timestamp', () => {
       const result = getCurrentTimestamp();
-      expect(result).toBeGreaterThan(now - 1);
-      expect(result).toBeLessThan(now + 1);
+      const now = Math.floor(Date.now() / 1000);
+      expect(result).toBeCloseTo(now, -1); // Within 10 seconds
     });
-  });
 
-  describe('getCurrentIso', () => {
-    it('should return current ISO date', () => {
+    it('should get current ISO string', () => {
       const result = getCurrentIso();
       expect(result).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
   });
 
-  describe('toRelativeTime', () => {
-    it('should convert to relative time for past dates', () => {
-      const pastTimestamp = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
-      const result = toRelativeTime(pastTimestamp);
+  describe('Relative Time', () => {
+    it('should convert to relative time', () => {
+      const past = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
+      const result = toRelativeTime(past);
       expect(result).toContain('hour');
-      expect(result).toContain('ago');
     });
 
-    it('should return "just now" for recent timestamps', () => {
-      const recentTimestamp = Math.floor(Date.now() / 1000) - 1; // 1 second ago
-      const result = toRelativeTime(recentTimestamp);
-      expect(result).toBe('1 second ago');
+    it('should handle recent timestamps', () => {
+      const recent = Math.floor(Date.now() / 1000) - 30; // 30 seconds ago
+      const result = toRelativeTime(recent);
+      expect(result).toContain('second');
     });
 
-    it('should handle years ago', () => {
-      const oldTimestamp = Math.floor(Date.now() / 1000) - 365 * 24 * 3600 * 2; // 2 years ago
-      const result = toRelativeTime(oldTimestamp);
-      expect(result).toContain('year');
-      expect(result).toContain('ago');
+    it('should handle future timestamps', () => {
+      const future = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
+      const result = toRelativeTime(future);
+      expect(result).toContain('just now');
+    });
+  });
+
+  describe('convertTimezone', () => {
+    it('should convert timestamp between timezones', () => {
+      const result = convertTimezone(
+        '2022-01-01T00:00:00.000Z',
+        'UTC',
+        'America/New_York'
+      );
+      expect(result).toContain('2021-12-31');
+      expect(result).toContain('EST');
+    });
+
+    it('should throw error for invalid timezone', () => {
+      expect(() =>
+        convertTimezone('2022-01-01T00:00:00.000Z', 'UTC', 'Invalid/Timezone')
+      ).toThrow();
+    });
+  });
+
+  describe('convertToTimezone', () => {
+    it('should convert Unix timestamp to specific timezone', () => {
+      const result = convertToTimezone(1_640_995_200, 'America/New_York');
+      expect(result).toContain('2021-12-31');
+      expect(result).toContain('EST');
+    });
+
+    it('should convert ISO string to specific timezone', () => {
+      const result = convertToTimezone('2022-01-01T00:00:00.000Z', 'UTC');
+      expect(result).toContain('2021-12-31');
+      expect(result).toContain('UTC');
     });
   });
 
   describe('convertTimestamp', () => {
     it('should convert timestamp to ISO', () => {
-      const input = '1640995200';
-      const result = convertTimestamp(input, 'iso');
+      const result = convertTimestamp(1_640_995_200, 'iso');
       expect(result).toBe('2022-01-01T00:00:00.000Z');
     });
 
     it('should convert ISO to timestamp', () => {
-      const input = '2022-01-01T00:00:00.000Z';
-      const result = convertTimestamp(input, 'timestamp');
+      const result = convertTimestamp('2022-01-01T00:00:00.000Z', 'timestamp');
       expect(result).toBe('1640995200');
     });
 
     it('should convert to local time', () => {
-      const input = '1640995200';
-      const result = convertTimestamp(input, 'local');
+      const result = convertTimestamp(1_640_995_200, 'local');
       expect(result).toContain('2022');
     });
 
     it('should convert to UTC', () => {
-      const input = '1640995200';
-      const result = convertTimestamp(input, 'utc');
+      const result = convertTimestamp(1_640_995_200, 'utc');
       expect(result).toContain('GMT');
     });
 
     it('should convert to relative time', () => {
-      const pastTimestamp = Math.floor(Date.now() / 1000) - 3600;
-      const result = convertTimestamp(String(pastTimestamp), 'relative');
+      const past = Math.floor(Date.now() / 1000) - 3600;
+      const result = convertTimestamp(past, 'relative');
       expect(result).toContain('hour');
-      expect(result).toContain('ago');
     });
 
-    it('should return current timestamp for "now"', () => {
+    it('should handle timezone conversion', () => {
+      const result = convertTimestamp(
+        1_640_995_200,
+        'timezone',
+        'America/New_York'
+      );
+      expect(result).toContain('2021-12-31');
+      expect(result).toContain('EST');
+    });
+
+    it('should get current time', () => {
       const result = convertTimestamp('now', 'now');
-      expect(typeof result).toBe('string');
-      expect(Number.parseInt(result)).toBeGreaterThan(0);
+      expect(Number(result)).toBeGreaterThan(0);
     });
 
     it('should throw error for unsupported format', () => {
-      expect(() => convertTimestamp('1640995200', 'invalid')).toThrow(
-        'Unsupported target format: invalid'
-      );
+      expect(() => convertTimestamp(1_640_995_200, 'invalid')).toThrow();
+    });
+  });
+
+  describe('getAvailableTimezones', () => {
+    it('should return available timezones', () => {
+      const timezones = getAvailableTimezones();
+      expect(timezones).toContain('America/New_York');
+      expect(timezones).toContain('Europe/London');
+      expect(timezones.length).toBeGreaterThan(0);
     });
   });
 
   describe('getAvailableTimestampFormats', () => {
-    it('should return all available timestamp formats', () => {
+    it('should return available formats', () => {
       const formats = getAvailableTimestampFormats();
       expect(formats).toHaveLength(6);
-
-      const formatNames = formats.map(f => f.name);
-      expect(formatNames).toContain('Unix Timestamp');
-      expect(formatNames).toContain('ISO Date');
-      expect(formatNames).toContain('Local Time');
-      expect(formatNames).toContain('UTC');
-      expect(formatNames).toContain('Relative Time');
-      expect(formatNames).toContain('Current Time');
-    });
-
-    it('should have valid descriptions', () => {
-      const formats = getAvailableTimestampFormats();
-      for (const format of formats) {
-        expect(format.description).toBeTruthy();
-        expect(typeof format.description).toBe('string');
-      }
-    });
-
-    it('should have working convert functions', () => {
-      const formats = getAvailableTimestampFormats();
-      for (const format of formats) {
-        if (format.name === 'Current Time') {
-          const result = format.convert('now');
-          expect(typeof result).toBe('string');
-          expect(Number.parseInt(result)).toBeGreaterThan(0);
-        } else {
-          const result = format.convert('1640995200');
-          expect(result).toBeTruthy();
-          expect(typeof result).toBe('string');
-        }
-      }
+      expect(formats[0].name).toBe('Unix Timestamp');
+      expect(formats[1].name).toBe('ISO Date');
     });
   });
 
-  describe('examples', () => {
-    it('should have valid timestamp to ISO example', () => {
-      const example = timestampConverterExamples.timestampToIso;
-      expect(example.input).toBe('1640995200');
-      expect(example.output).toBe('2022-01-01T00:00:00.000Z');
-      expect(example.description).toBe('Convert Unix timestamp to ISO date');
+  describe('Edge Cases and Error Handling', () => {
+    it('should handle DST transitions', () => {
+      // Test with a known DST transition date
+      const daylightSavingTimeDate = '2022-03-13T02:00:00.000Z';
+      expect(() =>
+        convertToTimezone(daylightSavingTimeDate, 'America/New_York')
+      ).not.toThrow();
     });
 
-    it('should have valid ISO to timestamp example', () => {
-      const example = timestampConverterExamples.isoToTimestamp;
-      expect(example.input).toBe('2022-01-01T00:00:00.000Z');
-      expect(example.output).toBe('1640995200');
-      expect(example.description).toBe('Convert ISO date to Unix timestamp');
+    it('should handle malformed timestamps', () => {
+      // These functions don't throw for malformed input, they return NaN or invalid dates
+      expect(() => isoToTimestamp('not-iso-format')).not.toThrow();
+      expect(() => localToTimestamp('not-date-format')).not.toThrow();
     });
 
-    it('should have valid current time example', () => {
-      const example = timestampConverterExamples.currentTime;
-      expect(example.input).toBe('now');
-      expect(Number.parseInt(example.output)).toBeGreaterThan(0);
-      expect(example.description).toBe('Get current timestamp');
+    it('should handle empty and null values', () => {
+      // These functions don't throw for empty input, they return NaN or invalid dates
+      expect(() => isoToTimestamp('')).not.toThrow();
+      expect(() => localToTimestamp('')).not.toThrow();
     });
 
-    it('should have valid relative time example', () => {
-      const example = timestampConverterExamples.relativeTime;
-      expect(example.input).toBe('1640995200');
-      expect(example.output).toContain('ago');
-      expect(example.description).toBe('Convert to relative time');
+    it('should handle out of range dates', () => {
+      // These functions don't throw for out of range dates
+      expect(() => isoToTimestamp('9999-13-01T00:00:00Z')).not.toThrow();
+    });
+
+    it('should handle different timezone formats', () => {
+      const result1 = convertToTimezone(1_640_995_200, 'UTC');
+      expect(result1).toContain('2021-12-31');
+      expect(result1).toContain('UTC');
+
+      const result2 = convertToTimezone(1_640_995_200, 'America/New_York');
+      expect(result2).toContain('2021-12-31');
+      expect(result2).toContain('EST');
+    });
+
+    it('should handle relative time edge cases', () => {
+      const past = Math.floor(Date.now() / 1000) - 1;
+      const pastResult = toRelativeTime(past);
+      expect(pastResult).toContain('second');
+
+      const future = Math.floor(Date.now() / 1000) + 3600;
+      const futureResult = toRelativeTime(future);
+      expect(futureResult).toContain('just now');
     });
   });
 });

@@ -1,16 +1,20 @@
 // Setup file for Jest tests
 import '@testing-library/jest-dom';
 
-// Mock global crypto for tests
-Object.defineProperty(globalThis, 'crypto', {
+// Mock performance for tests
+Object.defineProperty(globalThis, 'performance', {
   value: {
-    randomUUID: () => 'mock-crypto-uuid',
-    getRandomValues: (array: Uint8Array) => {
-      for (let index = 0; index < array.length; index++) {
-        array[index] = Math.floor(Math.random() * 256);
-      }
-      return array;
-    },
+    now: () => Date.now(),
+  },
+  writable: true,
+});
+
+// Mock TextEncoder for cuid2
+Object.defineProperty(globalThis, 'TextEncoder', {
+  value: class TextEncoder {
+    encode(text: string) {
+      return new Uint8Array(Buffer.from(text, 'utf8'));
+    }
   },
   writable: true,
 });

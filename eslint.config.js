@@ -122,6 +122,7 @@ export default [
       'unicorn/filename-case': ['error'],
       'unicorn/no-unsafe-regex': 'off', // Disabled for utility functions
       'unicorn/prefer-module': 'off', // Disabled for CommonJS compatibility
+      'unicorn/no-null': 'off',
 
       // Security rules - relaxed for this project
       'security/detect-object-injection': 'off', // Too many false positives
