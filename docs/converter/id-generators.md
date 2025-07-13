@@ -1,5 +1,16 @@
 ---
 sidebar_position: 2
+title: 'ID Generators - UUID, NanoID, CUID, ULID & MongoDB ObjectId'
+description: 'Free online ID generator tools for creating UUIDs, NanoIDs, CUIDs, ULIDs, and MongoDB ObjectIds. Generate unique identifiers for your applications.'
+keywords:
+  - ID generator
+  - UUID generator
+  - NanoID
+  - CUID
+  - ULID
+  - MongoDB ObjectId
+  - unique identifier
+  - online generator
 ---
 
 # 🆔 ID Generators

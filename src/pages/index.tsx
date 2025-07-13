@@ -1,6 +1,7 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageFeatures from '@site/src/components/homepage-features';
+import SEOStructuredData from '@site/src/components/seo-structured-data';
 import UsefulConverters from '@site/src/components/useful-converters';
 import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
@@ -31,12 +32,25 @@ function HomepageHeader() {
 }
 
 export default function Home(): ReactNode {
-  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description='Description will go into a meta tag in <head />'
+      title='HongArc - Free Online Developer Tools & Converters'
+      description='Free online developer tools for string conversion, ID generation, timestamp conversion, color conversion, data format conversion, and byte size conversion. Real-time conversion with instant results.'
     >
+      <SEOStructuredData
+        type='WebSite'
+        name='HongArc - Developer Tools & Converters'
+        description='Free online developer tools for string conversion, ID generation, timestamp conversion, color conversion, data format conversion, and byte size conversion.'
+        url='https://hongarc.github.io'
+        tools={[
+          'String Converter',
+          'ID Generator',
+          'Timestamp Converter',
+          'Color Converter',
+          'Data Format Converter',
+          'Byte Size Converter',
+        ]}
+      />
       <HomepageHeader />
       <main>
         <UsefulConverters />

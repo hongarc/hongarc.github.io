@@ -5,8 +5,8 @@ import { themes as prismThemes } from 'prism-react-renderer';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Hongarc',
-  tagline: 'Note for Hongarc',
+  title: 'HongArc - Developer Tools & Converters',
+  tagline: 'Comprehensive collection of developer utilities and converters',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -14,6 +14,19 @@ const config: Config = {
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
+
+  // SEO Configuration
+  customFields: {
+    keywords: [
+      'developer tools',
+      'string converter',
+      'ID generator',
+      'timestamp converter',
+      'color converter',
+      'data format converter',
+    ],
+    author: 'HongArc',
+  },
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -60,6 +73,18 @@ const config: Config = {
         },
         theme: {
           customCss: './src/css/custom.css',
+        },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
+        },
+        googleAnalytics: {
+          trackingID: 'G-XXXXXXXXXX', // Replace with your Google Analytics ID
+        },
+        gtag: {
+          trackingID: 'G-XXXXXXXXXX', // Replace with your Google Analytics ID
         },
       } satisfies Preset.Options,
     ],
