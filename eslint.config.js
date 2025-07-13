@@ -11,6 +11,18 @@ import unicorn from 'eslint-plugin-unicorn';
 
 export default [
   js.configs.recommended,
+  // Performance optimization: cache results
+  {
+    ignores: [
+      'node_modules/**',
+      'build/**',
+      '.docusaurus/**',
+      'coverage/**',
+      '.jest-cache/**',
+      '*.min.js',
+      '*.bundle.js',
+    ],
+  },
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
