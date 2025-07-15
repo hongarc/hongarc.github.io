@@ -1,6 +1,6 @@
 ---
-title: "Running a Node.js App with User-Entered Input in GitHub Actions"
-description: "Learn how to create a GitHub Actions workflow that accepts user input, passes it to a Node.js script, and validates the input format."
+title: 'Running a Node.js App with User-Entered Input in GitHub Actions'
+description: 'Learn how to create a GitHub Actions workflow that accepts user input, passes it to a Node.js script, and validates the input format.'
 tags: [github-actions, nodejs, automation, development]
 authors: [Hongarc]
 ---
@@ -12,6 +12,7 @@ authors: [Hongarc]
 GitHub Actions provides a powerful way to automate workflows, including running a Node.js application with user-entered inputs. In this guide, we will create a GitHub Actions workflow that allows users to enter a **date** manually, pass it to a **Node.js script**, and validate the input format.
 
 ---
+
 <!-- truncate -->
 
 ## Step 1: Define the GitHub Actions Workflow
@@ -19,6 +20,7 @@ GitHub Actions provides a powerful way to automate workflows, including running 
 We will define a workflow that allows users to input a date and then run a Node.js script with that input.
 
 ### **`.github/workflows/run-node.yml`**
+
 ```yaml
 name: Run Node.js with User Input
 
@@ -26,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: "Enter a date (YYYY-MM-DD)"
+        description: 'Enter a date (YYYY-MM-DD)'
         required: true
         type: string
 
@@ -41,10 +43,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18  # Specify your Node.js version
+          node-version: 18 # Specify your Node.js version
 
       - name: Install dependencies
-        run: npm install  # Ensure you have a package.json file
+        run: npm install # Ensure you have a package.json file
 
       - name: Run Node.js script with date input
         run: node script.js
@@ -53,6 +55,7 @@ jobs:
 ```
 
 ### **How It Works:**
+
 1. The workflow triggers when a user manually runs it via **GitHub Actions**.
 2. The user must enter a **date** in `YYYY-MM-DD` format.
 3. The entered date is stored as an **environment variable** (`INPUT_DATE`).
@@ -65,6 +68,7 @@ jobs:
 We need a script that reads the user input, validates the format, and performs an action based on the input.
 
 ### **`script.js`**
+
 ```javascript
 // script.js
 
@@ -72,14 +76,14 @@ We need a script that reads the user input, validates the format, and performs a
 const inputDate = process.env.INPUT_DATE;
 
 if (!inputDate) {
-  console.error("❌ Error: No date provided.");
+  console.error('❌ Error: No date provided.');
   process.exit(1);
 }
 
 // Validate the format (YYYY-MM-DD)
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 if (!dateRegex.test(inputDate)) {
-  console.error("❌ Error: Invalid date format. Use YYYY-MM-DD.");
+  console.error('❌ Error: Invalid date format. Use YYYY-MM-DD.');
   process.exit(1);
 }
 
@@ -89,6 +93,7 @@ console.log(`✅ Received valid date: ${inputDate}`);
 ```
 
 ### **Explanation:**
+
 - `process.env.INPUT_DATE` retrieves the input date from GitHub Actions.
 - The script validates the format using a **regular expression**.
 - If the format is incorrect, it throws an error (`process.exit(1)`).
@@ -99,6 +104,7 @@ console.log(`✅ Received valid date: ${inputDate}`);
 ## Step 3: Running the Workflow
 
 To execute this workflow:
+
 1. **Go to your GitHub repository** → Click on the **Actions** tab.
 2. Select the **Run Node.js with User Input** workflow.
 3. Click **Run workflow**.
@@ -111,6 +117,7 @@ To execute this workflow:
 ## Step 4: Handling Additional Validations (Optional)
 
 ### **Checking If the Date Is in the Past**
+
 Modify `script.js` to prevent users from entering past dates:
 
 ```javascript
@@ -118,17 +125,18 @@ const inputDateObj = new Date(inputDate);
 const today = new Date();
 
 if (inputDateObj < today) {
-  console.error("❌ Error: The date cannot be in the past.");
+  console.error('❌ Error: The date cannot be in the past.');
   process.exit(1);
 }
 ```
 
 ### **Using the Date in an API Call**
+
 ```javascript
 fetch(`https://example.com/api/data?date=${inputDate}`)
   .then(response => response.json())
-  .then(data => console.log("📊 Data received:", data))
-  .catch(error => console.error("❌ API Error:", error));
+  .then(data => console.log('📊 Data received:', data))
+  .catch(error => console.error('❌ API Error:', error));
 ```
 
 ---

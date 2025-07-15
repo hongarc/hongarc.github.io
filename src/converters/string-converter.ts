@@ -38,8 +38,9 @@ export function convertToCamelCase(input: string): string {
   return camelCase(input);
 }
 
+const simpleHelloWorld = 'hello world';
 export const convertToCamelCaseExample = {
-  input: 'hello world',
+  input: simpleHelloWorld,
   output: 'helloWorld',
   description: 'Converts to camelCase format',
 };
@@ -49,7 +50,7 @@ export function convertToKebabCase(input: string): string {
 }
 
 export const convertToKebabCaseExample = {
-  input: 'hello world',
+  input: simpleHelloWorld,
   output: 'hello-world',
   description: 'Converts to kebab-case format',
 };
@@ -59,7 +60,7 @@ export function convertToStartCase(input: string): string {
 }
 
 export const convertToStartCaseExample = {
-  input: 'hello world',
+  input: simpleHelloWorld,
   output: 'Hello World',
   description: 'Converts to Start Case format',
 };
@@ -69,7 +70,7 @@ export function convertToSnakeCase(input: string): string {
 }
 
 export const convertToSnakeCaseExample = {
-  input: 'hello world',
+  input: simpleHelloWorld,
   output: 'hello_world',
   description: 'Converts to snake_case format',
 };
@@ -79,7 +80,7 @@ export function convertToCapitalize(input: string): string {
 }
 
 export const convertToCapitalizeExample = {
-  input: 'hello world',
+  input: simpleHelloWorld,
   output: 'Hello world',
   description: 'Capitalizes first letter of string',
 };
@@ -89,7 +90,7 @@ export function convertToUpperCase(input: string): string {
 }
 
 export const convertToUpperCaseExample = {
-  input: 'hello world',
+  input: simpleHelloWorld,
   output: 'HELLO WORLD',
   description: 'Converts to UPPER CASE',
 };

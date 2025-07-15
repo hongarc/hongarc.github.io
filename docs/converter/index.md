@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: 'Converter Tools - Developer Utilities & Online Tools'
+title: 'Converter Tools'
 description: 'Free online developer tools for data format conversion, ID generation, timestamp conversion, color conversion, and byte size conversion. Real-time conversion with instant results.'
 keywords:
   - developer tools

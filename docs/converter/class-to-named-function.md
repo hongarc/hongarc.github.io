@@ -1,5 +1,6 @@
 ---
 sidebar_position: 6
+title: 'Named Function'
 ---
 
 # Class to Named Function Converter

@@ -53,6 +53,7 @@ import { useRef, useCallback } from 'react';
  * debouncedValidate(email);
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function useDebounce<T extends (...arguments_: any[]) => any>(
   callback: T,
   delay: number

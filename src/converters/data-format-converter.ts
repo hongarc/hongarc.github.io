@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Papa from 'papaparse';
 import * as yaml from 'yaml';
 
@@ -20,7 +21,9 @@ export function detectInputFormat(input: string): string {
   try {
     JSON.parse(trimmed);
     return 'json';
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   // Try to parse as XML (check first)
   if (trimmed.startsWith('<') && trimmed.includes('>')) {
@@ -41,7 +44,9 @@ export function detectInputFormat(input: string): string {
   try {
     yaml.parse(trimmed);
     return 'yaml';
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   return 'unknown';
 }
@@ -195,11 +200,11 @@ export function convertFromQueryString(
 }
 
 // Helper functions
-function convertObjectToXml(object: any, rootName: string = 'root'): string {
+function convertObjectToXml(object: any, rootName = 'root'): string {
   return objectToXml(object, rootName);
 }
 
-function objectToXml(object: any, rootName: string): string {
+function objectToXml(object: any | string, rootName: string): string {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<${rootName}>`;
 
   if (Array.isArray(object)) {

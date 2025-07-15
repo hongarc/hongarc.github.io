@@ -1,6 +1,6 @@
 ---
-title: "Implementing ESLint Checks on Changed Files in GitHub Pull Requests"
-description: "Learn how to configure a GitHub Actions workflow that runs ESLint only on modified files in a pull request and fails the check if errors are found."
+title: 'Implementing ESLint Checks on Changed Files in GitHub Pull Requests'
+description: 'Learn how to configure a GitHub Actions workflow that runs ESLint only on modified files in a pull request and fails the check if errors are found.'
 tags: [github-actions, eslint, nodejs, continuous-integration, development]
 authors: [Hongarc]
 ---
@@ -14,6 +14,7 @@ Linting tools like **ESLint** are critical in maintaining code quality and enfor
 In this guide, we will show you how to configure **GitHub Actions** to run ESLint only on the files modified in a PR. This setup improves feedback speed and ensures that merged code does not introduce new linting errors.
 
 ---
+
 <!-- truncate -->
 
 ## Why This Workflow Matters

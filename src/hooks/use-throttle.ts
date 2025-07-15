@@ -50,6 +50,7 @@ import { useRef, useCallback } from 'react';
  * throttledApiCall('react hooks');
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function useThrottle<T extends (...arguments_: any[]) => any>(
   callback: T,
   delay: number

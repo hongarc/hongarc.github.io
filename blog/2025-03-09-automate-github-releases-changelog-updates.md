@@ -8,7 +8,9 @@ tags: [github-actions, automation, release-management]
 # Automate GitHub Releases and Changelog Updates with GitHub Actions
 
 ## Introduction
+
 Keeping track of changes in a project is essential, but manually updating the changelog and creating releases can be tedious. In this blog, we'll automate the process using **GitHub Actions** to:
+
 - Run a workflow **on the 1st of every month** (or manually).
 - Extract the **latest commit messages**.
 - Update **CHANGELOG.md** automatically.
@@ -21,6 +23,7 @@ By the end, you'll have a fully automated workflow that keeps your releases up t
 ---
 
 ## Step 1: Create the GitHub Actions Workflow
+
 To get started, create the following workflow file in your GitHub repository:
 
 📂 **`.github/workflows/auto-release.yml`**
@@ -30,8 +33,8 @@ name: Auto Release
 
 on:
   schedule:
-    - cron: "0 0 1 * *"  # Runs on the 1st of every month
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '0 0 1 * *' # Runs on the 1st of every month
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   release:
@@ -68,9 +71,9 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "release-${{ env.date }}"
-          name: "Release ${{ env.date }}"
-          body_path: "CHANGELOG.md"
+          tag_name: 'release-${{ env.date }}'
+          name: 'Release ${{ env.date }}'
+          body_path: 'CHANGELOG.md'
           draft: false
           prerelease: false
 ```
@@ -78,7 +81,9 @@ jobs:
 ---
 
 ## Step 2: How the Workflow Works
+
 This workflow does the following:
+
 1. **Runs automatically** on the 1st of each month (or manually via `workflow_dispatch`).
 2. **Extracts the last 10 commit messages**.
 3. **Updates `CHANGELOG.md`**, appending the new release.
@@ -88,14 +93,17 @@ This workflow does the following:
 ---
 
 ## Step 3: Example `CHANGELOG.md` Output
+
 After the workflow runs, `CHANGELOG.md` will look something like this:
 
 ```md
 ## Release 2025-03-01
+
 - Added auto-release workflow
 - Improved error handling
 
 ## Release 2025-02-01
+
 - Fixed login bug
 - Updated UI design
 ```
@@ -105,7 +113,9 @@ Each new release will automatically prepend a section with the latest commit mes
 ---
 
 ## Step 4: Customizing the Workflow
+
 You can modify this workflow to fit your needs:
+
 - Change the **cron schedule** (`0 0 1 * *`) to run on a different day.
 - Adjust the **number of commits extracted** (`-n 10` in `git log`).
 - Modify the **commit message format**.
@@ -113,6 +123,7 @@ You can modify this workflow to fit your needs:
 ---
 
 ## Conclusion
+
 With this GitHub Actions workflow, your releases and changelog updates are fully automated! No more manual tracking—your project stays updated with minimal effort.
 
 Give it a try and let me know if you have any questions! 🚀

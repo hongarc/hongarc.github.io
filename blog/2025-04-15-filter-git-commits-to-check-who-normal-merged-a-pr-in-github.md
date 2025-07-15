@@ -1,6 +1,6 @@
 ---
-title: "Filter Git Commits to Check Who Normal Merged a PR in GitHub"
-description: "Learn how to filter Git commits to identify who merged a PR and exclude irrelevant commits using a simple bash script."
+title: 'Filter Git Commits to Check Who Normal Merged a PR in GitHub'
+description: 'Learn how to filter Git commits to identify who merged a PR and exclude irrelevant commits using a simple bash script.'
 tags: [git, github, commits, merge, pr]
 authors: [Hongarc]
 ---
@@ -13,6 +13,7 @@ In this post, I’ll show you how to filter **Git commits** to **check who merge
 - **Exclude** merges from `master`, `pick` code, or releases.
 
 ---
+
 <!-- truncate -->
 
 ### 1. **Why Use This?**
