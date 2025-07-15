@@ -17,16 +17,14 @@ npm run dev          # lint + typecheck + start
 # Fast builds
 npm run build:fast   # build without minification
 
-# Fast testing
-npm run test:fast    # limited workers for faster execution
-npm run test:changed # only test changed files
+
 
 # Fast linting
 npm run lint:fast    # with caching
 npm run format:changed # format only changed files
 
 # Full CI pipeline
-npm run ci           # lint + typecheck + test coverage + build
+npm run ci           # lint + typecheck + build
 
 # Cleanup
 npm run clean        # clear caches
@@ -34,13 +32,6 @@ npm run clean:full   # full reset
 ```
 
 ## ⚡ Performance Improvements
-
-### Jest Optimizations
-
-- **Caching**: Enabled Jest cache for faster subsequent runs
-- **Parallel Execution**: 50% max workers, 4 max concurrency
-- **Isolated Modules**: Faster TypeScript compilation
-- **Coverage Optimization**: Better reporting and directory structure
 
 ### ESLint Optimizations
 
@@ -95,14 +86,12 @@ npm install --save-dev nodemon
 
 ### Current Performance
 
-- **Test Time**: ~8-9 seconds (185 tests)
 - **Build Time**: ~1-2 seconds
 - **Lint Time**: ~2-3 seconds
 - **Type Check**: ~1-2 seconds
 
 ### Optimization Targets
 
-- **Test Time**: < 5 seconds
 - **Build Time**: < 1 second
 - **Lint Time**: < 1 second
 - **Type Check**: < 1 second
@@ -130,7 +119,7 @@ npm install --save-dev nodemon
 npm run dev
 
 # Fast iteration cycle
-npm run test:changed
+
 npm run lint:fast
 ```
 
@@ -141,7 +130,7 @@ npm run lint:fast
 npm run ci
 
 # Quick checks
-npm run lint && npm run test:fast
+npm run lint
 ```
 
 ### For Production
@@ -164,20 +153,11 @@ npm run build:fast
 
 ### Performance Monitoring
 
-- Monitor test execution times
 - Track build times
 - Watch bundle sizes
 - Monitor memory usage
 
 ## 🚨 Troubleshooting
-
-### Slow Tests
-
-```bash
-# Clear Jest cache
-rm -rf .jest-cache
-npm run test
-```
 
 ### Slow Builds
 
@@ -199,6 +179,6 @@ npm run lint
 
 - All optimizations maintain full functionality
 - Backward compatibility preserved
-- Test coverage remains at 100%
+
 - Build artifacts unchanged
 - Development experience improved

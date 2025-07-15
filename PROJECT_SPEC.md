@@ -202,7 +202,7 @@ export default function ComponentName() {
 2. Create component in `src/components/` (kebab-case)
 3. Add documentation in `docs/converter/`
 4. Update navigation in `sidebars.ts`
-5. Add tests in `src/converters/__tests__/`
+5. Add documentation and examples
 
 ### Component Updates
 
@@ -218,13 +218,6 @@ export default function ComponentName() {
 2. Maintain responsive design
 3. Follow accessibility guidelines
 4. Test in light/dark themes
-
-## Testing Guidelines
-
-- Unit tests for converter functions
-- Component tests for UI interactions
-- Test error handling scenarios
-- Maintain good test coverage
 
 ## Performance Guidelines
 
@@ -250,7 +243,7 @@ export default function ComponentName() {
 
 - Docusaurus build process
 - GitHub Pages deployment
-- Automated testing on PR
+
 - ESLint checks in CI/CD
 
 ## Maintenance Rules
@@ -267,13 +260,13 @@ export default function ComponentName() {
 1. Check existing patterns first
 2. Follow established conventions
 3. Update relevant documentation
-4. Add appropriate tests
+4. Add appropriate documentation
 
 ### When Fixing Issues
 
 1. Identify root cause
 2. Follow existing error handling patterns
-3. Test thoroughly
+3. Test manually in different scenarios
 4. Update spec if needed
 
 ## Version Control

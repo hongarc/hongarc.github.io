@@ -101,7 +101,7 @@ export function toBytes(
 
   if (base === 'decimal' && unit !== 'b' && unit !== 'B') {
     // Use decimal multipliers for larger units
-    const decimalUnits = {
+    const decimalUnits: Record<string, number> = {
       KB: 1000,
       MB: 1000 * 1000,
       GB: 1000 * 1000 * 1000,
@@ -115,8 +115,8 @@ export function toBytes(
   }
 
   // Use binary multipliers
-  if (UNITS[unit]) {
-    return value * UNITS[unit];
+  if (UNITS[unit as keyof typeof UNITS]) {
+    return value * UNITS[unit as keyof typeof UNITS];
   }
 
   throw new Error(`Unknown unit: ${unit}`);
@@ -133,7 +133,7 @@ export function fromBytes(
 
   if (base === 'decimal' && normalizedUnit !== 'b' && normalizedUnit !== 'B') {
     // Use decimal multipliers for larger units
-    const decimalUnits = {
+    const decimalUnits: Record<string, number> = {
       KB: 1000,
       MB: 1000 * 1000,
       GB: 1000 * 1000 * 1000,
@@ -141,9 +141,11 @@ export function fromBytes(
       PB: 1000 * 1000 * 1000 * 1000 * 1000,
     };
 
-    multiplier = decimalUnits[normalizedUnit] || UNITS[normalizedUnit];
+    multiplier =
+      decimalUnits[normalizedUnit] ||
+      UNITS[normalizedUnit as keyof typeof UNITS];
   } else {
-    multiplier = UNITS[normalizedUnit];
+    multiplier = UNITS[normalizedUnit as keyof typeof UNITS];
   }
 
   if (!multiplier) {

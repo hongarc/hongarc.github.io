@@ -36,7 +36,7 @@ export default [
       '*.temp',
       'static/**',
       'public/**',
-      '.jest-cache/**',
+
       '*.min.js',
       '*.bundle.js',
     ],
@@ -182,16 +182,6 @@ export default [
     files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
     languageOptions: {
       globals: {
-        // Jest globals
-        jest: 'readonly',
-        describe: 'readonly',
-        it: 'readonly',
-        test: 'readonly',
-        expect: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
         // Browser globals for tests
         window: 'readonly',
         document: 'readonly',

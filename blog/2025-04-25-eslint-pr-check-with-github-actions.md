@@ -37,7 +37,7 @@ npx eslint --init
 
 Choose your preferences during the `eslint --init` setup process.
 
-### Create a Sample File to Test
+### Create a Sample File to Validate
 
 ```bash
 mkdir src

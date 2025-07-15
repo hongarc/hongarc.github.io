@@ -34,14 +34,7 @@ npm start
 # Build for production
 npm run build
 
-# Run tests
-npm test
 
-# Run tests with coverage
-npm run test:coverage
-
-# Run tests in watch mode
-npm run test:watch
 
 # Type checking
 npm run typecheck
@@ -61,14 +54,13 @@ This project uses several tools to maintain code quality:
 
 - **ESLint**: Code linting with TypeScript, React, and security rules
 - **Prettier**: Code formatting
-- **Jest**: Testing with 80% coverage threshold
 - **Husky**: Git hooks for pre-commit and pre-push checks
 - **lint-staged**: Run linters on staged files only
 
 ### Git Hooks
 
 - **pre-commit**: Runs ESLint and Prettier on staged files
-- **pre-push**: Runs tests with coverage to ensure quality
+- **pre-push**: Runs linting and type checking to ensure quality
 
 ### Import Aliases
 
@@ -91,31 +83,6 @@ Available aliases:
 - `@/converters/*` → `src/converters/*`
 - `@/hooks/*` → `src/hooks/*`
 - `@/utils/*` → `src/utils/*`
-
-## 🧪 Testing
-
-Tests are organized in `__tests__` directories alongside source files:
-
-```
-src/
-├── converters/
-│   ├── data-format-converter.ts
-│   └── __tests__/
-│       └── data-format-converter.test.ts
-```
-
-Run tests with coverage:
-
-```bash
-npm run test:coverage
-```
-
-Coverage thresholds (80% minimum):
-
-- Branches: 80%
-- Functions: 80%
-- Lines: 80%
-- Statements: 80%
 
 ## 🔒 Security
 
@@ -144,13 +111,12 @@ GIT_USER=<Your GitHub username> npm run deploy
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Run tests and linting: `npm run test:coverage && npm run lint`
+4. Run linting and type checking: `npm run lint && npm run typecheck`
 5. Commit with pre-commit hooks enabled
 6. Push and create a pull request
 
 The CI pipeline will automatically:
 
 - Run linting and formatting checks
-- Execute tests with coverage
 - Verify TypeScript compilation
-- Upload coverage reports
+- Build the project

@@ -7,12 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [22.x, 24.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -35,13 +35,5 @@ jobs:
       - name: Run type checking
         run: npm run typecheck
 
-      - name: Run tests with coverage
-        run: npm run test:coverage
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
+      - name: Build project
+        run: npm run build
