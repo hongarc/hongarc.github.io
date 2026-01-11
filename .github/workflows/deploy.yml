@@ -33,7 +33,7 @@ jobs:
       - name: Create Firebase config
         run: echo '${{ secrets.FIREBASE_CONFIG }}' > firebase.config.json
 
-      - name: Build
+      - name: Build with SEO pre-rendering
         run: npm run build
 
       - name: Setup Pages

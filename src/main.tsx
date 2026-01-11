@@ -11,9 +11,12 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
+// Get basename from Vite's base config (import.meta.env.BASE_URL includes trailing slash)
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
+
 createRoot(rootElement).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </StrictMode>

@@ -33,15 +33,21 @@ export function ToolPage() {
     }
   }, [toolId, selectedToolId, selectTool, navigate]);
 
-  // Generate SEO data from selected tool
+  // Build canonical URL dynamically (works for local dev and any deployment)
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash
+  const baseUrl = `${globalThis.location.origin}${basePath}`;
+
+  // Generate SEO data from selected tool or home page
   const seoData = selectedTool
     ? {
         title: selectedTool.label,
-        description: selectedTool.description,
+        description: `${selectedTool.description} - Free online ${selectedTool.label.toLowerCase()} tool for developers.`,
         keywords: selectedTool.keywords,
-        canonical: `${globalThis.location.origin}/${selectedTool.id}`,
+        canonical: `${baseUrl}/${selectedTool.id}`,
       }
-    : {};
+    : {
+        canonical: baseUrl,
+      };
 
   return (
     <>

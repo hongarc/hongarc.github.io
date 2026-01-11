@@ -32,12 +32,25 @@ npm install
 # Start dev server
 npm run dev
 
-# Build for production
+# Build for production (includes SEO pre-rendering)
 npm run build
+
+# Preview production build
+npm run preview
 
 # Run linting
 npm run lint
 ```
+
+## SEO
+
+The build process automatically pre-renders all 28 tool pages for SEO. Each page gets:
+- Unique `<title>` tag
+- Unique `<meta description>`
+- Open Graph tags for social sharing
+- Canonical URLs
+
+This ensures search engines and social media crawlers see the correct metadata for each tool.
 
 ## Deploy to GitHub Pages
 
