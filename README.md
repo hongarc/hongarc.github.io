@@ -44,13 +44,13 @@ npm run lint
 
 ## SEO
 
-The build process automatically pre-renders all 28 tool pages for SEO. Each page gets:
-- Unique `<title>` tag
-- Unique `<meta description>`
+Each tool page dynamically updates SEO meta tags via JavaScript:
+- Unique `<title>` tag per tool
+- Unique `<meta description>` per tool
 - Open Graph tags for social sharing
 - Canonical URLs
 
-This ensures search engines and social media crawlers see the correct metadata for each tool.
+**Note:** Google and Bing render JavaScript, so they see the correct SEO data. Social media crawlers (Facebook, Twitter) may not execute JavaScript, so they'll see default meta tags.
 
 ## Deploy to GitHub Pages
 

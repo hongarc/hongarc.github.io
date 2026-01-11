@@ -328,19 +328,27 @@ export function Sidebar() {
       {/* Footer */}
       <div className="space-y-3 border-t border-slate-200/80 p-3 dark:border-slate-700/50">
         <UserMenu />
-        <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            {registry.count} tools available
-          </span>
-          {/* Desktop collapse button */}
-          <button
-            onClick={toggleSidebar}
-            className="hidden cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-700 lg:flex dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-            aria-label="Collapse sidebar"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            <span>Collapse</span>
-          </button>
+        <div className="rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              {registry.count} tools available
+            </span>
+            {/* Desktop collapse button */}
+            <button
+              onClick={toggleSidebar}
+              className="hidden cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-700 lg:flex dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              aria-label="Collapse sidebar"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              <span>Collapse</span>
+            </button>
+          </div>
+          {/* Build info */}
+          <div className="mt-1.5 flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500">
+            <span title={`Built: ${__BUILD_TIME__}`}>{__GIT_HASH__}</span>
+            <span>•</span>
+            <span>{__BUILD_ENV__}</span>
+          </div>
         </div>
       </div>
     </aside>

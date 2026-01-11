@@ -105,7 +105,7 @@ export default tseslint.config(
       ],
 
       // General best practices (Airbnb-style)
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
       'prefer-const': 'error',
