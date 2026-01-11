@@ -1,0 +1,81 @@
+import { Link } from 'lucide-react';
+
+import type { ToolPlugin } from '@/types/plugin';
+import { getErrorMessage, getSelectInput, getTrimmedInput, success, failure } from '@/utils';
+
+const MODE_OPTIONS = ['encode', 'decode', 'encodeComponent', 'decodeComponent'] as const;
+type ModeType = (typeof MODE_OPTIONS)[number];
+
+/**
+ * URL encoding/decoding functions mapped by mode
+ */
+const urlFunctions: Record<ModeType, (s: string) => string> = {
+  encode: encodeURI,
+  decode: decodeURI,
+  encodeComponent: encodeURIComponent,
+  decodeComponent: decodeURIComponent,
+};
+
+export const urlEncoder: ToolPlugin = {
+  id: 'url-encoder',
+  label: 'URL Encode/Decode',
+  description: 'Encode or decode URL components',
+  category: 'encoding',
+  icon: <Link className="h-4 w-4" />,
+  keywords: ['url', 'encode', 'decode', 'uri', 'percent', 'escape'],
+  inputs: [
+    {
+      id: 'input',
+      label: 'Input',
+      type: 'textarea',
+      placeholder: 'Enter text to encode or URL-encoded text to decode',
+      required: true,
+      rows: 4,
+    },
+    {
+      id: 'mode',
+      label: 'Mode',
+      type: 'select',
+      defaultValue: 'encode',
+      options: [
+        { value: 'encode', label: 'Encode (encodeURI)' },
+        { value: 'decode', label: 'Decode (decodeURI)' },
+        { value: 'encodeComponent', label: 'Encode Component (stricter)' },
+        { value: 'decodeComponent', label: 'Decode Component' },
+      ],
+    },
+  ],
+  transformer: (inputs) => {
+    const input = getTrimmedInput(inputs, 'input');
+    const mode = getSelectInput(inputs, 'mode', MODE_OPTIONS, 'encode');
+
+    if (!input) {
+      return failure('Please enter text to process');
+    }
+
+    try {
+      const result = urlFunctions[mode](input);
+      const modeLabels: Record<ModeType, string> = {
+        encode: 'Encode (encodeURI)',
+        decode: 'Decode (decodeURI)',
+        encodeComponent: 'Encode Component',
+        decodeComponent: 'Decode Component',
+      };
+
+      return success(result, {
+        _viewMode: 'sections',
+        _sections: {
+          stats: [
+            { label: 'Mode', value: modeLabels[mode] },
+            { label: 'Input', value: `${String(input.length)} chars` },
+            { label: 'Output', value: `${String(result.length)} chars` },
+          ],
+          content: result,
+          contentLabel: 'Result',
+        },
+      });
+    } catch (error) {
+      return failure(`Invalid input: ${getErrorMessage(error)}`);
+    }
+  },
+};
