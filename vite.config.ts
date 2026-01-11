@@ -16,10 +16,10 @@ const getGitHash = () => {
   }
 };
 
-// Base path: '/' for local, '/friendly/' for GitHub Pages
-const base = process.env.GITHUB_ACTIONS ? '/friendly/' : '/';
+// Base path: always '/' (root deployment)
+const base = '/';
 
-// Routes for pre-rendering (only works when base is '/')
+// Routes for pre-rendering
 const routes = [
   '/',
   '/json-formatter',
@@ -56,19 +56,14 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // Pre-render only for local builds (base '/')
-    // GitHub Pages subdirectory deployment has base path issues with prerenderer
-    ...(base === '/'
-      ? [
-          prerender({
-            routes,
-            renderer: new rendererPuppeteer({
-              renderAfterTime: 500,
-              headless: true,
-            }),
-          }),
-        ]
-      : []),
+    // Pre-render all routes for SEO
+    prerender({
+      routes,
+      renderer: new rendererPuppeteer({
+        renderAfterTime: 500,
+        headless: true,
+      }),
+    }),
   ],
   define: {
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
