@@ -145,6 +145,7 @@ export const loremIpsum: ToolPlugin = {
   category: 'text',
   icon: <FileText className="h-4 w-4" />,
   keywords: ['lorem', 'ipsum', 'placeholder', 'text', 'dummy', 'generate'],
+  preferFresh: true,
   inputs: [
     {
       id: 'type',

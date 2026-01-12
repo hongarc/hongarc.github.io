@@ -52,7 +52,7 @@ export function ToolPage() {
   return (
     <>
       <SEO {...seoData} />
-      <ToolView />
+      <ToolView key={selectedToolId ?? 'home'} />
     </>
   );
 }

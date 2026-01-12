@@ -122,6 +122,8 @@ export interface ToolPlugin {
   transformer: TransformerFn | AsyncTransformerFn;
   /** Whether the transformer is async */
   isAsync?: boolean;
+  /** Whether the tool should always start with a fresh result (skip pre-rendered result) */
+  preferFresh?: boolean;
   /** Keywords for search */
   keywords?: string[];
 }

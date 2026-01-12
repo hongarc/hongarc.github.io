@@ -139,6 +139,7 @@ export const uuidGenerator: ToolPlugin = {
   category: 'text',
   icon: <Fingerprint className="h-4 w-4" />,
   keywords: ['uuid', 'guid', 'cuid', 'mongodb', 'objectid', 'nanoid', 'unique', 'id', 'identifier'],
+  preferFresh: true,
   inputs: [
     {
       id: 'type',

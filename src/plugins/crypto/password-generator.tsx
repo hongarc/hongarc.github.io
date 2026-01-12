@@ -331,6 +331,7 @@ export const passwordGenerator: ToolPlugin = {
   category: 'crypto',
   icon: <KeyRound className="h-4 w-4" />,
   keywords: ['password', 'passphrase', 'generate', 'random', 'secure', 'key', 'words'],
+  preferFresh: true,
   inputs: [
     {
       id: 'mode',
@@ -365,24 +366,28 @@ export const passwordGenerator: ToolPlugin = {
       label: 'Lowercase (a-z)',
       type: 'checkbox',
       defaultValue: true,
+      visibleWhen: { inputId: 'mode', value: 'password' },
     },
     {
       id: 'uppercase',
       label: 'Uppercase (A-Z)',
       type: 'checkbox',
       defaultValue: true,
+      visibleWhen: { inputId: 'mode', value: 'password' },
     },
     {
       id: 'numbers',
       label: 'Numbers (0-9)',
       type: 'checkbox',
       defaultValue: true,
+      visibleWhen: { inputId: 'mode', value: 'password' },
     },
     {
       id: 'symbols',
       label: 'Symbols (!@#$...)',
       type: 'checkbox',
       defaultValue: false,
+      visibleWhen: { inputId: 'mode', value: 'password' },
     },
   ],
   transformer: (inputs) => {

@@ -91,6 +91,7 @@ export const timestampConverter: ToolPlugin = {
   category: 'dev',
   icon: <Clock className="h-4 w-4" />,
   keywords: ['timestamp', 'unix', 'epoch', 'date', 'time', 'convert'],
+  preferFresh: true,
   inputs: [
     {
       id: 'input',

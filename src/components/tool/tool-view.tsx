@@ -1,6 +1,6 @@
 import { ArrowRight, Command, Pin, RotateCcw, Sparkles, Zap } from 'lucide-react';
 import { equals } from 'ramda';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useDebounce } from '@/hooks/use-debounce';
@@ -10,10 +10,6 @@ import type { InputConfig } from '@/types/plugin';
 
 import { ToolInput } from './tool-input';
 import { ToolOutput } from './tool-output';
-
-// Track if inputs have been modified by user to avoid hydration mismatch
-// When page is prerendered, we don't want to re-run transform on hydration
-let hasUserInteracted = false;
 
 // Popular tools for quick access
 const POPULAR_TOOL_IDS = [
@@ -53,20 +49,11 @@ export function ToolView() {
       });
   }, [selectedTool, inputs]);
 
-  // Track initial mount to avoid hydration mismatch
+  // Track initial mount and transformations
   const isInitialMount = useRef(true);
-  const previousToolId = useRef<string | null>(null);
   const lastTransformedInputs = useRef<Record<string, unknown> | null>(null);
-
-  // Reset interaction tracking when tool changes
-  useEffect(() => {
-    if (selectedTool && selectedTool.id !== previousToolId.current) {
-      previousToolId.current = selectedTool.id;
-      isInitialMount.current = true;
-      hasUserInteracted = false;
-      lastTransformedInputs.current = null;
-    }
-  }, [selectedTool]);
+  const [hasTransformedOnClient, setHasTransformedOnClient] = useState(!selectedTool?.preferFresh);
+  const [userInteracted, setUserInteracted] = useState(false);
 
   // Auto-transform when debounced inputs change
   useEffect(() => {
@@ -77,7 +64,8 @@ export function ToolView() {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       // Only skip if we haven't had user interaction and there's already a result
-      if (!hasUserInteracted && result) {
+      // AND tool doesn't prefer a fresh start (deterministic tools)
+      if (!userInteracted && result && !selectedTool.preferFresh) {
         return;
       }
     }
@@ -88,8 +76,10 @@ export function ToolView() {
     }
 
     lastTransformedInputs.current = debouncedInputs;
-    void transform();
-  }, [debouncedInputs, selectedTool, hasRequiredInputs, transform, result]);
+    void transform().then(() => {
+      setHasTransformedOnClient(true);
+    });
+  }, [debouncedInputs, selectedTool, hasRequiredInputs, transform, result, userInteracted]);
 
   // Get pinned tools
   const pinnedTools = useMemo(() => {
@@ -280,7 +270,7 @@ export function ToolView() {
                           config={inp}
                           value={inputs[inp.id]}
                           onChange={(value) => {
-                            hasUserInteracted = true;
+                            setUserInteracted(true);
                             setInput(inp.id, value);
                           }}
                         />
@@ -321,7 +311,7 @@ export function ToolView() {
                           config={cb}
                           value={inputs[cb.id]}
                           onChange={(value) => {
-                            hasUserInteracted = true;
+                            setUserInteracted(true);
                             setInput(cb.id, value);
                           }}
                         />
@@ -335,7 +325,7 @@ export function ToolView() {
                       config={inputConfig}
                       value={inputs[inputConfig.id]}
                       onChange={(value) => {
-                        hasUserInteracted = true;
+                        setUserInteracted(true);
                         setInput(inputConfig.id, value);
                       }}
                     />
@@ -351,7 +341,12 @@ export function ToolView() {
 
         {/* Output Section */}
         <div className="rounded-xl border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/50">
-          <ToolOutput result={result} isProcessing={isProcessing} />
+          <ToolOutput
+            result={
+              selectedTool.preferFresh && !hasTransformedOnClient && !userInteracted ? null : result
+            }
+            isProcessing={isProcessing}
+          />
         </div>
       </div>
     </div>
