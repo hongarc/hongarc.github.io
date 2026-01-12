@@ -1,3 +1,4 @@
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import type { InputConfig } from '@/types/plugin';
 
@@ -56,6 +57,21 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
 
       case 'select': {
         const options = config.options ?? [];
+        // Use searchable select if marked as searchable
+        if (config.searchable) {
+          return (
+            <SearchableSelect
+              id={config.id}
+              options={options}
+              value={getStringValue(value)}
+              onChange={(v) => {
+                onChange(v);
+              }}
+              placeholder={config.placeholder}
+              required={config.required}
+            />
+          );
+        }
         // Use segmented control for 5 or fewer options, dropdown for more
         if (options.length <= 5) {
           return (

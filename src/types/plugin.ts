@@ -72,6 +72,10 @@ export interface InputConfig {
   accept?: string;
   /** Group name for side-by-side layout - inputs with same group render in a row */
   group?: string;
+  /** Condition for when this input should be visible */
+  visibleWhen?: { inputId: string; value: string | string[] };
+  /** Whether select input should be searchable/filterable */
+  searchable?: boolean;
 }
 
 /**

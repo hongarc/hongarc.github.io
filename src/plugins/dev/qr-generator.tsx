@@ -257,7 +257,7 @@ export const qrGenerator: ToolPlugin = {
       defaultValue: 'text',
       options: [
         { value: 'text', label: 'Text / URL' },
-        { value: 'vietqr', label: 'VietQR Bank Transfer' },
+        { value: 'vietqr', label: 'Bank Transfer' },
       ],
     },
     {
@@ -266,13 +266,14 @@ export const qrGenerator: ToolPlugin = {
       type: 'textarea',
       placeholder: 'Enter text or URL...',
       rows: 3,
-      helpText: 'For Text/URL mode only',
+      visibleWhen: { inputId: 'mode', value: 'text' },
     },
     {
       id: 'bankBin',
       label: 'Bank',
       type: 'select',
       defaultValue: '',
+      searchable: true,
       options: [
         { value: '', label: 'Select a bank...' },
         ...VIETNAM_BANKS.map((bank) => ({
@@ -280,14 +281,14 @@ export const qrGenerator: ToolPlugin = {
           label: `${bank.name} (${bank.shortName})`,
         })),
       ],
-      helpText: 'For VietQR mode only',
+      visibleWhen: { inputId: 'mode', value: 'vietqr' },
     },
     {
       id: 'accountNumber',
       label: 'Account Number',
       type: 'text',
       placeholder: 'Enter account number',
-      helpText: 'For VietQR mode only',
+      visibleWhen: { inputId: 'mode', value: 'vietqr' },
     },
     {
       id: 'amount',
@@ -295,6 +296,7 @@ export const qrGenerator: ToolPlugin = {
       type: 'text',
       placeholder: 'Optional - e.g., 100000',
       helpText: 'Leave empty for any amount',
+      visibleWhen: { inputId: 'mode', value: 'vietqr' },
     },
     {
       id: 'description',
@@ -302,6 +304,7 @@ export const qrGenerator: ToolPlugin = {
       type: 'text',
       placeholder: 'Optional - max 25 characters',
       helpText: 'Transfer description',
+      visibleWhen: { inputId: 'mode', value: 'vietqr' },
     },
   ],
   transformer: generateQR,

@@ -238,9 +238,26 @@ export function ToolView() {
               let i = 0;
               const processedGroups = new Set<string>();
 
+              // Helper to check if input should be visible based on visibleWhen
+              const isInputVisible = (inputConfig: (typeof selectedTool.inputs)[0]): boolean => {
+                if (!inputConfig.visibleWhen) return true;
+                const { inputId, value: expectedValue } = inputConfig.visibleWhen;
+                const currentValue = inputs[inputId];
+                if (Array.isArray(expectedValue)) {
+                  return expectedValue.includes(String(currentValue));
+                }
+                return String(currentValue) === expectedValue;
+              };
+
               while (i < selectedTool.inputs.length) {
                 const inputConfig = selectedTool.inputs[i];
                 if (!inputConfig) {
+                  i++;
+                  continue;
+                }
+
+                // Skip inputs that should be hidden
+                if (!isInputVisible(inputConfig)) {
                   i++;
                   continue;
                 }
