@@ -3,52 +3,155 @@
 /* Enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Custom Theme Configuration */
+/* Custom Theme Configuration - Catppuccin Palette */
 @theme {
   /* Typography */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
-  /* Catppuccin Theme Palette Mapping */
-  /* Blue Scale (Primary) */
-  --color-blue-50: #eff1f5;
-  /* Latte Base */
-  --color-blue-100: #dbeafe;
-  /* Standard Tailwind (Keep for mix) or map to Mantle? Keeping standard for now except main shades */
-  --color-blue-400: #8caaee;
-  /* Frappé Blue (for dark mode text) */
-  --color-blue-500: #1e66f5;
-  /* Latte Blue (for primary) */
-  --color-blue-600: #1754c9;
-  /* Darker Latte Blue */
+  /* ============================================
+     Catppuccin Latte (Light) & Frappé (Dark)
+     ============================================ */
 
-  /* Slate Scale (Neutral) mapped to Catppuccin Tones */
-  --color-slate-50: #eff1f5;
-  /* Latte Base */
-  --color-slate-100: #e6e9ef;
-  /* Latte Mantle */
-  --color-slate-200: #ccd0da;
-  /* Latte Surface0 (Light Borders) */
-  --color-slate-300: #bcc0cc;
-  /* Latte Surface1 */
-  --color-slate-400: #9ca0b0;
-  /* Latte Overlay0 (Placeholders) */
-  --color-slate-500: #6c6f85;
-  /* Latte Subtext0 */
-  --color-slate-600: #5c5f77;
-  /* Latte Subtext1 */
-  --color-slate-700: #4c4f69;
-  /* Latte Text (Main Text Light Mode) */
-  --color-slate-800: #414559;
-  /* Frappé Surface0 */
-  --color-slate-900: #303446;
-  /* Frappé Base (Dark Main Bg) */
-  --color-slate-950: #232634;
-  /* Frappé Crust (Dark Sidebar) */
+  /* Slate Scale - Mapped to Catppuccin Neutrals */
+  /* Light mode uses Latte, dark mode uses Frappé */
+  --color-slate-50: #eff1f5; /* Latte Base */
+  --color-slate-100: #e6e9ef; /* Latte Mantle */
+  --color-slate-200: #dce0e8; /* Latte Crust */
+  --color-slate-300: #ccd0da; /* Latte Surface0 */
+  --color-slate-400: #bcc0cc; /* Latte Surface1 */
+  --color-slate-500: #9ca0b0; /* Latte Overlay0 */
+  --color-slate-600: #6c6f85; /* Latte Subtext0 */
+  --color-slate-700: #5c5f77; /* Latte Subtext1 */
+  --color-slate-800: #4c4f69; /* Latte Text */
+  --color-slate-900: #303446; /* Frappé Base */
+  --color-slate-950: #232634; /* Frappé Crust */
 
-  /* Subtle gradient backgrounds */
+  /* Blue (Primary) - Catppuccin Blue */
+  --color-blue-50: #eff1f5; /* Latte Base */
+  --color-blue-100: #e6e9ef; /* Latte Mantle */
+  --color-blue-200: #ccd0da; /* Latte Surface0 */
+  --color-blue-300: #babbf1; /* Frappé Lavender */
+  --color-blue-400: #8caaee; /* Frappé Blue */
+  --color-blue-500: #1e66f5; /* Latte Blue */
+  --color-blue-600: #7287fd; /* Latte Lavender */
+  --color-blue-700: #209fb5; /* Latte Sapphire */
+  --color-blue-800: #414559; /* Frappé Surface0 */
+  --color-blue-900: #303446; /* Frappé Base */
+
+  /* Catppuccin Accent Colors - Latte (Light Mode) */
+  --color-ctp-rosewater: #dc8a78;
+  --color-ctp-flamingo: #dd7878;
+  --color-ctp-pink: #ea76cb;
+  --color-ctp-mauve: #8839ef;
+  --color-ctp-red: #d20f39;
+  --color-ctp-maroon: #e64553;
+  --color-ctp-peach: #fe640b;
+  --color-ctp-yellow: #df8e1d;
+  --color-ctp-green: #40a02b;
+  --color-ctp-teal: #179299;
+  --color-ctp-sky: #04a5e5;
+  --color-ctp-sapphire: #209fb5;
+  --color-ctp-blue: #1e66f5;
+  --color-ctp-lavender: #7287fd;
+  --color-ctp-text: #4c4f69;
+  --color-ctp-subtext1: #5c5f77;
+  --color-ctp-subtext0: #6c6f85;
+  --color-ctp-overlay2: #7c7f93;
+  --color-ctp-overlay1: #8c8fa1;
+  --color-ctp-overlay0: #9ca0b0;
+  --color-ctp-surface2: #acb0be;
+  --color-ctp-surface1: #bcc0cc;
+  --color-ctp-surface0: #ccd0da;
+  --color-ctp-base: #eff1f5;
+  --color-ctp-mantle: #e6e9ef;
+  --color-ctp-crust: #dce0e8;
+
+  /* Map standard color names to Catppuccin */
+  --color-red-500: #d20f39; /* Latte Red */
+  --color-red-400: #e78284; /* Frappé Red */
+  --color-green-500: #40a02b; /* Latte Green */
+  --color-green-400: #a6d189; /* Frappé Green */
+  --color-yellow-500: #df8e1d; /* Latte Yellow */
+  --color-yellow-400: #e5c890; /* Frappé Yellow */
+  --color-purple-500: #8839ef; /* Latte Mauve */
+  --color-purple-400: #ca9ee6; /* Frappé Mauve */
+  --color-pink-500: #ea76cb; /* Latte Pink */
+  --color-pink-400: #f4b8e4; /* Frappé Pink */
+  --color-orange-500: #fe640b; /* Latte Peach */
+  --color-orange-400: #ef9f76; /* Frappé Peach */
+  --color-teal-500: #179299; /* Latte Teal */
+  --color-teal-400: #81c8be; /* Frappé Teal */
+  --color-cyan-500: #04a5e5; /* Latte Sky */
+  --color-cyan-400: #99d1db; /* Frappé Sky */
+
+  /* Surface colors for backgrounds */
   --color-surface-light: #eff1f5;
   --color-surface-dark: #303446;
+}
+
+/* ============================================
+   CSS Custom Properties for Runtime Theming
+   ============================================ */
+
+:root {
+  /* Latte (Light Mode) Colors */
+  --ctp-rosewater: #dc8a78;
+  --ctp-flamingo: #dd7878;
+  --ctp-pink: #ea76cb;
+  --ctp-mauve: #8839ef;
+  --ctp-red: #d20f39;
+  --ctp-maroon: #e64553;
+  --ctp-peach: #fe640b;
+  --ctp-yellow: #df8e1d;
+  --ctp-green: #40a02b;
+  --ctp-teal: #179299;
+  --ctp-sky: #04a5e5;
+  --ctp-sapphire: #209fb5;
+  --ctp-blue: #1e66f5;
+  --ctp-lavender: #7287fd;
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
+  --ctp-surface2: #acb0be;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface0: #ccd0da;
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+}
+
+.dark {
+  /* Frappé (Dark Mode) Colors */
+  --ctp-rosewater: #f2d5cf;
+  --ctp-flamingo: #eebebe;
+  --ctp-pink: #f4b8e4;
+  --ctp-mauve: #ca9ee6;
+  --ctp-red: #e78284;
+  --ctp-maroon: #ea999c;
+  --ctp-peach: #ef9f76;
+  --ctp-yellow: #e5c890;
+  --ctp-green: #a6d189;
+  --ctp-teal: #81c8be;
+  --ctp-sky: #99d1db;
+  --ctp-sapphire: #85c1dc;
+  --ctp-blue: #8caaee;
+  --ctp-lavender: #babbf1;
+  --ctp-text: #c6d0f5;
+  --ctp-subtext1: #b5bfe2;
+  --ctp-subtext0: #a5adce;
+  --ctp-overlay2: #949cbb;
+  --ctp-overlay1: #838ba7;
+  --ctp-overlay0: #737994;
+  --ctp-surface2: #626880;
+  --ctp-surface1: #51576d;
+  --ctp-surface0: #414559;
+  --ctp-base: #303446;
+  --ctp-mantle: #292c3c;
+  --ctp-crust: #232634;
 }
 
 /* Smooth scrolling */
@@ -56,18 +159,18 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Selection styling */
+/* Selection styling - Catppuccin */
 ::selection {
-  background-color: var(--color-blue-100);
-  color: var(--color-slate-900);
+  background-color: #7287fd; /* Latte Lavender */
+  color: #eff1f5; /* Latte Base */
 }
 
 .dark ::selection {
-  background-color: var(--color-blue-600);
-  color: white;
+  background-color: #8caaee; /* Frappé Blue */
+  color: #303446; /* Frappé Base */
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Catppuccin */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -78,20 +181,20 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #bcc0cc; /* Latte Surface1 */
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #9ca0b0; /* Latte Overlay0 */
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: #51576d; /* Frappé Surface1 */
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #626880; /* Frappé Surface2 */
 }
 
 /* Reduced motion support */
