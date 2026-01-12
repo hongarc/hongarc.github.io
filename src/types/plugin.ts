@@ -76,6 +76,8 @@ export interface InputConfig {
   visibleWhen?: { inputId: string; value: string | string[] };
   /** Whether select input should be searchable/filterable */
   searchable?: boolean;
+  /** Whether the input value is sensitive and should not be persisted in toolSettings */
+  sensitive?: boolean;
 }
 
 /**
@@ -88,6 +90,8 @@ export interface TransformResult {
   output?: string;
   /** Error message (if failed) */
   error?: string;
+  /** Friendly instruction for the user (shown when input is empty/missing) */
+  instruction?: string;
   /** Optional metadata about the transformation */
   meta?: Record<string, unknown>;
 }

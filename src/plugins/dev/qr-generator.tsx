@@ -3,7 +3,7 @@ import QRCode from 'qrcode';
 import { useCallback } from 'react';
 
 import type { ToolPlugin, TransformResult } from '@/types/plugin';
-import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
+import { failure, getSelectInput, getTrimmedInput, instruction, success } from '@/utils';
 
 const MODE_OPTIONS = ['text', 'vietqr'] as const;
 
@@ -177,7 +177,7 @@ const generateQR = async (inputs: Record<string, unknown>): Promise<TransformRes
 
   if (mode === 'text') {
     if (!content) {
-      return failure('Please enter text or URL to generate QR code');
+      return instruction('Please enter text or URL to generate QR code');
     }
 
     try {
@@ -210,7 +210,7 @@ const generateQR = async (inputs: Record<string, unknown>): Promise<TransformRes
   const description = getTrimmedInput(inputs, 'description');
 
   if (!bankBin || !accountNumber) {
-    return failure('Please select a bank and enter account number');
+    return instruction('Please select a bank and enter account number');
   }
 
   try {
@@ -267,6 +267,7 @@ export const qrGenerator: ToolPlugin = {
       placeholder: 'Enter text or URL...',
       rows: 3,
       visibleWhen: { inputId: 'mode', value: 'text' },
+      sensitive: true,
     },
     {
       id: 'bankBin',
@@ -289,6 +290,7 @@ export const qrGenerator: ToolPlugin = {
       type: 'text',
       placeholder: 'Enter account number',
       visibleWhen: { inputId: 'mode', value: 'vietqr' },
+      sensitive: true,
     },
     {
       id: 'amount',
@@ -297,6 +299,7 @@ export const qrGenerator: ToolPlugin = {
       placeholder: 'Optional - e.g., 100000',
       helpText: 'Leave empty for any amount',
       visibleWhen: { inputId: 'mode', value: 'vietqr' },
+      sensitive: true,
     },
     {
       id: 'description',

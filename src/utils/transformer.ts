@@ -23,6 +23,14 @@ export const failure = (error: string): TransformResult => ({
 });
 
 /**
+ * Create a result that shows an instruction (e.g., when input is empty)
+ */
+export const instruction = (message: string): TransformResult => ({
+  success: false,
+  instruction: message,
+});
+
+/**
  * Execute a plugin's transformer with the given inputs
  */
 export const executeTransformer = async (

@@ -1,4 +1,4 @@
-export { success, failure, executeTransformer } from './transformer';
+export { success, failure, instruction, executeTransformer } from './transformer';
 export {
   getStringInput,
   getTrimmedInput,

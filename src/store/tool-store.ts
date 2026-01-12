@@ -122,11 +122,16 @@ export const useToolStore = create<ToolState>()(
 
       // Set a single input value and persist to tool settings
       setInput: (inputId: string, value: unknown) => {
-        const { selectedToolId, toolSettings } = get();
+        const { selectedToolId, toolSettings, selectedTool } = get();
         set((state) => {
           const newInputs = { ...state.inputs, [inputId]: value };
-          // Save non-required input settings for persistence
-          if (selectedToolId) {
+          // Save input settings for persistence unless marked as sensitive
+          if (selectedToolId && selectedTool) {
+            const inputConfig = selectedTool.inputs.find((i) => i.id === inputId);
+            if (inputConfig?.sensitive) {
+              return { inputs: newInputs };
+            }
+
             const currentSettings = toolSettings[selectedToolId] ?? {};
             return {
               inputs: newInputs,

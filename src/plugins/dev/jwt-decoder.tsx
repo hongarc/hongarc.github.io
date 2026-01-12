@@ -1,7 +1,14 @@
 import { KeyRound } from 'lucide-react';
 
 import type { ToolPlugin } from '@/types/plugin';
-import { failure, getErrorMessage, getSelectInput, getTrimmedInput, success } from '@/utils';
+import {
+  failure,
+  getErrorMessage,
+  getSelectInput,
+  getTrimmedInput,
+  instruction,
+  success,
+} from '@/utils';
 
 // Pure function: encode base64url
 const base64UrlEncode = (str: string): string => {
@@ -29,7 +36,6 @@ const base64UrlDecode = (str: string): string => {
     return atob(padded); // Fallback to raw atob
   }
 };
-
 // Pure function: convert buffer to base64url
 const bufferToBase64Url = (buffer: ArrayBuffer): string => {
   const bytes = new Uint8Array(buffer);
@@ -37,37 +43,33 @@ const bufferToBase64Url = (buffer: ArrayBuffer): string => {
   const base64 = btoa(binary);
   return base64.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
 };
-
-// Sign data using HS256
-const signHS256 = async (data: string, secret: string): Promise<string> => {
+// Sign data using HMAC (SHA-256, SHA-384, or SHA-512)
+const signHMAC = async (
+  data: string,
+  secret: string,
+  hash: 'SHA-256' | 'SHA-384' | 'SHA-512'
+): Promise<string> => {
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secret);
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
+  const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash }, false, [
+    'sign',
+  ]);
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
   return bufferToBase64Url(signature);
 };
 
-// Verify HS256 signature
-const verifyHS256 = async (
+// Verify HMAC (SHA-256, SHA-384, or SHA-512)
+const verifyHMAC = async (
   data: string,
   signatureB64: string,
-  secret: string
+  secret: string,
+  hash: 'SHA-256' | 'SHA-384' | 'SHA-512'
 ): Promise<boolean> => {
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secret);
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['verify']
-  );
+  const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash }, false, [
+    'verify',
+  ]);
 
   const sigBase64 = signatureB64.replaceAll('-', '+').replaceAll('_', '/');
   const sigPadded = sigBase64 + '='.repeat((4 - (sigBase64.length % 4)) % 4);
@@ -172,6 +174,7 @@ export const jwtDecoder: ToolPlugin = {
       placeholder: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature',
       rows: 3,
       visibleWhen: { inputId: 'mode', value: 'decode' },
+      sensitive: true,
     },
     {
       id: 'genHeader',
@@ -236,6 +239,7 @@ export const jwtDecoder: ToolPlugin = {
       type: 'text',
       placeholder: 'Enter secret for HS256 or RSA key...',
       helpText: 'Used for signing (Generate) or verification (Decode)',
+      sensitive: true,
     },
   ],
   transformer: async (inputs) => {
@@ -248,7 +252,7 @@ export const jwtDecoder: ToolPlugin = {
         const payloadStr = getTrimmedInput(inputs, 'genPayload');
 
         if (!headerStr || !payloadStr) {
-          return failure('Header and Payload are required');
+          return instruction('Please enter Header and Payload to generate JWT');
         }
 
         const header = parseJson(headerStr);
@@ -279,10 +283,25 @@ export const jwtDecoder: ToolPlugin = {
 
         let signature = 'signature';
         if (secret) {
-          if (alg === 'HS256') {
-            signature = await signHS256(dataToSign, secret);
-          } else {
-            return failure(`Signing with ${alg} not yet supported. Use HS256.`);
+          switch (alg) {
+            case 'HS256': {
+              signature = await signHMAC(dataToSign, secret, 'SHA-256');
+
+              break;
+            }
+            case 'HS384': {
+              signature = await signHMAC(dataToSign, secret, 'SHA-384');
+
+              break;
+            }
+            case 'HS512': {
+              signature = await signHMAC(dataToSign, secret, 'SHA-512');
+
+              break;
+            }
+            default: {
+              return failure(`Signing with ${alg} not yet supported. Use HS256/384/512.`);
+            }
           }
         }
 
@@ -292,6 +311,7 @@ export const jwtDecoder: ToolPlugin = {
           _sections: {
             stats: [
               { label: 'Algorithm', value: alg },
+              { label: 'Header', value: JSON.stringify(header) },
               { label: 'Status', value: secret ? 'Signed' : 'Unsigned', type: 'badge' },
             ],
             content: token,
@@ -302,7 +322,7 @@ export const jwtDecoder: ToolPlugin = {
 
       // Decode Mode
       const input = getTrimmedInput(inputs, 'input');
-      if (!input) return failure('Please enter a JWT token');
+      if (!input) return instruction('Please enter a JWT token to decode');
 
       const parts = parseJwtParts(input);
       if (!parts) return failure('Invalid JWT format (expected 3 parts)');
@@ -320,24 +340,33 @@ export const jwtDecoder: ToolPlugin = {
       };
 
       if (secret) {
-        if (header.alg === 'HS256') {
-          const isValid = await verifyHS256(
-            `${parts.rawHeader}.${parts.rawPayload}`,
-            parts.signature,
-            secret
-          );
-          sigStatus = {
-            label: 'Signature',
-            value: isValid ? 'Verified' : 'Invalid',
-            variant: isValid ? 'success' : 'error',
-          };
-        } else {
-          sigStatus = {
-            label: 'Signature',
-            value: 'Unsupported Alg',
-            variant: 'warning',
-          };
+        let isSignatureValid = false;
+        const dataToVerify = `${parts.rawHeader}.${parts.rawPayload}`;
+
+        switch (header.alg) {
+          case 'HS256': {
+            isSignatureValid = await verifyHMAC(dataToVerify, parts.signature, secret, 'SHA-256');
+
+            break;
+          }
+          case 'HS384': {
+            isSignatureValid = await verifyHMAC(dataToVerify, parts.signature, secret, 'SHA-384');
+
+            break;
+          }
+          case 'HS512': {
+            isSignatureValid = await verifyHMAC(dataToVerify, parts.signature, secret, 'SHA-512');
+
+            break;
+          }
+          // No default
         }
+
+        sigStatus = {
+          label: 'Signature',
+          value: isSignatureValid ? 'Verified' : 'Invalid Signature',
+          variant: isSignatureValid ? 'success' : 'error',
+        };
       }
 
       const stats = [

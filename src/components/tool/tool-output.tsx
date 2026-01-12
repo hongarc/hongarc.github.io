@@ -1,4 +1,4 @@
-import { AlertCircle, Check, Copy, Download, FileOutput } from 'lucide-react';
+import { AlertCircle, Check, Copy, Download, FileOutput, Sparkles } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { DiffView } from '@/components/ui/diff-view';
@@ -87,6 +87,17 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
         <FileOutput className="mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
         <p className="text-sm font-medium text-slate-400 dark:text-slate-500">
           Output will appear here
+        </p>
+      </div>
+    );
+  }
+
+  if (!result.success && result.instruction) {
+    return (
+      <div className="flex h-48 flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-200/50 bg-blue-50/20 dark:border-blue-900/30 dark:bg-blue-950/20">
+        <Sparkles className="mb-2 h-8 w-8 text-blue-300/80 dark:text-blue-600/50" />
+        <p className="max-w-[280px] text-center font-sans text-sm font-medium text-blue-600/80 dark:text-blue-400/60">
+          {result.instruction}
         </p>
       </div>
     );
