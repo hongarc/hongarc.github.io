@@ -15,6 +15,8 @@ import {
 const ALGORITHM_OPTIONS = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'] as const;
 type AlgorithmType = (typeof ALGORITHM_OPTIONS)[number];
 
+const INPUT_TYPE_OPTIONS = ['text', 'file'] as const;
+
 /**
  * Convert ArrayBuffer to hex string using Ramda
  */
@@ -27,13 +29,41 @@ const bufferToHex = (buffer: ArrayBuffer): string => {
 };
 
 /**
- * Compute hash using Web Crypto API
+ * Compute hash from ArrayBuffer using Web Crypto API
+ */
+const computeHashFromBuffer = async (
+  data: ArrayBuffer,
+  algorithm: AlgorithmType
+): Promise<string> => {
+  const hashBuffer = await crypto.subtle.digest(algorithm, data);
+  return bufferToHex(hashBuffer);
+};
+
+/**
+ * Compute hash from text using Web Crypto API
  */
 const computeHash = async (text: string, algorithm: AlgorithmType): Promise<string> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest(algorithm, data);
-  return bufferToHex(hashBuffer);
+  return computeHashFromBuffer(data.buffer as ArrayBuffer, algorithm);
+};
+
+/**
+ * Read file as ArrayBuffer
+ */
+const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.result instanceof ArrayBuffer) {
+        resolve(reader.result);
+      } else {
+        reject(new Error('Failed to read file'));
+      }
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsArrayBuffer(file);
+  });
 };
 
 /**
@@ -48,22 +78,46 @@ const secureCompare = (a: string, b: string): boolean => {
   return result === 0;
 };
 
+/**
+ * Format file size for display
+ */
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
 export const hashGenerator: ToolPlugin = {
   id: 'hash-generator',
   label: 'Hash Generator',
   description: 'Generate and verify SHA-1, SHA-256, SHA-384, or SHA-512 hashes',
   category: 'crypto',
   icon: <Hash className="h-4 w-4" />,
-  keywords: ['hash', 'sha', 'sha256', 'sha512', 'checksum', 'digest', 'verify', 'compare'],
+  keywords: ['hash', 'sha', 'sha256', 'sha512', 'checksum', 'digest', 'verify', 'compare', 'file'],
   isAsync: true,
   inputs: [
+    {
+      id: 'inputType',
+      label: 'Input Type',
+      type: 'select',
+      defaultValue: 'text',
+      options: [
+        { value: 'text', label: 'Text' },
+        { value: 'file', label: 'File' },
+      ],
+    },
     {
       id: 'input',
       label: 'Input Text',
       type: 'textarea',
       placeholder: 'Enter text to hash',
-      required: true,
       rows: 4,
+    },
+    {
+      id: 'file',
+      label: 'Select File',
+      type: 'file',
+      accept: '*/*',
     },
     {
       id: 'algorithm',
@@ -94,17 +148,31 @@ export const hashGenerator: ToolPlugin = {
     },
   ],
   transformer: async (inputs) => {
+    const inputType = getSelectInput(inputs, 'inputType', INPUT_TYPE_OPTIONS, 'text');
     const input = getStringInput(inputs, 'input');
+    const file = inputs.file as File | undefined;
     const compareHash = getTrimmedInput(inputs, 'compareHash');
     const algorithm = getSelectInput(inputs, 'algorithm', ALGORITHM_OPTIONS, 'SHA-256');
     const uppercase = getBooleanInput(inputs, 'uppercase');
 
-    if (!input) {
-      return failure('Please enter text to hash');
-    }
-
     try {
-      let hash = await computeHash(input, algorithm);
+      let hash: string;
+      let inputInfo: string;
+
+      if (inputType === 'file') {
+        if (!file) {
+          return failure('Please select a file to hash');
+        }
+        const buffer = await readFileAsArrayBuffer(file);
+        hash = await computeHashFromBuffer(buffer, algorithm);
+        inputInfo = `${file.name} (${formatFileSize(file.size)})`;
+      } else {
+        if (!input) {
+          return failure('Please enter text to hash');
+        }
+        hash = await computeHash(input, algorithm);
+        inputInfo = `${input.length} chars`;
+      }
 
       if (uppercase) {
         hash = hash.toUpperCase();
@@ -119,7 +187,7 @@ export const hashGenerator: ToolPlugin = {
       }[] = [
         { label: 'Algorithm', value: algorithm },
         { label: 'Length', value: `${String(hash.length)} chars` },
-        { label: 'Input', value: `${String(input.length)} chars` },
+        { label: 'Input', value: inputInfo },
       ];
 
       // Add verification if compare hash is provided
