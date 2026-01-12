@@ -1,201 +1,145 @@
+import { diffWords, diffLines } from 'diff';
 import { GitCompare } from 'lucide-react';
+import { pipe, map, filter, reduce, join, trim, reject, curry, equals } from 'ramda';
 
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, success } from '@/utils';
 
-const MODE_OPTIONS = ['line', 'word', 'char'] as const;
-const VIEW_OPTIONS = ['inline', 'side-by-side'] as const;
-
-type DiffType = 'equal' | 'insert' | 'delete';
-
-interface DiffPart {
-  type: DiffType;
+interface WordDiff {
+  type: 'equal' | 'added' | 'removed';
   value: string;
 }
 
-// Pure function: compute longest common subsequence length table
-const lcsTable = (a: string[], b: string[]): number[][] => {
-  const m = a.length;
-  const n = b.length;
-  const table: number[][] = Array.from({ length: m + 1 }, () =>
-    Array.from({ length: n + 1 }, () => 0)
-  );
-
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      const row = table[i];
-      if (row) {
-        row[j] =
-          a[i - 1] === b[j - 1]
-            ? (table[i - 1]?.[j - 1] ?? 0) + 1
-            : Math.max(table[i - 1]?.[j] ?? 0, row[j - 1] ?? 0);
-      }
-    }
-  }
-
-  return table;
-};
-
-// Pure function: backtrack to find diff
-const backtrack = (table: number[][], a: string[], b: string[]): DiffPart[] => {
-  const result: DiffPart[] = [];
-  let i = a.length;
-  let j = b.length;
-
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
-      result.unshift({ type: 'equal', value: a[i - 1] ?? '' });
-      i--;
-      j--;
-    } else if (j > 0 && (i === 0 || (table[i]?.[j - 1] ?? 0) >= (table[i - 1]?.[j] ?? 0))) {
-      result.unshift({ type: 'insert', value: b[j - 1] ?? '' });
-      j--;
-    } else if (i > 0) {
-      result.unshift({ type: 'delete', value: a[i - 1] ?? '' });
-      i--;
-    }
-  }
-
-  return result;
-};
-
-// Pure function: compute diff
-const computeDiff = (oldText: string[], newText: string[]): DiffPart[] => {
-  const table = lcsTable(oldText, newText);
-  return backtrack(table, oldText, newText);
-};
-
-// Pure function: merge consecutive same-type parts
-const mergeParts = (parts: DiffPart[], separator = ''): DiffPart[] => {
-  if (parts.length === 0) return [];
-
-  const merged: DiffPart[] = [];
-  let current = { ...parts[0] } as DiffPart;
-
-  for (let i = 1; i < parts.length; i++) {
-    const part = parts[i];
-    if (part?.type === current.type) {
-      current.value += separator + part.value;
-    } else if (part) {
-      merged.push(current);
-      current = { ...part };
-    }
-  }
-  merged.push(current);
-
-  return merged;
-};
-
-// Pure function: split text based on mode
-const splitText = (text: string, mode: (typeof MODE_OPTIONS)[number]): string[] => {
-  switch (mode) {
-    case 'line': {
-      return text.split('\n');
-    }
-    case 'word': {
-      return text.split(/(\s+)/);
-    }
-    case 'char': {
-      // eslint-disable-next-line unicorn/prefer-spread -- Safe for ASCII
-      return text.split('');
-    }
-  }
-};
-
-// Pure function: format diff output
-const formatDiff = (parts: DiffPart[], mode: (typeof MODE_OPTIONS)[number]): string => {
-  const lines: string[] = [];
-
-  for (const part of parts) {
-    const prefix = part.type === 'insert' ? '+ ' : part.type === 'delete' ? '- ' : '  ';
-
-    if (mode === 'line') {
-      const partLines = part.value.split('\n');
-      for (const line of partLines) {
-        if (line || part.type !== 'equal') {
-          lines.push(`${prefix}${line}`);
-        }
-      }
-    } else {
-      if (part.type === 'equal') {
-        lines.push(part.value);
-      } else {
-        lines.push(`[${part.type === 'insert' ? '+' : '-'}${part.value}]`);
-      }
-    }
-  }
-
-  return mode === 'line' ? lines.join('\n') : lines.join('');
-};
-
-// Pure function: count changes (line-based for line mode)
-const countChanges = (
-  parts: DiffPart[],
-  mode: (typeof MODE_OPTIONS)[number]
-): { insertions: number; deletions: number } => {
-  let insertions = 0;
-  let deletions = 0;
-
-  for (const part of parts) {
-    if (mode === 'line') {
-      const lineCount = part.value.split('\n').filter(Boolean).length || 1;
-      if (part.type === 'insert') insertions += lineCount;
-      if (part.type === 'delete') deletions += lineCount;
-    } else {
-      if (part.type === 'insert') insertions += part.value.length;
-      if (part.type === 'delete') deletions += part.value.length;
-    }
-  }
-
-  return { insertions, deletions };
-};
-
-// Pure function: convert diff parts to line-by-line view for visual display
-interface DiffLine {
-  type: 'equal' | 'insert' | 'delete';
+interface LineDiffResult {
+  type: 'equal' | 'added' | 'removed';
   content: string;
   oldLineNum?: number;
   newLineNum?: number;
+  wordDiffs?: WordDiff[];
 }
 
-const toDiffLines = (parts: DiffPart[]): DiffLine[] => {
-  const lines: DiffLine[] = [];
+// Pure function: transform diff change to WordDiff using Ramda
+const transformDiffChange = (change: {
+  added?: boolean;
+  removed?: boolean;
+  value: string;
+}): WordDiff => ({
+  type: change.added ? 'added' : change.removed ? 'removed' : 'equal',
+  value: change.value,
+});
+
+// Pure function: compute word-level diff for a line pair using Ramda
+const computeWordDiff = pipe(
+  ({ oldLine, newLine }: { oldLine: string; newLine: string }) => diffWords(oldLine, newLine),
+  map(transformDiffChange)
+);
+
+// Pure function: filter out word diffs by type using Ramda
+const filterWordDiffsByType = curry((excludeType: string, wordDiffs: WordDiff[]) =>
+  reject((diff: WordDiff) => equals(excludeType, diff.type), wordDiffs)
+);
+
+// Pure function: process lines and add word-level diffs
+const processLinesWithWordDiff = (oldText: string, newText: string): LineDiffResult[] => {
+  const diffResults = diffLines(oldText, newText);
+  const lines: LineDiffResult[] = [];
   let oldLineNum = 1;
   let newLineNum = 1;
 
-  for (const part of parts) {
-    const partLines = part.value.split('\n');
+  // Convert diff results to line results
+  for (const result of diffResults) {
+    const resultLines = result.value.split('\n');
 
-    for (const [idx, content] of partLines.entries()) {
+    for (let i = 0; i < resultLines.length; i++) {
+      const content = resultLines[i] ?? '';
+
       // Skip empty last element from split (trailing newline)
-      if (idx === partLines.length - 1 && content === '' && partLines.length > 1) {
+      if (i === resultLines.length - 1 && content === '' && resultLines.length > 1) {
         continue;
       }
 
-      if (part.type === 'equal') {
-        lines.push({ type: 'equal', content, oldLineNum, newLineNum });
-        oldLineNum++;
+      if (result.added) {
+        lines.push({
+          type: 'added',
+          content,
+          newLineNum,
+        });
         newLineNum++;
-      } else if (part.type === 'delete') {
-        lines.push({ type: 'delete', content, oldLineNum });
+      } else if (result.removed) {
+        lines.push({
+          type: 'removed',
+          content,
+          oldLineNum,
+        });
         oldLineNum++;
       } else {
-        lines.push({ type: 'insert', content, newLineNum });
+        lines.push({
+          type: 'equal',
+          content,
+          oldLineNum,
+          newLineNum,
+        });
+        oldLineNum++;
         newLineNum++;
       }
+    }
+  }
+
+  // Add word-level diffs for adjacent removed/added pairs
+  for (let i = 0; i < lines.length - 1; i++) {
+    const current = lines[i];
+    const next = lines[i + 1];
+
+    if (current?.type === 'removed' && next?.type === 'added') {
+      const wordDiffs = computeWordDiff({
+        oldLine: current.content,
+        newLine: next.content,
+      });
+
+      // Split word diffs between removed and added lines using Ramda
+      current.wordDiffs = filterWordDiffsByType('added', wordDiffs);
+      next.wordDiffs = filterWordDiffsByType('removed', wordDiffs);
+
+      i++; // Skip next line as we processed the pair
     }
   }
 
   return lines;
 };
 
+// Pure function: format diff output using Ramda
+const formatDiffOutput = pipe(
+  map((line: LineDiffResult) => {
+    const prefix = line.type === 'added' ? '+ ' : line.type === 'removed' ? '- ' : '  ';
+    return `${prefix}${line.content}`;
+  }),
+  join('\n')
+);
+
+// Pure function: count changes using Ramda
+const countChanges = pipe(
+  filter((line: LineDiffResult) => line.type !== 'equal'),
+  reduce(
+    (acc: { insertions: number; deletions: number }, line: LineDiffResult) => ({
+      insertions: acc.insertions + (line.type === 'added' ? 1 : 0),
+      deletions: acc.deletions + (line.type === 'removed' ? 1 : 0),
+    }),
+    { insertions: 0, deletions: 0 }
+  )
+);
+
+// Pure function: sanitize input text using Ramda
+const sanitizeInput = pipe((text: string | undefined) => text ?? '', trim);
+
+const VIEW_OPTIONS = ['inline', 'side-by-side'] as const;
+
 export const textDiff: ToolPlugin = {
   id: 'text-diff',
   label: 'Text Diff',
-  description: 'Compare two texts and show differences',
+  description: 'Compare two texts line by line with word-level highlighting',
   category: 'text',
   icon: <GitCompare className="h-4 w-4" />,
-  keywords: ['diff', 'compare', 'difference', 'merge', 'text', 'changes'],
+  keywords: ['diff', 'compare', 'difference', 'merge', 'text', 'changes', 'line', 'word'],
   inputs: [
     {
       id: 'oldText',
@@ -218,17 +162,6 @@ export const textDiff: ToolPlugin = {
       sensitive: true,
     },
     {
-      id: 'mode',
-      label: 'Compare By',
-      type: 'select',
-      defaultValue: 'line',
-      options: [
-        { value: 'line', label: 'Lines' },
-        { value: 'word', label: 'Words' },
-        { value: 'char', label: 'Chars' },
-      ],
-    },
-    {
       id: 'diffView',
       label: 'View',
       type: 'select',
@@ -240,49 +173,34 @@ export const textDiff: ToolPlugin = {
     },
   ],
   transformer: (inputs) => {
-    const oldText = (inputs.oldText as string | undefined) ?? '';
-    const newText = (inputs.newText as string | undefined) ?? '';
-    const mode = getSelectInput(inputs, 'mode', MODE_OPTIONS, 'line');
+    const oldText = sanitizeInput(inputs.oldText as string | undefined);
+    const newText = sanitizeInput(inputs.newText as string | undefined);
     const diffView = getSelectInput(inputs, 'diffView', VIEW_OPTIONS, 'side-by-side');
 
     if (!oldText && !newText) {
       return failure('Please enter text to compare');
     }
 
-    const oldParts = splitText(oldText, mode);
-    const newParts = splitText(newText, mode);
+    // Process lines and add word-level diffs using Ramda
+    const processedLines = processLinesWithWordDiff(oldText, newText);
 
-    // Get separator based on mode
-    const separator = mode === 'line' ? '\n' : '';
+    // Generate statistics using Ramda
+    const stats = countChanges(processedLines);
 
-    const diff = computeDiff(oldParts, newParts);
-    const merged = mergeParts(diff, separator);
-    const { insertions, deletions } = countChanges(merged, mode);
+    // Format output for copy functionality using Ramda
+    const output = formatDiffOutput(processedLines);
 
-    // Generate text output for copy functionality
-    const output = formatDiff(merged, mode);
-
-    // For line mode, use visual diff view
-    if (mode === 'line') {
-      const diffLines = toDiffLines(merged);
-      return success(output, {
-        insertions,
-        deletions,
-        mode,
-        _viewMode: 'diff',
-        _diffData: {
-          lines: diffLines,
-          stats: { insertions, deletions },
-          viewMode: diffView,
-        },
-      });
-    }
-
-    // For word/char mode, use text output
     return success(output, {
-      insertions,
-      deletions,
-      mode,
+      insertions: stats.insertions,
+      deletions: stats.deletions,
+      mode: 'line',
+      _viewMode: 'diff',
+      _diffData: {
+        lines: processedLines,
+        stats,
+        viewMode: diffView,
+        hasWordHighlighting: true,
+      },
     });
   },
 };

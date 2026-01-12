@@ -1,11 +1,58 @@
 import { Check, Copy } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+interface DiffPart {
+  type: 'equal' | 'insert' | 'delete';
+  value: string;
+}
+
 interface DiffLine {
   type: 'equal' | 'insert' | 'delete';
   content: string;
   oldLineNum?: number;
   newLineNum?: number;
+  parts?: DiffPart[];
+}
+
+function DiffContent({
+  content,
+  parts,
+  type,
+}: {
+  content: string;
+  parts?: DiffPart[];
+  type: 'insert' | 'delete' | 'equal';
+}) {
+  if (!parts || parts.length === 0) return <>{content}</>;
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.type === 'equal') {
+          return <span key={i}>{part.value}</span>;
+        }
+
+        const isHighlight =
+          (type === 'delete' && part.type === 'delete') ||
+          (type === 'insert' && part.type === 'insert');
+
+        if (!isHighlight) return null;
+
+        return (
+          <span
+            key={i}
+            className={`font-bold ${
+              part.type === 'delete'
+                ? 'bg-red-200/50 text-red-900 dark:bg-red-500/30 dark:text-red-100'
+                : 'bg-green-200/50 text-green-900 dark:bg-green-500/30 dark:text-green-100'
+            }`}
+          >
+            {part.value}
+          </span>
+        );
+      })}
+    </>
+  );
 }
 
 interface DiffViewProps {
@@ -128,7 +175,7 @@ function InlineView({ lines }: { lines: DiffLine[] }) {
                       : 'text-slate-700 dark:text-slate-300'
                 }`}
               >
-                {line.content}
+                <DiffContent content={line.content} parts={line.parts} type={line.type} />
               </td>
               {/* Copy button */}
               <td className="w-8 px-1 py-0.5 select-none">
@@ -308,7 +355,11 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
                         : 'text-slate-700 dark:text-slate-300'
                     }`}
                   >
-                    {pair.left?.content ?? ''}
+                    <DiffContent
+                      content={pair.left?.content ?? ''}
+                      parts={pair.left?.parts}
+                      type="delete"
+                    />
                   </span>
                   {pair.left?.content && (
                     <span className="flex-shrink-0 px-1">
@@ -352,7 +403,11 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
                         : 'text-slate-700 dark:text-slate-300'
                     }`}
                   >
-                    {pair.right?.content ?? ''}
+                    <DiffContent
+                      content={pair.right?.content ?? ''}
+                      parts={pair.right?.parts}
+                      type="insert"
+                    />
                   </span>
                   {pair.right?.content && (
                     <span className="flex-shrink-0 px-1">
