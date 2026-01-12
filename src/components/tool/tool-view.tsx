@@ -1,6 +1,6 @@
 import { ArrowRight, Command, Pin, RotateCcw, Sparkles, Zap } from 'lucide-react';
 import { equals } from 'ramda';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useDebounce } from '@/hooks/use-debounce';
@@ -10,6 +10,10 @@ import type { InputConfig } from '@/types/plugin';
 
 import { ToolInput } from './tool-input';
 import { ToolOutput } from './tool-output';
+
+// Track if inputs have been modified by user to avoid hydration mismatch
+// When page is prerendered, we don't want to re-run transform on hydration
+let hasUserInteracted = false;
 
 // Popular tools for quick access
 const POPULAR_TOOL_IDS = [
@@ -49,16 +53,43 @@ export function ToolView() {
       });
   }, [selectedTool, inputs]);
 
+  // Track initial mount to avoid hydration mismatch
+  const isInitialMount = useRef(true);
+  const previousToolId = useRef<string | null>(null);
+  const lastTransformedInputs = useRef<Record<string, unknown> | null>(null);
+
+  // Reset interaction tracking when tool changes
+  useEffect(() => {
+    if (selectedTool && selectedTool.id !== previousToolId.current) {
+      previousToolId.current = selectedTool.id;
+      isInitialMount.current = true;
+      hasUserInteracted = false;
+      lastTransformedInputs.current = null;
+    }
+  }, [selectedTool]);
+
   // Auto-transform when debounced inputs change
   useEffect(() => {
     if (!selectedTool || !hasRequiredInputs) return;
 
-    // Only transform if inputs have actually changed
-    const inputsChanged = !equals(debouncedInputs, {});
-    if (inputsChanged) {
-      void transform();
+    // Skip auto-transform on initial mount if there's already a result (from prerendering)
+    // This prevents hydration mismatch for tools with random output like lorem-ipsum
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      // Only skip if we haven't had user interaction and there's already a result
+      if (!hasUserInteracted && result) {
+        return;
+      }
     }
-  }, [debouncedInputs, selectedTool, hasRequiredInputs, transform]);
+
+    // Only transform if inputs have actually changed from last transform
+    if (equals(debouncedInputs, lastTransformedInputs.current)) {
+      return;
+    }
+
+    lastTransformedInputs.current = debouncedInputs;
+    void transform();
+  }, [debouncedInputs, selectedTool, hasRequiredInputs, transform, result]);
 
   // Get pinned tools
   const pinnedTools = useMemo(() => {
@@ -232,6 +263,7 @@ export function ToolView() {
                           config={inp}
                           value={inputs[inp.id]}
                           onChange={(value) => {
+                            hasUserInteracted = true;
                             setInput(inp.id, value);
                           }}
                         />
@@ -272,6 +304,7 @@ export function ToolView() {
                           config={cb}
                           value={inputs[cb.id]}
                           onChange={(value) => {
+                            hasUserInteracted = true;
                             setInput(cb.id, value);
                           }}
                         />
@@ -285,6 +318,7 @@ export function ToolView() {
                       config={inputConfig}
                       value={inputs[inputConfig.id]}
                       onChange={(value) => {
+                        hasUserInteracted = true;
                         setInput(inputConfig.id, value);
                       }}
                     />
