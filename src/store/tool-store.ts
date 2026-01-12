@@ -31,6 +31,9 @@ interface ToolState {
   sidebarCollapsed: boolean;
   mobileSidebarOpen: boolean;
 
+  // Per-tool settings persistence
+  toolSettings: Record<string, Record<string, unknown>>;
+
   // Actions
   selectTool: (toolId: string | null) => void;
   setInput: (inputId: string, value: unknown) => void;
@@ -66,6 +69,7 @@ export const useToolStore = create<ToolState>()(
       pinnedToolIds: [],
       sidebarCollapsed: false,
       mobileSidebarOpen: false,
+      toolSettings: {},
 
       // Select a tool by ID (or clear selection with null)
       selectTool: (toolId: string | null) => {
@@ -94,6 +98,11 @@ export const useToolStore = create<ToolState>()(
           }
         }
 
+        // Restore saved settings for this tool (merge with defaults)
+        const { toolSettings } = get();
+        const savedSettings = toolSettings[toolId] ?? {};
+        const mergedInputs = { ...defaultInputs, ...savedSettings };
+
         // Update recent tools
         const { recentToolIds } = get();
         const updatedRecent = [toolId, ...recentToolIds.filter((id) => id !== toolId)].slice(
@@ -104,18 +113,31 @@ export const useToolStore = create<ToolState>()(
         set({
           selectedToolId: toolId,
           selectedTool: tool,
-          inputs: defaultInputs,
+          inputs: mergedInputs,
           result: null,
           recentToolIds: updatedRecent,
           mobileSidebarOpen: false,
         });
       },
 
-      // Set a single input value
+      // Set a single input value and persist to tool settings
       setInput: (inputId: string, value: unknown) => {
-        set((state) => ({
-          inputs: { ...state.inputs, [inputId]: value },
-        }));
+        const { selectedToolId, toolSettings } = get();
+        set((state) => {
+          const newInputs = { ...state.inputs, [inputId]: value };
+          // Save non-required input settings for persistence
+          if (selectedToolId) {
+            const currentSettings = toolSettings[selectedToolId] ?? {};
+            return {
+              inputs: newInputs,
+              toolSettings: {
+                ...toolSettings,
+                [selectedToolId]: { ...currentSettings, [inputId]: value },
+              },
+            };
+          }
+          return { inputs: newInputs };
+        });
       },
 
       // Set multiple inputs at once
@@ -224,6 +246,7 @@ export const useToolStore = create<ToolState>()(
         recentToolIds: state.recentToolIds,
         pinnedToolIds: state.pinnedToolIds,
         sidebarCollapsed: state.sidebarCollapsed,
+        toolSettings: state.toolSettings,
       }),
     }
   )

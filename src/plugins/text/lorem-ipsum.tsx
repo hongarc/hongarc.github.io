@@ -2,7 +2,7 @@ import { FileText } from 'lucide-react';
 import { join, map, pipe, range } from 'ramda';
 
 import type { ToolPlugin } from '@/types/plugin';
-import { failure, getNumberInput, getSelectInput, success } from '@/utils';
+import { failure, getBooleanInput, getNumberInput, getSelectInput, success } from '@/utils';
 
 const WORDS = [
   'lorem',
@@ -114,21 +114,25 @@ const generateSentence = (): string => {
 };
 
 // Pure function: generate N sentences
-const generateSentences = (count: number): string =>
-  pipe(() => range(0, count), map(generateSentence), join(' '))();
+const generateSentences = (count: number, wrapLine = false): string =>
+  pipe(() => range(0, count), map(generateSentence), join(wrapLine ? '\n' : ' '))();
 
 // Pure function: generate a paragraph (4-7 sentences)
-const generateParagraph = (): string => {
+const generateParagraph = (wrapLine = false): string => {
   const sentenceCount = 4 + Math.floor(Math.random() * 4);
-  return generateSentences(sentenceCount);
+  return generateSentences(sentenceCount, wrapLine);
 };
 
 // Pure function: generate N paragraphs
-const generateParagraphs = (count: number): string =>
-  pipe(() => range(0, count), map(generateParagraph), join('\n\n'))();
+const generateParagraphs = (count: number, wrapLine = false): string =>
+  pipe(
+    () => range(0, count),
+    map(() => generateParagraph(wrapLine)),
+    join('\n\n')
+  )();
 
 // Strategy pattern for generators
-const generators: Record<GenerateType, (count: number) => string> = {
+const generators: Record<GenerateType, (count: number, wrapLine?: boolean) => string> = {
   words: generateWords,
   sentences: generateSentences,
   paragraphs: generateParagraphs,
@@ -162,17 +166,25 @@ export const loremIpsum: ToolPlugin = {
       max: 100,
       required: true,
     },
+    {
+      id: 'wrapLine',
+      label: 'Wrap lines',
+      type: 'checkbox',
+      defaultValue: false,
+      placeholder: 'Add line breaks between sentences',
+    },
   ],
   transformer: (inputs) => {
     const type = getSelectInput(inputs, 'type', TYPE_OPTIONS, 'paragraphs');
     const count = getNumberInput(inputs, 'count', 3);
+    const wrapLine = getBooleanInput(inputs, 'wrapLine');
 
     if (count < 1 || count > 100) {
       return failure('Count must be between 1 and 100');
     }
 
     try {
-      const result = generators[type](count);
+      const result = generators[type](count, wrapLine);
       const wordCount = result.split(/\s+/).length;
       const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
 
