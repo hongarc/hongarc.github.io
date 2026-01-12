@@ -205,6 +205,7 @@ export const textDiff: ToolPlugin = {
       required: true,
       rows: 8,
       group: 'compare',
+      sensitive: true,
     },
     {
       id: 'newText',
@@ -214,6 +215,7 @@ export const textDiff: ToolPlugin = {
       required: true,
       rows: 8,
       group: 'compare',
+      sensitive: true,
     },
     {
       id: 'mode',

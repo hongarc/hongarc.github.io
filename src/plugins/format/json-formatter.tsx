@@ -63,6 +63,7 @@ export const jsonFormatter: ToolPlugin = {
       placeholder: '{"key": "value"}',
       required: true,
       rows: 8,
+      sensitive: true,
     },
     {
       id: 'viewMode',

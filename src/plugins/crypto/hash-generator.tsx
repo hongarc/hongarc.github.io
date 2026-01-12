@@ -97,16 +97,18 @@ export const hashGenerator: ToolPlugin = {
       id: 'input',
       label: 'Input Text',
       type: 'textarea',
-      placeholder: 'Enter text to hash',
+      placeholder: 'Enter text to hash here...',
       rows: 4,
       visibleWhen: { inputId: 'inputType', value: 'text' },
+      sensitive: true,
     },
     {
       id: 'file',
-      label: 'Select File',
+      label: 'Input File',
       type: 'file',
       accept: '*/*',
       visibleWhen: { inputId: 'inputType', value: 'file' },
+      sensitive: true,
     },
     {
       id: 'algorithm',
@@ -134,6 +136,7 @@ export const hashGenerator: ToolPlugin = {
       placeholder: 'Paste a hash here to verify if it matches',
       rows: 2,
       helpText: 'Leave empty to only generate hash',
+      sensitive: true,
     },
   ],
   transformer: async (inputs) => {

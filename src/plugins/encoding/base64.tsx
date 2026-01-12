@@ -65,6 +65,7 @@ export const base64Encoder: ToolPlugin = {
       placeholder: 'Enter text to encode or Base64 to decode',
       required: true,
       rows: 6,
+      sensitive: true,
     },
     {
       id: 'mode',

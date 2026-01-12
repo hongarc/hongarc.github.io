@@ -33,6 +33,7 @@ export const sqlFormatter: ToolPlugin = {
       placeholder: 'Paste your SQL query here...',
       required: true,
       rows: 10,
+      sensitive: true,
     },
     {
       id: 'language',

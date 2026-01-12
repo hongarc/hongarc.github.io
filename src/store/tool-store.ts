@@ -98,10 +98,21 @@ export const useToolStore = create<ToolState>()(
           }
         }
 
-        // Restore saved settings for this tool (merge with defaults)
+        // Restore saved settings (excluding sensitive fields)
         const { toolSettings } = get();
         const savedSettings = toolSettings[toolId] ?? {};
-        const mergedInputs = { ...defaultInputs, ...savedSettings };
+
+        // Filter out sensitive fields from saved settings
+        const safeSavedSettings: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(savedSettings)) {
+          const inputConfig = tool.inputs.find((i) => i.id === key);
+          // Only restore if input exists and is NOT sensitive
+          if (inputConfig && !inputConfig.sensitive) {
+            safeSavedSettings[key] = value;
+          }
+        }
+
+        const mergedInputs = { ...defaultInputs, ...safeSavedSettings };
 
         // Update recent tools
         const { recentToolIds } = get();

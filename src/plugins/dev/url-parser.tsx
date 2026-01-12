@@ -101,6 +101,7 @@ export const urlParser: ToolPlugin = {
       type: 'text',
       placeholder: 'https://example.com/path?query=value#hash',
       required: true,
+      sensitive: true,
     },
   ],
   transformer: (inputs) => {
