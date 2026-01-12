@@ -17,7 +17,7 @@ const getStringValue = (value: unknown): string => {
 
 export function ToolInput({ config, value, onChange }: ToolInputProps) {
   const baseInputClass =
-    'w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800';
+    'w-full rounded-lg border border-slate-200/50 bg-white/50 px-3.5 py-2.5 text-sm text-slate-900 shadow-sm backdrop-blur-sm placeholder-slate-400 transition-all focus:border-blue-500/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-500/50 dark:focus:bg-slate-800';
 
   const renderInput = () => {
     switch (config.type) {

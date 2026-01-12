@@ -24,7 +24,7 @@ export function Layout() {
   });
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950">
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-950">
       {/* Mobile sidebar overlay */}
       {mobileSidebarOpen && (
         <div

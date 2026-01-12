@@ -47,7 +47,7 @@ export function Sidebar() {
 
   if (sidebarCollapsed) {
     return (
-      <aside className="hidden h-full w-16 flex-col border-r border-slate-200/80 bg-white/80 backdrop-blur-xl lg:flex dark:border-slate-700/50 dark:bg-slate-900/80">
+      <aside className="hidden h-full w-16 flex-col border-r border-slate-200 bg-slate-100 lg:flex dark:border-slate-800 dark:bg-slate-950">
         {/* Logo */}
         <div className="flex h-14 items-center justify-center border-b border-slate-200/80 dark:border-slate-700/50">
           <Link
@@ -72,8 +72,8 @@ export function Sidebar() {
                   className={({ isActive }) =>
                     `flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-all ${
                       isActive
-                        ? 'bg-blue-50 text-blue-600 shadow-sm dark:bg-blue-500/10 dark:text-blue-400'
-                        : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
+                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'
                     }`
                   }
                   aria-label={plugin.label}
@@ -110,7 +110,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-72 flex-col border-r border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/80">
+    <aside className="flex h-full w-72 flex-col border-r border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-950">
       {/* Header */}
       <div className="flex h-14 items-center justify-between border-b border-slate-200/80 px-4 dark:border-slate-700/50">
         <Link
@@ -147,7 +147,7 @@ export function Sidebar() {
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pr-16 pl-10 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+            className="w-full rounded-xl border border-slate-200/50 bg-white/50 py-2.5 pr-16 pl-10 text-sm text-slate-900 placeholder-slate-400 shadow-sm backdrop-blur-sm transition-all focus:border-blue-500/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-500/50 dark:focus:bg-slate-800/80"
           />
           <kbd className="absolute top-1/2 right-3 hidden -translate-y-1/2 items-center gap-0.5 rounded border border-slate-200 bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-500 select-none sm:flex dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400">
             <span className="text-xs">⌘</span>K
@@ -175,8 +175,8 @@ export function Sidebar() {
                   className={({ isActive }) =>
                     `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
                       isActive
-                        ? 'bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-500/10 dark:text-blue-400'
-                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/50'
+                        ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20'
+                        : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
                     }`
                   }
                   title={plugin.description}
@@ -186,7 +186,7 @@ export function Sidebar() {
                       <span
                         className={`flex-shrink-0 transition-colors ${
                           isActive
-                            ? 'text-blue-600 dark:text-blue-400'
+                            ? 'text-white'
                             : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'
                         }`}
                       >
@@ -221,8 +221,8 @@ export function Sidebar() {
                         className={({ isActive }) =>
                           `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
                             isActive
-                              ? 'bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-500/10 dark:text-blue-400'
-                              : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/50'
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 dark:from-blue-600 dark:to-blue-500 dark:text-white'
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
                           }`
                         }
                         title={plugin.description}
@@ -232,7 +232,7 @@ export function Sidebar() {
                             <span
                               className={`flex-shrink-0 transition-colors ${
                                 isActive
-                                  ? 'text-blue-600 dark:text-blue-400'
+                                  ? 'text-white'
                                   : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'
                               }`}
                             >
@@ -277,8 +277,8 @@ export function Sidebar() {
                         className={({ isActive }) =>
                           `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
                             isActive
-                              ? 'bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-500/10 dark:text-blue-400'
-                              : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/50'
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 dark:from-blue-600 dark:to-blue-500 dark:text-white'
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
                           }`
                         }
                         title={plugin.description}
@@ -288,7 +288,7 @@ export function Sidebar() {
                             <span
                               className={`flex-shrink-0 transition-colors ${
                                 isActive
-                                  ? 'text-blue-600 dark:text-blue-400'
+                                  ? 'text-white'
                                   : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'
                               }`}
                             >

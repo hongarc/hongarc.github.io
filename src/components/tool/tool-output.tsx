@@ -52,9 +52,11 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
 
   if (!result) {
     return (
-      <div className="flex h-48 flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/30">
-        <FileOutput className="mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
-        <p className="text-sm font-medium text-slate-400 dark:text-slate-500">
+      <div className="flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200/50 bg-white/60 p-8 text-center backdrop-blur-sm transition-all dark:border-slate-700/50 dark:bg-slate-800/20">
+        <div className="rounded-full bg-slate-100 p-3 ring-1 ring-slate-200/50 dark:bg-slate-800 dark:ring-slate-700/50">
+          <FileOutput className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+        </div>
+        <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
           Output will appear here
         </p>
       </div>
@@ -75,7 +77,7 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
   if (!result.success) {
     return (
       <div
-        className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/30"
+        className="rounded-xl border border-red-200/50 bg-red-50/50 p-4 shadow-sm backdrop-blur-sm dark:border-red-900/30 dark:bg-red-950/20"
         role="alert"
       >
         <div className="flex items-start gap-3">
