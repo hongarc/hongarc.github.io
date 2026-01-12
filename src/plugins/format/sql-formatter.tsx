@@ -1,6 +1,7 @@
 import { Database } from 'lucide-react';
-import { format as formatSql } from 'sql-formatter';
 
+import type { KeywordCase, SqlLanguage } from '@/domain/format/sql';
+import { countStatements, formatSql } from '@/domain/format/sql';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
 
@@ -98,15 +99,13 @@ export const sqlFormatter: ToolPlugin = {
 
     try {
       const formatted = formatSql(input, {
-        language,
-        keywordCase,
+        language: language as SqlLanguage,
+        keywordCase: keywordCase as KeywordCase,
         tabWidth: Number(indent),
         linesBetweenQueries,
-        indentStyle: 'standard',
       });
 
-      // Count statements
-      const statementCount = (formatted.match(/;/g) ?? []).length;
+      const statementCount = countStatements(formatted);
 
       return success(formatted, {
         dialect: language.toUpperCase(),

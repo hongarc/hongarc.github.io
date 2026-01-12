@@ -1,95 +1,22 @@
 import { Quote } from 'lucide-react';
 
+import {
+  escapeHtml,
+  escapeJs,
+  escapeJson,
+  escapeSql,
+  escapeUrl,
+  unescapeHtml,
+  unescapeJs,
+  unescapeJson,
+  unescapeSql,
+  unescapeUrl,
+} from '@/domain/encoding/escape';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, success } from '@/utils';
 
 const MODE_OPTIONS = ['escape', 'unescape'] as const;
 const FORMAT_OPTIONS = ['javascript', 'json', 'html', 'url', 'sql'] as const;
-
-// Pure function: escape for JavaScript
-const escapeJs = (str: string): string => {
-  return str
-    .replaceAll('\\', '\\\\')
-    .replaceAll("'", String.raw`\'`)
-    .replaceAll('"', String.raw`\"`)
-    .replaceAll('\n', String.raw`\n`)
-    .replaceAll('\r', String.raw`\r`)
-    .replaceAll('\t', String.raw`\t`)
-    .replaceAll('\b', String.raw`\b`)
-    .replaceAll('\f', String.raw`\f`);
-};
-
-// Pure function: unescape JavaScript
-const unescapeJs = (str: string): string => {
-  return str
-    .replaceAll(String.raw`\n`, '\n')
-    .replaceAll(String.raw`\r`, '\r')
-    .replaceAll(String.raw`\t`, '\t')
-    .replaceAll(String.raw`\b`, '\b')
-    .replaceAll(String.raw`\f`, '\f')
-    .replaceAll(String.raw`\'`, "'")
-    .replaceAll(String.raw`\"`, '"')
-    .replaceAll('\\\\', '\\');
-};
-
-// Pure function: escape for JSON
-const escapeJson = (str: string): string => {
-  return JSON.stringify(str).slice(1, -1);
-};
-
-// Pure function: unescape JSON
-const unescapeJson = (str: string): string => {
-  try {
-    return JSON.parse(`"${str}"`) as string;
-  } catch {
-    return str;
-  }
-};
-
-// Pure function: escape HTML
-const escapeHtml = (str: string): string => {
-  return str
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-};
-
-// Pure function: unescape HTML
-const unescapeHtml = (str: string): string => {
-  return str
-    .replaceAll('&amp;', '&')
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'")
-    .replaceAll('&nbsp;', ' ');
-};
-
-// Pure function: escape URL
-const escapeUrl = (str: string): string => {
-  return encodeURIComponent(str);
-};
-
-// Pure function: unescape URL
-const unescapeUrl = (str: string): string => {
-  try {
-    return decodeURIComponent(str);
-  } catch {
-    return str;
-  }
-};
-
-// Pure function: escape SQL
-const escapeSql = (str: string): string => {
-  return str.replaceAll("'", "''").replaceAll('\\', '\\\\');
-};
-
-// Pure function: unescape SQL
-const unescapeSql = (str: string): string => {
-  return str.replaceAll("''", "'").replaceAll('\\\\', '\\');
-};
 
 export const stringEscape: ToolPlugin = {
   id: 'string-escape',

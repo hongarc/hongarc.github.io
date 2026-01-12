@@ -1,52 +1,19 @@
 import { Braces } from 'lucide-react';
-import { sortBy, identity } from 'ramda';
 
+import type { IndentType } from '@/domain/format/json';
+import { formatJson } from '@/domain/format/json';
 import type { ToolPlugin } from '@/types/plugin';
 import {
+  failure,
   getBooleanInput,
   getErrorMessage,
   getSelectInput,
   getTrimmedInput,
   success,
-  failure,
 } from '@/utils';
 
 const INDENT_OPTIONS = ['2', '4', 'tab', '0'] as const;
-type IndentType = (typeof INDENT_OPTIONS)[number];
-
 const VIEW_OPTIONS = ['raw', 'tree'] as const;
-
-/**
- * Type guard for plain objects
- */
-const isPlainObject = (value: unknown): value is Record<string, unknown> =>
-  value !== null && typeof value === 'object' && !Array.isArray(value);
-
-/**
- * Recursively sort object keys alphabetically
- */
-const sortObjectKeys = (obj: unknown): unknown => {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => sortObjectKeys(item));
-  }
-  if (isPlainObject(obj)) {
-    const sortedKeys = sortBy(identity, Object.keys(obj));
-    const sorted: Record<string, unknown> = {};
-    for (const key of sortedKeys) {
-      sorted[key] = sortObjectKeys(obj[key]);
-    }
-    return sorted;
-  }
-  return obj;
-};
-
-/**
- * Get indentation value from option
- */
-const getIndentValue = (indent: IndentType): string | number => {
-  if (indent === 'tab') return '\t';
-  return Number(indent);
-};
 
 export const jsonFormatter: ToolPlugin = {
   id: 'json-formatter',
@@ -105,14 +72,8 @@ export const jsonFormatter: ToolPlugin = {
     }
 
     try {
-      let parsed: unknown = JSON.parse(input);
-
-      if (sortKeys) {
-        parsed = sortObjectKeys(parsed);
-      }
-
-      const indentValue = getIndentValue(indent);
-      const formatted = JSON.stringify(parsed, null, indentValue);
+      const formatted = formatJson(input, indent as IndentType, sortKeys);
+      const parsed: unknown = JSON.parse(formatted);
 
       return success(formatted, {
         _viewMode: viewMode,

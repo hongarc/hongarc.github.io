@@ -1,20 +1,11 @@
 import { Link } from 'lucide-react';
 
+import type { UrlMode } from '@/domain/encoding/url';
+import { processUrl } from '@/domain/encoding/url';
 import type { ToolPlugin } from '@/types/plugin';
-import { getErrorMessage, getSelectInput, getTrimmedInput, success, failure } from '@/utils';
+import { failure, getErrorMessage, getSelectInput, getTrimmedInput, success } from '@/utils';
 
 const MODE_OPTIONS = ['encode', 'decode', 'encodeComponent', 'decodeComponent'] as const;
-type ModeType = (typeof MODE_OPTIONS)[number];
-
-/**
- * URL encoding/decoding functions mapped by mode
- */
-const urlFunctions: Record<ModeType, (s: string) => string> = {
-  encode: encodeURI,
-  decode: decodeURI,
-  encodeComponent: encodeURIComponent,
-  decodeComponent: decodeURIComponent,
-};
 
 export const urlEncoder: ToolPlugin = {
   id: 'url-encoder',
@@ -54,8 +45,8 @@ export const urlEncoder: ToolPlugin = {
     }
 
     try {
-      const result = urlFunctions[mode](input);
-      const modeLabels: Record<ModeType, string> = {
+      const result = processUrl(input, mode as UrlMode);
+      const modeLabels: Record<UrlMode, string> = {
         encode: 'Encode (encodeURI)',
         decode: 'Decode (decodeURI)',
         encodeComponent: 'Encode Component',
@@ -66,7 +57,7 @@ export const urlEncoder: ToolPlugin = {
         _viewMode: 'sections',
         _sections: {
           stats: [
-            { label: 'Mode', value: modeLabels[mode] },
+            { label: 'Mode', value: modeLabels[mode as UrlMode] },
             { label: 'Input', value: `${String(input.length)} chars` },
             { label: 'Output', value: `${String(result.length)} chars` },
           ],
