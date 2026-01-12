@@ -206,6 +206,7 @@ const generateQR = async (inputs: Record<string, unknown>): Promise<TransformRes
   // VietQR mode
   const bankBin = getTrimmedInput(inputs, 'bankBin');
   const accountNumber = getTrimmedInput(inputs, 'accountNumber');
+  const accountName = getTrimmedInput(inputs, 'accountName');
   const amount = getTrimmedInput(inputs, 'amount');
   const description = getTrimmedInput(inputs, 'description');
 
@@ -214,7 +215,13 @@ const generateQR = async (inputs: Record<string, unknown>): Promise<TransformRes
   }
 
   try {
-    const qrContent = generateVietQRContent(bankBin, accountNumber, amount, description);
+    const qrContent = generateVietQRContent(
+      bankBin,
+      accountNumber,
+      amount,
+      description,
+      accountName
+    );
 
     const dataUrl = await QRCode.toDataURL(qrContent, {
       width: 512,
@@ -231,9 +238,11 @@ const generateQR = async (inputs: Record<string, unknown>): Promise<TransformRes
     return success(qrContent, {
       _viewMode: 'qr',
       _qrData: { dataUrl, content: qrContent },
-      bank: bank?.name ?? bankBin,
-      account: accountNumber,
-      amount: amount ? `${Number(amount).toLocaleString('vi-VN')} VND` : 'Not specified',
+      Bank: bank ? `${bank.name} (${bank.shortName})` : bankBin,
+      Account: accountName ? `${accountNumber} (${accountName})` : accountNumber,
+      'Account Name': accountName,
+      Amount: amount ? `${Number(amount).toLocaleString('vi-VN')} VND` : 'Not specified',
+      Message: description,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'QR generation failed';
@@ -289,6 +298,14 @@ export const qrGenerator: ToolPlugin = {
       label: 'Account Number',
       type: 'text',
       placeholder: 'Enter account number',
+      visibleWhen: { inputId: 'mode', value: 'vietqr' },
+      sensitive: true,
+    },
+    {
+      id: 'accountName',
+      label: 'Account Name',
+      type: 'text',
+      placeholder: 'Owner name (optional)',
       visibleWhen: { inputId: 'mode', value: 'vietqr' },
       sensitive: true,
     },
