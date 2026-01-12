@@ -51,20 +51,7 @@ const computeHash = async (text: string, algorithm: AlgorithmType): Promise<stri
 /**
  * Read file as ArrayBuffer
  */
-const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result instanceof ArrayBuffer) {
-        resolve(reader.result);
-      } else {
-        reject(new Error('Failed to read file'));
-      }
-    };
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsArrayBuffer(file);
-  });
-};
+const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> => file.arrayBuffer();
 
 /**
  * Constant-time string comparison to prevent timing attacks
@@ -82,7 +69,7 @@ const secureCompare = (a: string, b: string): boolean => {
  * Format file size for display
  */
 const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024) return `${String(bytes)} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
@@ -112,12 +99,14 @@ export const hashGenerator: ToolPlugin = {
       type: 'textarea',
       placeholder: 'Enter text to hash',
       rows: 4,
+      visibleWhen: { inputId: 'inputType', value: 'text' },
     },
     {
       id: 'file',
       label: 'Select File',
       type: 'file',
       accept: '*/*',
+      visibleWhen: { inputId: 'inputType', value: 'file' },
     },
     {
       id: 'algorithm',
@@ -171,7 +160,7 @@ export const hashGenerator: ToolPlugin = {
           return failure('Please enter text to hash');
         }
         hash = await computeHash(input, algorithm);
-        inputInfo = `${input.length} chars`;
+        inputInfo = `${String(input.length)} chars`;
       }
 
       if (uppercase) {
