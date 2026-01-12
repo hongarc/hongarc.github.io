@@ -35,6 +35,7 @@ function ShortcutRow({ shortcut }: { shortcut: ShortcutDef }) {
 
 interface GroupedShortcuts {
   navigation: ShortcutDef[];
+  blog: ShortcutDef[];
   actions: ShortcutDef[];
   general: ShortcutDef[];
 }
@@ -43,11 +44,13 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
   const grouped = useMemo((): GroupedShortcuts => {
     const groups: GroupedShortcuts = {
       navigation: [],
+      blog: [],
       actions: [],
       general: [],
     };
     for (const shortcut of SHORTCUTS) {
-      groups[shortcut.category].push(shortcut);
+      const category = shortcut.category as keyof GroupedShortcuts;
+      groups[category].push(shortcut);
     }
     return groups;
   }, []);
@@ -117,6 +120,20 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
               ))}
             </div>
           </div>
+
+          {/* Blog */}
+          {grouped.blog.length > 0 && (
+            <div>
+              <h3 className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                Blog
+              </h3>
+              <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                {grouped.blog.map((s) => (
+                  <ShortcutRow key={s.description} shortcut={s} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Actions */}
           <div>
