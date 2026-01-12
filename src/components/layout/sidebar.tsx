@@ -1,5 +1,5 @@
 import { BookOpen, ChevronLeft, ChevronRight, Pin, Search, Sparkles, Tag, X } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { blogRegistry } from '@/blog';
@@ -18,9 +18,11 @@ export function Sidebar() {
     pinnedToolIds,
     togglePinTool,
     activeSection,
+    selectedToolId,
   } = useToolStore();
 
   const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
 
   // Auto-detect section from URL
   const effectiveSection = useMemo(() => {
@@ -76,6 +78,17 @@ export function Sidebar() {
         post.tags.some((tag) => tag.toLowerCase().includes(query))
     );
   }, [allBlogPosts, searchQuery]);
+
+  // Scroll to selected tool when it changes
+  useEffect(() => {
+    if (!selectedToolId || !navRef.current) return;
+
+    // Find the active link element
+    const activeLink = navRef.current.querySelector(`[data-tool-id="${selectedToolId}"]`);
+    if (activeLink) {
+      activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [selectedToolId]);
 
   if (sidebarCollapsed) {
     return (
@@ -188,7 +201,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation Content */}
-      <nav className="flex-1 overflow-y-auto px-3 pb-3">
+      <nav ref={navRef} className="flex-1 overflow-y-auto px-3 pb-3">
         {effectiveSection === 'blog' ? (
           // Blog section navigation
           <div className="space-y-6">
@@ -337,6 +350,7 @@ export function Sidebar() {
                 <NavLink
                   key={plugin.id}
                   to={`/${plugin.id}`}
+                  data-tool-id={plugin.id}
                   onClick={() => {
                     setMobileSidebarOpen(false);
                   }}
@@ -383,6 +397,7 @@ export function Sidebar() {
                     <div key={plugin.id} className="group/item relative">
                       <NavLink
                         to={`/${plugin.id}`}
+                        data-tool-id={plugin.id}
                         onClick={() => {
                           setMobileSidebarOpen(false);
                         }}
@@ -439,6 +454,7 @@ export function Sidebar() {
                     <div key={plugin.id} className="group/item relative">
                       <NavLink
                         to={`/${plugin.id}`}
+                        data-tool-id={plugin.id}
                         onClick={() => {
                           setMobileSidebarOpen(false);
                         }}

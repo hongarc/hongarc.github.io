@@ -1,11 +1,11 @@
-import { BookOpen, ChevronDown, Keyboard, Menu, Monitor, Moon, Sun, Wrench } from 'lucide-react';
+import { BookOpen, ChevronDown, Menu, Monitor, Moon, Sun, Wrench } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useToolStore } from '@/store/tool-store';
 
 interface HeaderProps {
-  onShowShortcuts?: () => void;
+  onShowShortcuts?: () => void; // Keep for potential future use
 }
 
 const themeOptions = [
@@ -14,7 +14,7 @@ const themeOptions = [
   { value: 'system' as const, label: 'System', icon: Monitor },
 ];
 
-export function Header({ onShowShortcuts }: HeaderProps) {
+export function Header({ onShowShortcuts: _onShowShortcuts }: HeaderProps) {
   const { theme, setTheme, selectedTool, setMobileSidebarOpen, activeSection, setActiveSection } =
     useToolStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -76,8 +76,8 @@ export function Header({ onShowShortcuts }: HeaderProps) {
   const CurrentIcon = currentTheme?.icon ?? Sun;
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-slate-100 px-4 dark:border-slate-800 dark:bg-slate-950">
-      <div className="flex items-center gap-3">
+    <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-slate-100 px-4 dark:border-slate-800 dark:bg-slate-950">
+      <div className="flex min-w-0 items-center gap-3">
         {/* Mobile menu button */}
         <button
           onClick={() => {
@@ -138,19 +138,6 @@ export function Header({ onShowShortcuts }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Keyboard Shortcuts Button */}
-        <button
-          type="button"
-          onClick={onShowShortcuts}
-          className="hidden cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200/50 bg-white/50 px-2.5 py-2 text-sm text-slate-500 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-slate-700 hover:shadow sm:flex dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-          aria-label="Keyboard shortcuts"
-        >
-          <Keyboard className="h-4 w-4" />
-          <kbd className="hidden rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-500 md:inline dark:bg-slate-700 dark:text-slate-400">
-            {/mac/i.test(globalThis.navigator.userAgent) ? '\u2318' : 'Ctrl'}/
-          </kbd>
-        </button>
-
         {/* Theme Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -158,7 +145,7 @@ export function Header({ onShowShortcuts }: HeaderProps) {
             onClick={() => {
               setDropdownOpen(!dropdownOpen);
             }}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200/50 bg-white/50 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-slate-900 hover:shadow dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-slate-200/50 bg-white/50 px-3 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-slate-900 hover:shadow dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800"
             aria-label="Select theme"
           >
             <CurrentIcon className="h-4 w-4" />

@@ -1,8 +1,9 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { registry } from '@/plugins/registry';
 import { useToolStore } from '@/store/tool-store';
+import { CATEGORY_ORDER } from '@/types/plugin';
 
 interface ShortcutHandlers {
   onToggleHelp?: () => void;
@@ -19,32 +20,54 @@ export function useKeyboardShortcuts(handlers: ShortcutHandlers = {}) {
     copyToClipboard,
     clearInputs,
     selectedToolId,
+    theme,
+    setTheme,
+    setActiveSection,
+    pinnedToolIds,
   } = useToolStore();
 
   const openPalette = useCallback(() => {
     handlers.onOpenPalette?.();
   }, [handlers]);
 
+  // Get tools in sidebar display order: pinned first, then by category
+  const orderedTools = useMemo(() => {
+    const allTools = registry.getAll();
+    const grouped = registry.getGroupedByCategory();
+
+    // Pinned tools first
+    const pinned = pinnedToolIds
+      .map((id) => allTools.find((t) => t.id === id))
+      .filter((t) => t !== undefined);
+
+    // Then tools by category order (excluding pinned to avoid duplicates)
+    const pinnedSet = new Set(pinnedToolIds);
+    const byCategory = CATEGORY_ORDER.flatMap(
+      (cat) => grouped[cat]?.filter((t) => !pinnedSet.has(t.id)) ?? []
+    );
+
+    return [...pinned, ...byCategory];
+  }, [pinnedToolIds]);
+
   const navigateToTool = useCallback(
     (direction: 'next' | 'prev') => {
-      const allTools = registry.getAll();
-      if (allTools.length === 0) return;
+      if (orderedTools.length === 0) return;
 
-      const currentIndex = allTools.findIndex((t) => t.id === selectedToolId);
+      const currentIndex = orderedTools.findIndex((t) => t.id === selectedToolId);
       let newIndex: number;
 
       if (direction === 'next') {
-        newIndex = currentIndex < allTools.length - 1 ? currentIndex + 1 : 0;
+        newIndex = currentIndex < orderedTools.length - 1 ? currentIndex + 1 : 0;
       } else {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : allTools.length - 1;
+        newIndex = currentIndex > 0 ? currentIndex - 1 : orderedTools.length - 1;
       }
 
-      const newTool = allTools[newIndex];
+      const newTool = orderedTools[newIndex];
       if (newTool) {
         void navigate(`/${newTool.id}`);
       }
     },
-    [navigate, selectedToolId]
+    [navigate, selectedToolId, orderedTools]
   );
 
   const handleKeyDown = useCallback(
@@ -116,14 +139,14 @@ export function useKeyboardShortcuts(handlers: ShortcutHandlers = {}) {
         return;
       }
 
-      // Arrow keys - Navigate tools
-      if (event.key === 'ArrowDown' || event.key === 'j') {
+      // Arrow keys - Navigate tools (j/J = next, k/K = prev)
+      if (event.key === 'ArrowDown' || event.key === 'j' || event.key === 'J') {
         event.preventDefault();
         navigateToTool('next');
         return;
       }
 
-      if (event.key === 'ArrowUp' || event.key === 'k') {
+      if (event.key === 'ArrowUp' || event.key === 'k' || event.key === 'K') {
         event.preventDefault();
         navigateToTool('prev');
         return;
@@ -133,18 +156,60 @@ export function useKeyboardShortcuts(handlers: ShortcutHandlers = {}) {
       if (event.key === '/') {
         event.preventDefault();
         openPalette();
+        return;
+      }
+
+      // D - Toggle dark mode
+      if (event.key === 'd' || event.key === 'D') {
+        event.preventDefault();
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+        return;
+      }
+
+      // B - Toggle sidebar
+      if (event.key === 'b' || event.key === 'B') {
+        event.preventDefault();
+        toggleSidebar();
+        return;
+      }
+
+      // H - Go home
+      if (event.key === 'h' || event.key === 'H') {
+        event.preventDefault();
+        setActiveSection('tools');
+        void navigate('/');
+        return;
+      }
+
+      // T - Go to tools
+      if (event.key === 't' || event.key === 'T') {
+        event.preventDefault();
+        setActiveSection('tools');
+        void navigate('/');
+        return;
+      }
+
+      // G - Go to blog
+      if (event.key === 'g' || event.key === 'G') {
+        event.preventDefault();
+        setActiveSection('blog');
+        void navigate('/blog');
       }
     },
     [
       openPalette,
       handlers,
-      sidebarCollapsed,
       toggleSidebar,
+      sidebarCollapsed,
       copyToClipboard,
       searchQuery,
       setSearchQuery,
       clearInputs,
       navigateToTool,
+      theme,
+      setTheme,
+      setActiveSection,
+      navigate,
     ]
   );
 
@@ -168,10 +233,14 @@ export const SHORTCUTS: ShortcutDef[] = [
   { keys: ['/', 'Ctrl', 'K'], description: 'Command palette', category: 'navigation' },
   { keys: ['\u2191', 'K'], description: 'Previous tool', category: 'navigation' },
   { keys: ['\u2193', 'J'], description: 'Next tool', category: 'navigation' },
+  { keys: ['B'], description: 'Toggle sidebar', category: 'navigation' },
   { keys: ['Ctrl', '['], description: 'Collapse sidebar', category: 'navigation' },
   { keys: ['Ctrl', ']'], description: 'Expand sidebar', category: 'navigation' },
+  { keys: ['H'], description: 'Go home', category: 'navigation' },
+  { keys: ['G'], description: 'Go to blog', category: 'navigation' },
 
   // Actions
+  { keys: ['D'], description: 'Toggle dark mode', category: 'actions' },
   { keys: ['Ctrl', 'Shift', 'C'], description: 'Copy output', category: 'actions' },
   { keys: ['Ctrl', 'Backspace'], description: 'Clear inputs', category: 'actions' },
 

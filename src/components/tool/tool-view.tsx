@@ -11,14 +11,14 @@ import type { InputConfig } from '@/types/plugin';
 import { ToolInput } from './tool-input';
 import { ToolOutput } from './tool-output';
 
-// Popular tools for quick access
+// Popular tools for quick access (6 items)
 const POPULAR_TOOL_IDS = [
   'json-formatter',
-  'base64',
   'hash-generator',
   'uuid-generator',
   'url-encoder',
   'case-converter',
+  'base64-encoder',
 ];
 
 const DEBOUNCE_DELAY = 300;
