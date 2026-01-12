@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { execSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
@@ -83,6 +84,26 @@ export default defineConfig({
           ramda: ['ramda'],
         },
       },
+    },
+  },
+  test: {
+    globals: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'src/__tests__/**',
+        'src/components/**',
+        'src/plugins/**',
+        '**/*.d.ts',
+        '**/*.test.ts',
+        'vite.config.ts',
+        'tailwind.config.js',
+      ],
+      // Enforce high coverage
+      statements: 90,
+      branches: 80,
+      functions: 90,
     },
   },
 });

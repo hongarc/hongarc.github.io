@@ -94,5 +94,34 @@ describe('JWT Domain', () => {
       expect(info.isExpired).toBe(false);
       expect(info.text).toContain('Expires in');
     });
+
+    it('should format short expiring duration', () => {
+      // Use much larger buffer to avoid flaky tests due to execution time
+      const future = Math.floor(Date.now() / 1000) + 35;
+      const info = getExpiryInfo({ exp: future });
+      // It might be 34s or 35s depending on execution speed
+      expect(info.text).toMatch(/3[0-9]s/);
+    });
+
+    it('should format long expiring duration', () => {
+      // 2.5 days to be safe from "almost 2 days" rounding
+      const future = Math.floor(Date.now() / 1000) + 220_000;
+      const info = getExpiryInfo({ exp: future });
+      expect(info.text).toMatch(/2d/);
+    });
+
+    it('should format long expired duration', () => {
+      // 2.5 days ago
+      const past = Math.floor(Date.now() / 1000) - 220_000;
+      const info = getExpiryInfo({ exp: past });
+      expect(info.text).toMatch(/Expired 2d ago/);
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle invalid base64 decode gracefully', () => {
+      const result = base64UrlDecode('invalid-base64%'); // Contains invalid char %
+      expect(result).toBe('');
+    });
   });
 });

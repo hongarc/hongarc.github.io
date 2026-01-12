@@ -6,7 +6,11 @@ export interface VietQRParams {
   amount?: string;
   description?: string;
   accountName?: string;
+  isDynamic?: boolean; // Add this for compatibility with builder
+  message?: string; // Add this for compatibility with builder description mapping
 }
+
+export type VietQRData = VietQRParams;
 
 // CRC16-CCITT calculation for VietQR (Byte-based)
 export const calculateCRC16 = (str: string): string => {

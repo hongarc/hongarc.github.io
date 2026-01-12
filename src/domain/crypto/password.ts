@@ -219,12 +219,14 @@ export const getSecureRandom = (max: number): number => {
 };
 
 // Pure function: build character pool based on options
-export const buildCharPool = (options: {
+export interface PasswordOptions {
   lowercase: boolean;
   uppercase: boolean;
   numbers: boolean;
   symbols: boolean;
-}): string => {
+}
+
+export const buildCharPool = (options: PasswordOptions): string => {
   let pool = '';
   if (options.lowercase) pool += LOWERCASE;
   if (options.uppercase) pool += UPPERCASE;

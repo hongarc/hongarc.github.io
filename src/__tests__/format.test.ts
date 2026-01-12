@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatJson, isPlainObject, sortObjectKeys } from '../domain/format/json';
-import { countStatements, formatSql } from '../domain/format/sql';
+import { isPlainObject, sortObjectKeys } from '../domain/format/json';
+import { countStatements } from '../domain/format/sql';
+
+import { JsonFormatterBuilder, SqlFormatterBuilder } from './builders/format-builder';
 
 describe('Format Domain', () => {
   describe('JSON Service', () => {
@@ -28,35 +30,40 @@ describe('Format Domain', () => {
 
     it('should format JSON with indentation', () => {
       const input = '{"b":2,"a":1}';
-      const formatted = formatJson(input, '2', false);
+      const formatted = new JsonFormatterBuilder().withJson(input).withSpace(2).format();
+
       expect(formatted).toContain('  ');
       expect(JSON.parse(formatted)).toEqual({ b: 2, a: 1 });
     });
 
     it('should format JSON with sorted keys', () => {
       const input = '{"b":2,"a":1}';
-      const formatted = formatJson(input, '2', true);
+      const formatted = new JsonFormatterBuilder()
+        .withJson(input)
+        .withSpace(2)
+        .withSort(true)
+        .format();
+
       const lines = formatted.split('\n');
       expect(lines[1]).toContain('"a"');
       expect(lines[2]).toContain('"b"');
     });
 
     it('should minify JSON when indent is 0', () => {
-      const input = '{\n  "key": "value"\n}';
-      const formatted = formatJson(input, '0', false);
+      const formatted = new JsonFormatterBuilder()
+        .withJson('{\n  "key": "value"\n}')
+        .withSpace(0)
+        .format();
       expect(formatted).toBe('{"key":"value"}');
     });
   });
 
   describe('SQL Service', () => {
     it('should format SQL query', () => {
-      const input = 'SELECT * FROM users WHERE id=1';
-      const formatted = formatSql(input, {
-        language: 'sql',
-        keywordCase: 'upper',
-        tabWidth: 2,
-        linesBetweenQueries: 1,
-      });
+      const formatted = new SqlFormatterBuilder()
+        .withSql('SELECT * FROM users WHERE id=1')
+        .format();
+
       expect(formatted).toContain('SELECT');
       expect(formatted).toContain('FROM');
       expect(formatted).toContain('WHERE');

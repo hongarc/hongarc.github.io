@@ -21,7 +21,11 @@ export const base64UrlDecode = (str: string): string => {
     const decoder = new TextDecoder();
     return decoder.decode(bytes);
   } catch {
-    return atob(padded); // Fallback to raw atob
+    try {
+      return atob(padded); // Fallback to raw atob
+    } catch {
+      return ''; // Return empty string on total failure
+    }
   }
 };
 

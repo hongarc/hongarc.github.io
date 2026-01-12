@@ -9,6 +9,7 @@ import {
 } from '../domain/generators/id';
 import {
   generateParagraph,
+  generateParagraphs,
   generateSentence,
   generateWords,
   LOREM_WORDS,
@@ -66,6 +67,17 @@ describe('Generators Domain', () => {
       const paragraph = generateParagraph();
       const sentences = paragraph.split('. ');
       expect(sentences.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('should generate multiple paragraphs', () => {
+      const paragraphs = generateParagraphs(3);
+      expect(paragraphs.split('\n\n')).toHaveLength(3);
+    });
+
+    it('should generate multiple paragraphs with wrapped lines', () => {
+      const paragraphs = generateParagraphs(2, true);
+      expect(paragraphs.split('\n\n')).toHaveLength(2);
+      expect(paragraphs).toContain('\n');
     });
   });
 

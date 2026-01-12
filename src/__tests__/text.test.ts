@@ -26,6 +26,14 @@ describe('Text Domain', () => {
       expect(caseConverters.constant('helloWorld')).toBe('HELLO_WORLD');
     });
 
+    it('should convert to UPPERCASE', () => {
+      expect(caseConverters.upper('hello world')).toBe('HELLO WORLD');
+    });
+
+    it('should convert to lowercase', () => {
+      expect(caseConverters.lower('HELLO WORLD')).toBe('hello world');
+    });
+
     it('should convert lines', () => {
       const input = 'hello world\nfoo bar';
       const result = convertLines('camel')(input);

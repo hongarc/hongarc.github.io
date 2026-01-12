@@ -38,3 +38,7 @@ npm-debug.log*
 # Markdown files (except README)
 *.md
 !README.md
+
+# Coverage
+coverage/
+

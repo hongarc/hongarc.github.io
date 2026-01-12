@@ -4,12 +4,18 @@ import { bufferToHex, computeHash, secureCompare } from '../domain/crypto/hash';
 import {
   buildCharPool,
   calculatePasswordEntropy,
+  generateMultiplePasswords,
+  generateMultiplePassphrases,
   generatePassword,
   getSecureRandom,
   getStrengthLabel,
+  getStrengthPercentage,
+  getStrengthVariant,
   LOWERCASE,
   NUMBERS,
 } from '../domain/crypto/password';
+
+import { PasswordOptionsBuilder } from './builders/crypto-builder';
 
 describe('Crypto Domain', () => {
   describe('Hash Service', () => {
@@ -47,12 +53,13 @@ describe('Crypto Domain', () => {
 
     describe('buildCharPool', () => {
       it('should build correct pool', () => {
-        const result = buildCharPool({
-          lowercase: true,
-          uppercase: false,
-          numbers: true,
-          symbols: false,
-        });
+        const options = new PasswordOptionsBuilder().withoutUppercase().withoutSymbols().build();
+
+        // When using builder, we need to map options to arguments if function expects arguments
+        // But buildCharPool expects individual params or an object?
+        // Checking password.ts: export const buildCharPool = (options: PasswordOptions): string
+
+        const result = buildCharPool(options);
         expect(result).toBe(LOWERCASE + NUMBERS);
       });
     });
@@ -87,6 +94,54 @@ describe('Crypto Domain', () => {
         expect(getStrengthLabel(50)).toBe('Moderate');
         expect(getStrengthLabel(100)).toBe('Strong');
         expect(getStrengthLabel(130)).toBe('Very Strong');
+      });
+    });
+
+    describe('getStrengthPercentage', () => {
+      it('should calculate correct percentage', () => {
+        expect(getStrengthPercentage(0)).toBe(0);
+        expect(getStrengthPercentage(64)).toBe(50);
+        expect(getStrengthPercentage(128)).toBe(100);
+        expect(getStrengthPercentage(200)).toBe(100); // Max cap
+      });
+    });
+
+    describe('getStrengthVariant', () => {
+      it('should return correct variant', () => {
+        expect(getStrengthVariant(10)).toBe('error');
+        expect(getStrengthVariant(30)).toBe('warning');
+        expect(getStrengthVariant(50)).toBe('default');
+        expect(getStrengthVariant(100)).toBe('success');
+      });
+    });
+
+    describe('generateMultiplePasswords', () => {
+      it('should generate multiple passwords separated by newline', () => {
+        const count = 3;
+        const length = 5;
+        const pool = LOWERCASE;
+        const result = generateMultiplePasswords(count, length, pool);
+        const passwords = result.split('\n');
+
+        expect(passwords).toHaveLength(count);
+        for (const pwd of passwords) {
+          expect(pwd).toHaveLength(length);
+        }
+      });
+    });
+
+    describe('generateMultiplePassphrases', () => {
+      it('should generate multiple passphrases', () => {
+        const count = 2;
+        const wordCount = 3;
+        const separator = '-';
+        const result = generateMultiplePassphrases(count, wordCount, separator, false);
+        const phrases = result.split('\n');
+
+        expect(phrases).toHaveLength(count);
+        for (const phrase of phrases) {
+          expect(phrase.split(separator)).toHaveLength(wordCount);
+        }
       });
     });
   });
