@@ -182,6 +182,35 @@ export const jwtDecoder: ToolPlugin = {
       visibleWhen: { inputId: 'mode', value: 'generate' },
     },
     {
+      id: 'alg',
+      label: 'Algorithm',
+      type: 'select',
+      defaultValue: 'HS256',
+      searchable: true,
+      options: [
+        { value: 'HS256', label: 'HS256 (HMAC SHA-256)' },
+        { value: 'HS384', label: 'HS384 (HMAC SHA-384)' },
+        { value: 'HS512', label: 'HS512 (HMAC SHA-512)' },
+        { value: 'RS256', label: 'RS256 (RSA SHA-256) - Verification only' },
+      ],
+      visibleWhen: { inputId: 'mode', value: 'generate' },
+    },
+    {
+      id: 'expIn',
+      label: 'Expires In',
+      type: 'select',
+      defaultValue: '3600',
+      options: [
+        { value: '60', label: '1 minute' },
+        { value: '600', label: '10 minutes' },
+        { value: '3600', label: '1 hour' },
+        { value: '86400', label: '1 day' },
+        { value: '2592000', label: '30 days' },
+        { value: '0', label: 'No expiration' },
+      ],
+      visibleWhen: { inputId: 'mode', value: 'generate' },
+    },
+    {
       id: 'genPayload',
       label: 'Payload (JSON)',
       type: 'textarea',
@@ -220,16 +249,26 @@ export const jwtDecoder: ToolPlugin = {
         if (!header) return failure('Invalid Header JSON');
         if (!payload) return failure('Invalid Payload JSON');
 
+        // Override alg from select
+        const alg = getTrimmedInput(inputs, 'alg') || (header.alg as string) || 'HS256';
+        header.alg = alg;
+
+        // Add exp if set
+        const expIn = Number(getTrimmedInput(inputs, 'expIn') || '0');
+        if (expIn > 0) {
+          payload.exp = Math.floor(Date.now() / 1000) + expIn;
+        }
+
         const headerB64 = base64UrlEncode(JSON.stringify(header));
         const payloadB64 = base64UrlEncode(JSON.stringify(payload));
         const dataToSign = `${headerB64}.${payloadB64}`;
 
         let signature = 'signature';
         if (secret) {
-          if (header.alg === 'HS256') {
+          if (alg === 'HS256') {
             signature = await signHS256(dataToSign, secret);
           } else {
-            return failure(`Signing with ${String(header.alg)} not yet supported. Use HS256.`);
+            return failure(`Signing with ${alg} not yet supported. Use HS256.`);
           }
         }
 
@@ -238,7 +277,7 @@ export const jwtDecoder: ToolPlugin = {
           _viewMode: 'sections',
           _sections: {
             stats: [
-              { label: 'Algorithm', value: typeof header.alg === 'string' ? header.alg : 'none' },
+              { label: 'Algorithm', value: alg },
               { label: 'Status', value: secret ? 'Signed' : 'Unsigned', type: 'badge' },
             ],
             content: token,
