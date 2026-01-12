@@ -35,6 +35,8 @@ jobs:
 
       - name: Build with SEO pre-rendering
         run: npm run build
+        env:
+          VITE_SITE_URL: https://hongarc.github.io
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

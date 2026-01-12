@@ -33,9 +33,9 @@ export function ToolPage() {
     }
   }, [toolId, selectedToolId, selectTool, navigate]);
 
-  // Build canonical URL dynamically (works for local dev and any deployment)
-  const basePath = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash
-  const baseUrl = `${globalThis.location.origin}${basePath}`;
+  // Build canonical URL: use VITE_SITE_URL for production, dynamic origin for local dev
+  const siteUrl = import.meta.env.VITE_SITE_URL as string | undefined;
+  const baseUrl = siteUrl?.replace(/\/$/, '') ?? globalThis.location.origin;
 
   // Generate SEO data from selected tool or home page
   const seoData = selectedTool
