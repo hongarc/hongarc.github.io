@@ -73,13 +73,16 @@ const generateVietQRContent = (
   qrData += '010212';
 
   // Merchant Account Information (ID 38) - VietQR specific
-  let merchantInfo = '';
-  merchantInfo += '0010A000000727'; // Global Unique Identifier for VietQR
-  merchantInfo += `0120${bankBin.padStart(6, '0')}`; // Acquirer ID (Bank BIN)
-  merchantInfo += `02${String(accountNumber.length).padStart(2, '0')}${accountNumber}`; // Merchant ID (Account Number)
+  let beneficiaryInfo = '';
+  beneficiaryInfo += `00${String(bankBin.length).padStart(2, '0')}${bankBin}`; // 00: Bank BIN
+  beneficiaryInfo += `01${String(accountNumber.length).padStart(2, '0')}${accountNumber}`; // 01: Account Number
 
-  const merchantInfoLength = String(merchantInfo.length).padStart(2, '0');
-  qrData += `38${merchantInfoLength}${merchantInfo}`;
+  let merchantInfo = '';
+  merchantInfo += '0010A000000727'; // 00: GUID
+  merchantInfo += `01${String(beneficiaryInfo.length).padStart(2, '0')}${beneficiaryInfo}`; // 01: Beneficiary Info
+  merchantInfo += '0208QRIBFTTA'; // 02: Service Code
+
+  qrData += `38${String(merchantInfo.length).padStart(2, '0')}${merchantInfo}`;
 
   // Transaction Currency (ID 53) - 704 = VND
   qrData += '5303704';
@@ -93,19 +96,18 @@ const generateVietQRContent = (
   // Country Code (ID 58)
   qrData += '5802VN';
 
-  // Additional Data Field Template (ID 62) - for description
-  if (description || accountName) {
+  // Beneficiary Name (ID 59) - optional but recommended
+  if (accountName) {
+    const name = accountName.toUpperCase().slice(0, 25);
+    qrData += `59${String(name.length).padStart(2, '0')}${name}`;
+  }
+
+  // Additional Data Field Template (ID 62)
+  if (description) {
     let additionalData = '';
-
-    // Purpose of Transaction (ID 08)
-    if (description) {
-      const desc = description.slice(0, 25); // Max 25 chars
-      additionalData += `08${String(desc.length).padStart(2, '0')}${desc}`;
-    }
-
-    if (additionalData) {
-      qrData += `62${String(additionalData.length).padStart(2, '0')}${additionalData}`;
-    }
+    const desc = description.slice(0, 50); // EMVCo allows more, but keep reasonable
+    additionalData += `08${String(desc.length).padStart(2, '0')}${desc}`;
+    qrData += `62${String(additionalData.length).padStart(2, '0')}${additionalData}`;
   }
 
   // Calculate CRC (ID 63)
@@ -118,13 +120,13 @@ const generateVietQRContent = (
   return qrData;
 };
 
-// CRC16-CCITT calculation for VietQR
+// CRC16-CCITT calculation for VietQR (Byte-based)
 const calculateCRC16 = (str: string): string => {
   let crc = 0xff_ff;
   const polynomial = 0x10_21;
+  const bytes = new TextEncoder().encode(str);
 
-  for (let i = 0; i < str.length; i++) {
-    const byte = str.codePointAt(i) ?? 0;
+  for (const byte of bytes) {
     for (let j = 0; j < 8; j++) {
       const bit = ((byte >> (7 - j)) & 1) === 1;
       const c15 = ((crc >> 15) & 1) === 1;
