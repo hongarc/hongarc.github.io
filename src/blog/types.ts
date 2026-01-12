@@ -35,8 +35,12 @@ export interface BlogRegistryInterface {
   register(post: BlogPost): void;
   get(slug: string): BlogPost | undefined;
   getAll(): BlogPost[];
+  getAllSorted(): BlogPost[];
   getPublished(): BlogPost[];
   getByTag(tag: string): BlogPost[];
+  getPublishedByTag(tag: string): BlogPost[];
   getAllTags(): string[];
   search(query: string): BlogPost[];
 }
+
+export type NavigationSection = 'tools' | 'blog';

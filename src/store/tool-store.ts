@@ -1,11 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import type { NavigationSection } from '@/blog/types';
 import { registry } from '@/plugins/registry';
 import type { ToolPlugin, TransformResult } from '@/types/plugin';
 import { executeTransformer } from '@/utils/transformer';
 
 interface ToolState {
+  // Navigation section
+  activeSection: NavigationSection;
+
   // Current tool
   selectedToolId: string | null;
   selectedTool: ToolPlugin | null;
@@ -35,6 +39,7 @@ interface ToolState {
   toolSettings: Record<string, Record<string, unknown>>;
 
   // Actions
+  setActiveSection: (section: NavigationSection) => void;
   selectTool: (toolId: string | null) => void;
   setInput: (inputId: string, value: unknown) => void;
   setInputs: (inputs: Record<string, unknown>) => void;
@@ -58,6 +63,7 @@ export const useToolStore = create<ToolState>()(
   persist(
     (set, get) => ({
       // Initial state
+      activeSection: 'tools',
       selectedToolId: null,
       selectedTool: null,
       inputs: {},
@@ -70,6 +76,11 @@ export const useToolStore = create<ToolState>()(
       sidebarCollapsed: false,
       mobileSidebarOpen: false,
       toolSettings: {},
+
+      // Set active navigation section
+      setActiveSection: (section: NavigationSection) => {
+        set({ activeSection: section, searchQuery: '' });
+      },
 
       // Select a tool by ID (or clear selection with null)
       selectTool: (toolId: string | null) => {
@@ -258,6 +269,7 @@ export const useToolStore = create<ToolState>()(
     {
       name: 'friendly-storage',
       partialize: (state) => ({
+        activeSection: state.activeSection,
         theme: state.theme,
         recentToolIds: state.recentToolIds,
         pinnedToolIds: state.pinnedToolIds,

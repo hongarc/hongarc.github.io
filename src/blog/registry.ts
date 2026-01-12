@@ -42,10 +42,27 @@ export class BlogRegistry implements BlogRegistryInterface {
   }
 
   /**
-   * Get only published blog posts (excludes drafts)
+   * Get only published blog posts (excludes drafts), sorted by date (newest first)
    */
   getPublished(): BlogPost[] {
-    return this.getAll().filter((post) => !post.isDraft);
+    const published = this.getAll().filter((post) => !post.isDraft);
+    // eslint-disable-next-line unicorn/no-array-sort -- toSorted has type inference issues
+    return [...published].sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+  }
+
+  /**
+   * Get all posts sorted by publication date (newest first)
+   */
+  getAllSorted(): BlogPost[] {
+    // eslint-disable-next-line unicorn/no-array-sort -- toSorted has type inference issues
+    return [...this.getAll()].sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+  }
+
+  /**
+   * Get published posts by tag, sorted by date (newest first)
+   */
+  getPublishedByTag(tag: string): BlogPost[] {
+    return this.getPublished().filter((post) => post.tags.includes(tag));
   }
 
   /**

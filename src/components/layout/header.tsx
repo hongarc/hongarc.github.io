@@ -1,5 +1,6 @@
-import { ChevronDown, Keyboard, Menu, Monitor, Moon, Sun } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { BookOpen, ChevronDown, Keyboard, Menu, Monitor, Moon, Sun, Wrench } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useToolStore } from '@/store/tool-store';
 
@@ -14,9 +15,21 @@ const themeOptions = [
 ];
 
 export function Header({ onShowShortcuts }: HeaderProps) {
-  const { theme, setTheme, selectedTool, setMobileSidebarOpen } = useToolStore();
+  const { theme, setTheme, selectedTool, setMobileSidebarOpen, activeSection, setActiveSection } =
+    useToolStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  // Auto-detect section from URL
+  const effectiveSection = useMemo(() => {
+    if (location.pathname.startsWith('/blog')) {
+      return 'blog';
+    }
+    return activeSection === 'blog' && !location.pathname.startsWith('/blog')
+      ? 'tools'
+      : activeSection;
+  }, [location.pathname, activeSection]);
 
   // Apply theme to document
   useEffect(() => {
@@ -76,14 +89,47 @@ export function Header({ onShowShortcuts }: HeaderProps) {
           <Menu className="h-5 w-5" />
         </button>
 
-        {selectedTool && (
-          <div className="flex items-center gap-3">
-            <span className="hidden text-slate-400 sm:block">{selectedTool.icon}</span>
+        {/* Section Toggle */}
+        <div className="flex rounded-lg bg-slate-200/50 p-1 dark:bg-slate-800/50">
+          <Link
+            to="/"
+            onClick={() => {
+              setActiveSection('tools');
+            }}
+            className={`flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              effectiveSection === 'tools'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+            }`}
+          >
+            <Wrench className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Tools</span>
+          </Link>
+          <Link
+            to="/blog"
+            onClick={() => {
+              setActiveSection('blog');
+            }}
+            className={`flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              effectiveSection === 'blog'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+            }`}
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Blog</span>
+          </Link>
+        </div>
+
+        {/* Tool/Blog info */}
+        {effectiveSection === 'tools' && selectedTool && (
+          <div className="hidden items-center gap-3 md:flex">
+            <span className="text-slate-400">{selectedTool.icon}</span>
             <div>
               <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
                 {selectedTool.label}
               </h2>
-              <p className="hidden text-xs text-slate-500 sm:block dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {selectedTool.description}
               </p>
             </div>

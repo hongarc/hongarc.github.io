@@ -1,7 +1,8 @@
-import { ChevronLeft, ChevronRight, Pin, Search, Sparkles, X } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Pin, Search, Sparkles, Tag, X } from 'lucide-react';
 import { useMemo } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
+import { blogRegistry } from '@/blog';
 import { UserMenu, UserMenuCompact } from '@/components/layout/user-menu';
 import { registry } from '@/plugins/registry';
 import { useToolStore } from '@/store/tool-store';
@@ -16,7 +17,20 @@ export function Sidebar() {
     setMobileSidebarOpen,
     pinnedToolIds,
     togglePinTool,
+    activeSection,
   } = useToolStore();
+
+  const location = useLocation();
+
+  // Auto-detect section from URL
+  const effectiveSection = useMemo(() => {
+    if (location.pathname.startsWith('/blog')) {
+      return 'blog';
+    }
+    return activeSection === 'blog' && !location.pathname.startsWith('/blog')
+      ? 'tools'
+      : activeSection;
+  }, [location.pathname, activeSection]);
 
   const filteredPlugins = useMemo(() => {
     if (searchQuery.trim()) {
@@ -44,6 +58,24 @@ export function Sidebar() {
       .map((id) => allPlugins.find((p) => p.id === id))
       .filter((p) => p !== undefined);
   }, [pinnedToolIds, allPlugins]);
+
+  // Get blog posts and tags for blog section
+  const allBlogPosts = useMemo(() => blogRegistry.getPublished(), []);
+  const blogTags = useMemo(() => blogRegistry.getAllTags(), []);
+
+  // Filter blog posts by search query
+  const filteredBlogPosts = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return allBlogPosts;
+    }
+    const query = searchQuery.toLowerCase().trim();
+    return allBlogPosts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(query) ||
+        post.description.toLowerCase().includes(query) ||
+        post.tags.some((tag) => tag.toLowerCase().includes(query))
+    );
+  }, [allBlogPosts, searchQuery]);
 
   if (sidebarCollapsed) {
     return (
@@ -142,7 +174,7 @@ export function Sidebar() {
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search tools..."
+            placeholder={effectiveSection === 'tools' ? 'Search tools...' : 'Search posts...'}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -155,9 +187,145 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Tool List */}
+      {/* Navigation Content */}
       <nav className="flex-1 overflow-y-auto px-3 pb-3">
-        {filteredPlugins ? (
+        {effectiveSection === 'blog' ? (
+          // Blog section navigation
+          <div className="space-y-6">
+            {/* All Posts Link */}
+            <div>
+              <NavLink
+                to="/blog"
+                end
+                onClick={() => {
+                  setMobileSidebarOpen(false);
+                }}
+                className={({ isActive }) =>
+                  `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
+                  }`
+                }
+              >
+                <BookOpen className="h-4 w-4" />
+                <span className="font-medium">All Posts</span>
+                <span className="ml-auto rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+                  {allBlogPosts.length}
+                </span>
+              </NavLink>
+            </div>
+
+            {/* Search Results or Default Navigation */}
+            {searchQuery.trim() ? (
+              // Show search results
+              <div>
+                <h2 className="mb-2 flex items-center gap-2 px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                  <span>Search Results</span>
+                  <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700/50" />
+                </h2>
+                {filteredBlogPosts.length === 0 ? (
+                  <p className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                    No posts found
+                  </p>
+                ) : (
+                  <div className="space-y-0.5">
+                    {filteredBlogPosts.map((post) => (
+                      <NavLink
+                        key={post.slug}
+                        to={`/blog/${post.slug}`}
+                        onClick={() => {
+                          setMobileSidebarOpen(false);
+                        }}
+                        className={({ isActive }) =>
+                          `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                            isActive
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
+                          }`
+                        }
+                        title={post.description}
+                      >
+                        <span className="truncate font-medium">{post.title}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Show default navigation (tags + recent posts)
+              <>
+                {/* Tags Section */}
+                {blogTags.length > 0 && (
+                  <div>
+                    <h2 className="mb-2 flex items-center gap-2 px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                      <Tag className="h-3 w-3" />
+                      <span>Tags</span>
+                      <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700/50" />
+                    </h2>
+                    <div className="space-y-0.5">
+                      {blogTags.map((tag) => (
+                        <NavLink
+                          key={tag}
+                          to={`/blog/tag/${tag}`}
+                          onClick={() => {
+                            setMobileSidebarOpen(false);
+                          }}
+                          className={({ isActive }) =>
+                            `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                              isActive
+                                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
+                            }`
+                          }
+                        >
+                          <span className="truncate font-medium">#{tag}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Posts */}
+                {allBlogPosts.length > 0 && (
+                  <div>
+                    <h2 className="mb-2 flex items-center gap-2 px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                      <span>Recent Posts</span>
+                      <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700/50" />
+                    </h2>
+                    <div className="space-y-0.5">
+                      {allBlogPosts.slice(0, 5).map((post) => (
+                        <NavLink
+                          key={post.slug}
+                          to={`/blog/${post.slug}`}
+                          onClick={() => {
+                            setMobileSidebarOpen(false);
+                          }}
+                          className={({ isActive }) =>
+                            `group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                              isActive
+                                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
+                            }`
+                          }
+                          title={post.description}
+                        >
+                          <span className="truncate font-medium">{post.title}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {allBlogPosts.length === 0 && (
+                  <p className="px-3 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                    No blog posts yet
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        ) : filteredPlugins ? (
           // Search results
           <div className="space-y-1">
             {filteredPlugins.length === 0 ? (
@@ -331,7 +499,9 @@ export function Sidebar() {
         <div className="rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              {registry.count} tools available
+              {effectiveSection === 'blog'
+                ? `${String(allBlogPosts.length)} posts`
+                : `${String(registry.count)} tools available`}
             </span>
             {/* Desktop collapse button */}
             <button
