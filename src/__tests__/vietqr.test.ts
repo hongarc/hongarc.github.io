@@ -20,4 +20,12 @@ describe('VietQR Service', () => {
     expect(result).toContain('540550000'); // Transaction Amount
     expect(result).toContain('62160812Payment test'); // Additional Data Field Template
   });
+
+  it('should include account name when provided', () => {
+    const data = new VietQRDataBuilder().withBank('970415').build();
+    data.accountName = 'NGUYEN VAN A';
+
+    const result = generateVietQRContent(data);
+    expect(result).toContain('5912NGUYEN VAN A'); // ID 59 + Length 12 + Name
+  });
 });

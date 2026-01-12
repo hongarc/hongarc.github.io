@@ -38,6 +38,18 @@ describe('Encoding Domain', () => {
       expect(encoded).not.toContain('=');
       expect(decodeBase64(encoded, true)).toBe(input);
     });
+
+    it('should decode url-safe base64 with required padding', () => {
+      // "M" -> "TQ==" (Base64) -> "TQ" (Base64URL)
+      // Length 2. %4 = 2. Padding required = 2.
+      const encoded = 'TQ';
+      expect(decodeBase64(encoded, true)).toBe('M');
+    });
+
+    it('should decode base64 without padding', () => {
+      const encoded = 'TWFu'; // "Man" -> "TWFu" (length 4, no padding)
+      expect(decodeBase64(encoded, true)).toBe('Man');
+    });
   });
 
   describe('URL Service', () => {

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { bufferToHex, computeHash, secureCompare } from '../domain/crypto/hash';
 import {
   buildCharPool,
+  calculatePassphraseEntropy,
   calculatePasswordEntropy,
   generateMultiplePasswords,
   generateMultiplePassphrases,
@@ -77,6 +78,38 @@ describe('Crypto Domain', () => {
         const pool = 'a';
         const result = generatePassword(length, pool);
         expect(result).toBe('a'.repeat(length));
+      });
+    });
+
+    describe('Entropy Calculation', () => {
+      it('should calculate password entropy', () => {
+        const entropy = calculatePasswordEntropy(10, 26);
+        expect(entropy).toBeGreaterThan(0);
+      });
+
+      it('should return 0 entropy for empty pool', () => {
+        expect(calculatePasswordEntropy(10, 0)).toBe(0);
+      });
+
+      it('should build partial char pool', () => {
+        const pool = buildCharPool({
+          lowercase: true,
+          uppercase: false,
+          numbers: false,
+          symbols: false,
+        });
+        expect(pool).toBe(LOWERCASE);
+      });
+
+      it('should calculate passphrase entropy', () => {
+        const entropy = calculatePassphraseEntropy(4); // 4 words
+        expect(entropy).toBeGreaterThan(0);
+      });
+    });
+
+    describe('Secure Random', () => {
+      it('should return 0 if max is 0', () => {
+        expect(getSecureRandom(0)).toBe(0);
       });
     });
 

@@ -65,5 +65,12 @@ describe('Text Domain', () => {
       const stats = getTextStats(text);
       expect(stats.readingTime).toBe('1 min');
     });
+
+    it('should handle empty text stats', () => {
+      const stats = getTextStats('');
+      expect(stats.words).toBe(0);
+      expect(stats.readingTime).toBe('< 1 min');
+      expect(stats.speakingTime).toBe('< 1 min');
+    });
   });
 });

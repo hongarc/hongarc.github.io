@@ -41,6 +41,8 @@ describe('Generators Domain', () => {
 
     it('should generate correct ID type', () => {
       expect(generateId('uuidv4')).toMatch(/^[0-9a-f-]{36}$/);
+      expect(generateId('uuidv7')).toMatch(/^[0-9a-f-]{36}$/);
+      expect(generateId('cuid')).toMatch(/^c[0-9a-z]+$/);
       expect(generateId('mongodb')).toMatch(/^[0-9a-f]{24}$/);
     });
   });

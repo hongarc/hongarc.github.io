@@ -49,6 +49,15 @@ describe('Format Domain', () => {
       expect(lines[2]).toContain('"b"');
     });
 
+    it('should sort keys inside arrays', () => {
+      const input = '[{"b":2,"a":1}]';
+      const formatted = new JsonFormatterBuilder().withJson(input).withSort(true).format();
+
+      const lines = formatted.split('\n');
+      expect(lines).toContain('    "a": 1,');
+      expect(lines).toContain('    "b": 2');
+    });
+
     it('should minify JSON when indent is 0', () => {
       const formatted = new JsonFormatterBuilder()
         .withJson('{\n  "key": "value"\n}')
