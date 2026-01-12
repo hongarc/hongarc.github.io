@@ -114,7 +114,7 @@ export function ToolView() {
             </p>
           </div>
 
-          {/* Pinned Tools */}
+          {/* Pinned Tools - max 6 */}
           {pinnedTools.length > 0 && (
             <div className="mb-8">
               <h3 className="mb-4 flex items-center justify-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -122,7 +122,7 @@ export function ToolView() {
                 Pinned Tools
               </h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {pinnedTools.map((tool) => (
+                {pinnedTools.slice(0, 6).map((tool) => (
                   <Link
                     key={tool.id}
                     to={`/${tool.id}`}
