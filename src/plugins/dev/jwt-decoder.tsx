@@ -206,9 +206,17 @@ export const jwtDecoder: ToolPlugin = {
         { value: '3600', label: '1 hour' },
         { value: '86400', label: '1 day' },
         { value: '2592000', label: '30 days' },
+        { value: 'custom', label: 'Custom seconds...' },
         { value: '0', label: 'No expiration' },
       ],
       visibleWhen: { inputId: 'mode', value: 'generate' },
+    },
+    {
+      id: 'customExp',
+      label: 'Custom Expiration (seconds)',
+      type: 'number',
+      defaultValue: 3600,
+      visibleWhen: { inputId: 'expIn', value: 'custom' },
     },
     {
       id: 'genPayload',
@@ -254,7 +262,13 @@ export const jwtDecoder: ToolPlugin = {
         header.alg = alg;
 
         // Add exp if set
-        const expIn = Number(getTrimmedInput(inputs, 'expIn') || '0');
+        const expInVal = getTrimmedInput(inputs, 'expIn') || '0';
+        let expIn = 0;
+        expIn =
+          expInVal === 'custom'
+            ? Number(getTrimmedInput(inputs, 'customExp') || '3600')
+            : Number(expInVal);
+
         if (expIn > 0) {
           payload.exp = Math.floor(Date.now() / 1000) + expIn;
         }
