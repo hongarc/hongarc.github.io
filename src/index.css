@@ -154,6 +154,291 @@
   --ctp-crust: #232634;
 }
 
+/* ============================================
+   Catppuccin Utility Classes
+   Auto-switch between Latte (light) & Frappé (dark)
+   ============================================ */
+
+/* Text Colors */
+.text-ctp-text {
+  color: var(--ctp-text);
+}
+.text-ctp-subtext0 {
+  color: var(--ctp-subtext0);
+}
+.text-ctp-subtext1 {
+  color: var(--ctp-subtext1);
+}
+.text-ctp-overlay0 {
+  color: var(--ctp-overlay0);
+}
+.text-ctp-overlay1 {
+  color: var(--ctp-overlay1);
+}
+.text-ctp-overlay2 {
+  color: var(--ctp-overlay2);
+}
+
+/* Accent Text Colors */
+.text-ctp-rosewater {
+  color: var(--ctp-rosewater);
+}
+.text-ctp-flamingo {
+  color: var(--ctp-flamingo);
+}
+.text-ctp-pink {
+  color: var(--ctp-pink);
+}
+.text-ctp-mauve {
+  color: var(--ctp-mauve);
+}
+.text-ctp-red {
+  color: var(--ctp-red);
+}
+.text-ctp-maroon {
+  color: var(--ctp-maroon);
+}
+.text-ctp-peach {
+  color: var(--ctp-peach);
+}
+.text-ctp-yellow {
+  color: var(--ctp-yellow);
+}
+.text-ctp-green {
+  color: var(--ctp-green);
+}
+.text-ctp-teal {
+  color: var(--ctp-teal);
+}
+.text-ctp-sky {
+  color: var(--ctp-sky);
+}
+.text-ctp-sapphire {
+  color: var(--ctp-sapphire);
+}
+.text-ctp-blue {
+  color: var(--ctp-blue);
+}
+.text-ctp-lavender {
+  color: var(--ctp-lavender);
+}
+
+/* Background Colors */
+.bg-ctp-base {
+  background-color: var(--ctp-base);
+}
+.bg-ctp-mantle {
+  background-color: var(--ctp-mantle);
+}
+.bg-ctp-crust {
+  background-color: var(--ctp-crust);
+}
+.bg-ctp-surface0 {
+  background-color: var(--ctp-surface0);
+}
+.bg-ctp-surface1 {
+  background-color: var(--ctp-surface1);
+}
+.bg-ctp-surface2 {
+  background-color: var(--ctp-surface2);
+}
+
+/* Accent Backgrounds with opacity */
+.bg-ctp-pink\/10 {
+  background-color: color-mix(in srgb, var(--ctp-pink) 10%, transparent);
+}
+.bg-ctp-pink\/20 {
+  background-color: color-mix(in srgb, var(--ctp-pink) 20%, transparent);
+}
+.bg-ctp-mauve\/10 {
+  background-color: color-mix(in srgb, var(--ctp-mauve) 10%, transparent);
+}
+.bg-ctp-mauve\/20 {
+  background-color: color-mix(in srgb, var(--ctp-mauve) 20%, transparent);
+}
+.bg-ctp-blue\/10 {
+  background-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
+}
+.bg-ctp-blue\/20 {
+  background-color: color-mix(in srgb, var(--ctp-blue) 20%, transparent);
+}
+.bg-ctp-blue\/30 {
+  background-color: color-mix(in srgb, var(--ctp-blue) 30%, transparent);
+}
+.hover\:bg-ctp-blue\/30:hover {
+  background-color: color-mix(in srgb, var(--ctp-blue) 30%, transparent);
+}
+.bg-ctp-sapphire\/10 {
+  background-color: color-mix(in srgb, var(--ctp-sapphire) 10%, transparent);
+}
+.bg-ctp-sapphire\/20 {
+  background-color: color-mix(in srgb, var(--ctp-sapphire) 20%, transparent);
+}
+.bg-ctp-teal\/10 {
+  background-color: color-mix(in srgb, var(--ctp-teal) 10%, transparent);
+}
+.bg-ctp-teal\/20 {
+  background-color: color-mix(in srgb, var(--ctp-teal) 20%, transparent);
+}
+.bg-ctp-green\/10 {
+  background-color: color-mix(in srgb, var(--ctp-green) 10%, transparent);
+}
+.bg-ctp-green\/20 {
+  background-color: color-mix(in srgb, var(--ctp-green) 20%, transparent);
+}
+.bg-ctp-yellow\/10 {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 10%, transparent);
+}
+.bg-ctp-yellow\/20 {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 20%, transparent);
+}
+.bg-ctp-peach\/10 {
+  background-color: color-mix(in srgb, var(--ctp-peach) 10%, transparent);
+}
+.bg-ctp-peach\/20 {
+  background-color: color-mix(in srgb, var(--ctp-peach) 20%, transparent);
+}
+.bg-ctp-red\/10 {
+  background-color: color-mix(in srgb, var(--ctp-red) 10%, transparent);
+}
+.bg-ctp-red\/20 {
+  background-color: color-mix(in srgb, var(--ctp-red) 20%, transparent);
+}
+.bg-ctp-rosewater\/10 {
+  background-color: color-mix(in srgb, var(--ctp-rosewater) 10%, transparent);
+}
+.bg-ctp-rosewater\/20 {
+  background-color: color-mix(in srgb, var(--ctp-rosewater) 20%, transparent);
+}
+.bg-ctp-flamingo\/10 {
+  background-color: color-mix(in srgb, var(--ctp-flamingo) 10%, transparent);
+}
+.bg-ctp-flamingo\/20 {
+  background-color: color-mix(in srgb, var(--ctp-flamingo) 20%, transparent);
+}
+.bg-ctp-lavender\/10 {
+  background-color: color-mix(in srgb, var(--ctp-lavender) 10%, transparent);
+}
+.bg-ctp-lavender\/15 {
+  background-color: color-mix(in srgb, var(--ctp-lavender) 15%, transparent);
+}
+.bg-ctp-lavender\/20 {
+  background-color: color-mix(in srgb, var(--ctp-lavender) 20%, transparent);
+}
+.bg-ctp-sky\/10 {
+  background-color: color-mix(in srgb, var(--ctp-sky) 10%, transparent);
+}
+.bg-ctp-sky\/20 {
+  background-color: color-mix(in srgb, var(--ctp-sky) 20%, transparent);
+}
+
+/* Border Colors */
+.border-ctp-surface0 {
+  border-color: var(--ctp-surface0);
+}
+.border-ctp-surface1 {
+  border-color: var(--ctp-surface1);
+}
+.border-ctp-surface2 {
+  border-color: var(--ctp-surface2);
+}
+.border-ctp-overlay0 {
+  border-color: var(--ctp-overlay0);
+}
+
+/* Hover utilities */
+.hover\:bg-ctp-surface0:hover {
+  background-color: var(--ctp-surface0);
+}
+.hover\:bg-ctp-surface1:hover {
+  background-color: var(--ctp-surface1);
+}
+.hover\:bg-ctp-surface2:hover {
+  background-color: var(--ctp-surface2);
+}
+.hover\:text-ctp-text:hover {
+  color: var(--ctp-text);
+}
+.hover\:text-ctp-blue:hover {
+  color: var(--ctp-blue);
+}
+.hover\:text-ctp-pink:hover {
+  color: var(--ctp-pink);
+}
+.hover\:text-ctp-sapphire:hover {
+  color: var(--ctp-sapphire);
+}
+.hover\:border-ctp-surface2:hover {
+  border-color: var(--ctp-surface2);
+}
+.hover\:border-ctp-pink:hover {
+  border-color: var(--ctp-pink);
+}
+.hover\:bg-ctp-pink\/10:hover {
+  background-color: color-mix(in srgb, var(--ctp-pink) 10%, transparent);
+}
+.hover\:bg-ctp-pink\/20:hover {
+  background-color: color-mix(in srgb, var(--ctp-pink) 20%, transparent);
+}
+
+/* Group hover utilities */
+.group:hover .group-hover\:text-ctp-blue {
+  color: var(--ctp-blue);
+}
+.group:hover .group-hover\:text-ctp-yellow {
+  color: var(--ctp-yellow);
+}
+.group:hover .group-hover\:bg-ctp-blue\/10 {
+  background-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
+}
+.group:hover .group-hover\:bg-ctp-yellow\/30 {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 30%, transparent);
+}
+
+/* Placeholder colors */
+.placeholder-ctp-overlay0::placeholder {
+  color: var(--ctp-overlay0);
+}
+
+/* Focus utilities */
+.focus\:border-ctp-blue:focus {
+  border-color: var(--ctp-blue);
+}
+.focus\:ring-ctp-blue\/10:focus {
+  --tw-ring-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
+}
+
+/* Border color with opacity */
+.border-ctp-yellow {
+  border-color: var(--ctp-yellow);
+}
+
+/* Yellow accent utilities */
+.bg-ctp-yellow\/10 {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 10%, transparent);
+}
+.bg-ctp-yellow\/20 {
+  background-color: color-mix(in srgb, var(--ctp-yellow) 20%, transparent);
+}
+
+/* Hover utilities for border */
+.hover\:border-ctp-blue:hover {
+  border-color: var(--ctp-blue);
+}
+
+/* Border for specific sides */
+.border-r-ctp-crust {
+  border-right-color: var(--ctp-crust);
+}
+.border-ctp-surface0 {
+  border-color: var(--ctp-surface0);
+}
+
+/* More hover utilities */
+.hover\:bg-ctp-surface1:hover {
+  background-color: var(--ctp-surface1);
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;

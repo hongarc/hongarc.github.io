@@ -103,40 +103,36 @@ export function ToolView() {
         <div className="w-full max-w-2xl">
           {/* Header */}
           <div className="mb-10 text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
-              <Sparkles className="h-8 w-8" />
+            <div className="bg-ctp-blue/20 mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg">
+              <Sparkles className="text-ctp-blue h-8 w-8" />
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-ctp-text text-2xl font-bold tracking-tight">
               Welcome to Friendly Toolbox
             </h2>
-            <p className="mt-3 text-slate-500 dark:text-slate-400">
-              30+ developer utilities at your fingertips
-            </p>
+            <p className="text-ctp-subtext0 mt-3">30+ developer utilities at your fingertips</p>
           </div>
 
-          {/* Pinned Tools - max 6 */}
+          {/* Pinned Tools - max 3 */}
           {pinnedTools.length > 0 && (
             <div className="mb-8">
-              <h3 className="mb-4 flex items-center justify-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                <Pin className="h-4 w-4" />
+              <h3 className="text-ctp-overlay1 mb-4 flex items-center justify-center gap-2 text-sm font-medium">
+                <Pin className="text-ctp-yellow h-4 w-4" />
                 Pinned Tools
               </h3>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {pinnedTools.slice(0, 6).map((tool) => (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {pinnedTools.slice(0, 3).map((tool) => (
                   <Link
                     key={tool.id}
                     to={`/${tool.id}`}
-                    className="group flex cursor-pointer items-center gap-3 rounded-xl border border-amber-200 bg-amber-50/50 p-4 transition-all hover:border-amber-300 hover:shadow-md dark:border-amber-500/30 dark:bg-amber-500/5 dark:hover:border-amber-500/50"
+                    className="bg-ctp-yellow\/10 border-ctp-yellow group border-opacity-30 hover:border-opacity-50 flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all hover:shadow-md"
                   >
-                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:group-hover:bg-amber-500/30">
+                    <span className="bg-ctp-yellow\/20 text-ctp-yellow group-hover:bg-opacity-30 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-colors">
                       {tool.icon}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900 dark:text-white">
-                        {tool.label}
-                      </p>
+                      <p className="text-ctp-text truncate text-sm font-medium">{tool.label}</p>
                     </div>
-                    <ArrowRight className="h-4 w-4 flex-shrink-0 text-amber-300 transition-transform group-hover:translate-x-0.5 group-hover:text-amber-500 dark:text-amber-600" />
+                    <ArrowRight className="text-ctp-yellow h-4 w-4 flex-shrink-0 opacity-50 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100" />
                   </Link>
                 ))}
               </div>
@@ -145,7 +141,7 @@ export function ToolView() {
 
           {/* Popular Tools */}
           <div className="mb-8">
-            <h3 className="mb-4 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
+            <h3 className="text-ctp-overlay1 mb-4 text-center text-sm font-medium">
               Popular Tools
             </h3>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -153,48 +149,46 @@ export function ToolView() {
                 <Link
                   key={tool.id}
                   to={`/${tool.id}`}
-                  className="group flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-blue-500/50"
+                  className="bg-ctp-base border-ctp-surface1 hover:border-ctp-blue group flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all hover:shadow-md"
                 >
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-blue-50 group-hover:text-blue-600 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:bg-blue-500/10 dark:group-hover:text-blue-400">
+                  <span className="bg-ctp-surface0 text-ctp-subtext0 group-hover:bg-ctp-blue\/10 group-hover:text-ctp-blue flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-colors">
                     {tool.icon}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900 dark:text-white">
-                      {tool.label}
-                    </p>
+                    <p className="text-ctp-text truncate text-sm font-medium">{tool.label}</p>
                   </div>
-                  <ArrowRight className="h-4 w-4 flex-shrink-0 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-blue-500 dark:text-slate-600" />
+                  <ArrowRight className="text-ctp-overlay0 group-hover:text-ctp-blue h-4 w-4 flex-shrink-0 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               ))}
             </div>
           </div>
 
           {/* Keyboard Shortcuts */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/30">
-            <h3 className="mb-3 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
+          <div className="bg-ctp-mantle border-ctp-surface1 rounded-xl border p-4">
+            <h3 className="text-ctp-overlay1 mb-3 text-center text-sm font-medium">
               Keyboard Shortcuts
             </h3>
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <kbd className="flex items-center gap-0.5 rounded border border-slate-300 bg-white px-2 py-1 font-mono text-xs text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                <kbd className="bg-ctp-surface0 border-ctp-surface2 text-ctp-text flex items-center gap-0.5 rounded border px-2 py-1 font-mono text-xs">
                   <Command className="h-3 w-3" />
                   <span>K</span>
                 </kbd>
-                <span className="text-slate-500 dark:text-slate-400">Search</span>
+                <span className="text-ctp-subtext0">Search</span>
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="flex items-center gap-0.5 rounded border border-slate-300 bg-white px-2 py-1 font-mono text-xs text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                <kbd className="bg-ctp-surface0 border-ctp-surface2 text-ctp-text flex items-center gap-0.5 rounded border px-2 py-1 font-mono text-xs">
                   <Command className="h-3 w-3" />
                   <span>D</span>
                 </kbd>
-                <span className="text-slate-500 dark:text-slate-400">Dark mode</span>
+                <span className="text-ctp-subtext0">Dark mode</span>
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="flex items-center gap-0.5 rounded border border-slate-300 bg-white px-2 py-1 font-mono text-xs text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                <kbd className="bg-ctp-surface0 border-ctp-surface2 text-ctp-text flex items-center gap-0.5 rounded border px-2 py-1 font-mono text-xs">
                   <Command className="h-3 w-3" />
                   <span>B</span>
                 </kbd>
-                <span className="text-slate-500 dark:text-slate-400">Sidebar</span>
+                <span className="text-ctp-subtext0">Sidebar</span>
               </div>
             </div>
           </div>
@@ -207,16 +201,16 @@ export function ToolView() {
     <div className="mx-auto max-w-4xl">
       <div className="space-y-6">
         {/* Input Section */}
-        <div className="rounded-xl border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/50">
+        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <Zap className="h-3.5 w-3.5" />
+            <div className="text-ctp-overlay1 flex items-center gap-2 text-xs">
+              <Zap className="text-ctp-yellow h-3.5 w-3.5" />
               <span>Auto-transform enabled</span>
             </div>
             <button
               type="button"
               onClick={clearInputs}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               Clear
@@ -340,7 +334,7 @@ export function ToolView() {
         </div>
 
         {/* Output Section */}
-        <div className="rounded-xl border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/50">
+        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-6 shadow-sm">
           <ToolOutput
             result={
               selectedTool.preferFresh && !hasTransformedOnClient && !userInteracted ? null : result

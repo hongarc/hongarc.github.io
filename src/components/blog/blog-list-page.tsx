@@ -19,7 +19,7 @@ interface PostCardProps {
 
 function PostCard({ post }: PostCardProps) {
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all hover:border-slate-300 hover:shadow-md dark:border-slate-700/50 dark:bg-slate-900 dark:hover:border-slate-600">
+    <article className="bg-ctp-base group border-ctp-surface1 hover:border-ctp-surface2 relative cursor-pointer overflow-hidden rounded-2xl border p-6 shadow-sm transition-all hover:shadow-md">
       <Link
         to={`/blog/${post.slug}`}
         className="absolute inset-0 z-10"
@@ -33,7 +33,7 @@ function PostCard({ post }: PostCardProps) {
             <Link
               key={tag}
               to={`/blog/tag/${tag}`}
-              className="relative z-20 inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+              className="bg-ctp-pink\/10 text-ctp-pink hover:bg-ctp-pink\/20 relative z-20 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -43,7 +43,7 @@ function PostCard({ post }: PostCardProps) {
             </Link>
           ))}
           {post.tags.length > 3 && (
-            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            <span className="bg-ctp-surface1 text-ctp-subtext0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
               +{post.tags.length - 3}
             </span>
           )}
@@ -51,30 +51,28 @@ function PostCard({ post }: PostCardProps) {
       )}
 
       {/* Title */}
-      <h2 className="mb-2 text-xl font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+      <h2 className="text-ctp-text group-hover:text-ctp-blue mb-2 text-xl font-semibold transition-colors">
         {post.title}
       </h2>
 
       {/* Description */}
-      <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+      <p className="text-ctp-subtext1 mb-4 line-clamp-2 text-sm leading-relaxed">
         {post.description}
       </p>
 
       {/* Excerpt */}
       {post.excerpt && (
-        <p className="mb-4 line-clamp-3 text-sm text-slate-500 dark:text-slate-500">
-          {post.excerpt}
-        </p>
+        <p className="text-ctp-subtext0 mb-4 line-clamp-3 text-sm">{post.excerpt}</p>
       )}
 
       {/* Meta */}
-      <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-500">
+      <div className="text-ctp-overlay1 flex items-center gap-4 text-xs">
         <span className="flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5" />
+          <Calendar className="text-ctp-sapphire h-3.5 w-3.5" />
           {formatDate(post.publishedAt)}
         </span>
         <span className="flex items-center gap-1.5">
-          <Clock className="h-3.5 w-3.5" />
+          <Clock className="text-ctp-teal h-3.5 w-3.5" />
           {formatReadingTime(post.readingTime)}
         </span>
       </div>
@@ -110,16 +108,16 @@ export function BlogListPage() {
     <div className="mx-auto max-w-4xl">
       {/* Header */}
       <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-ctp-text mb-2 text-3xl font-bold tracking-tight">
           {tagName ? (
             <>
-              Posts tagged <span className="text-blue-600 dark:text-blue-400">#{tagName}</span>
+              Posts tagged <span className="text-ctp-pink">#{tagName}</span>
             </>
           ) : (
             'Blog'
           )}
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-ctp-subtext0">
           {tagName
             ? `${String(posts.length)} post${posts.length === 1 ? '' : 's'} with this tag`
             : 'Technical articles, tutorials, and updates'}
@@ -128,7 +126,7 @@ export function BlogListPage() {
         {tagName && (
           <Link
             to="/blog"
-            className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-ctp-blue hover:text-ctp-sapphire mt-3 inline-flex items-center gap-1 text-sm font-medium"
           >
             ← View all posts
           </Link>
@@ -144,7 +142,7 @@ export function BlogListPage() {
           onChange={(e) => {
             setSearchQuery(e.target.value);
           }}
-          className="w-full rounded-xl border border-slate-200/80 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition-all focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:outline-none sm:max-w-xs dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-500"
+          className="bg-ctp-base text-ctp-text placeholder-ctp-overlay0 border-ctp-surface1 focus:border-ctp-blue focus:ring-ctp-blue\/10 w-full rounded-xl border px-4 py-2.5 text-sm shadow-sm transition-all focus:ring-4 focus:outline-none sm:max-w-xs"
         />
 
         {/* Tag filter chips */}
@@ -154,7 +152,7 @@ export function BlogListPage() {
               <Link
                 key={tag}
                 to={`/blog/tag/${tag}`}
-                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                className="bg-ctp-surface0 text-ctp-subtext0 border-ctp-surface1 hover:border-ctp-pink hover:bg-ctp-pink\/10 hover:text-ctp-pink rounded-full border px-3 py-1 text-xs font-medium transition-colors"
               >
                 {tag}
               </Link>
@@ -165,8 +163,8 @@ export function BlogListPage() {
 
       {/* Posts grid */}
       {posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center dark:border-slate-700 dark:bg-slate-800/50">
-          <p className="text-slate-600 dark:text-slate-400">
+        <div className="bg-ctp-mantle border-ctp-surface1 rounded-2xl border border-dashed p-12 text-center">
+          <p className="text-ctp-subtext0">
             {searchQuery
               ? 'No posts match your search'
               : tagName

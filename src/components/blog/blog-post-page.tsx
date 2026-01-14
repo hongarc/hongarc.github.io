@@ -40,16 +40,16 @@ function PostContent({ content }: PostContentProps) {
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
-        <div className="h-4 w-full rounded bg-slate-200 dark:bg-slate-700" />
-        <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="bg-ctp-surface0 h-4 w-3/4 rounded" />
+        <div className="bg-ctp-surface0 h-4 w-full rounded" />
+        <div className="bg-ctp-surface0 h-4 w-5/6 rounded" />
       </div>
     );
   }
 
   return (
     <div
-      className="prose prose-slate dark:prose-invert prose-headings:scroll-mt-20 prose-headings:font-semibold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-pre:bg-slate-900 prose-pre:text-sm dark:prose-a:text-blue-400 max-w-none"
+      className="prose text-ctp-text prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:text-ctp-text prose-h1:text-2xl prose-h2:text-xl prose-h2:text-ctp-mauve prose-h3:text-lg prose-h3:text-ctp-sapphire prose-p:text-ctp-subtext0 prose-strong:text-ctp-text prose-a:text-ctp-blue prose-a:no-underline hover:prose-a:underline hover:prose-a:text-ctp-sapphire prose-code:text-ctp-pink prose-code:bg-ctp-surface0 prose-code:rounded prose-code:px-1 prose-pre:bg-ctp-mantle prose-pre:text-ctp-text prose-pre:text-sm prose-li:text-ctp-subtext0 prose-li:marker:text-ctp-overlay0 prose-blockquote:text-ctp-subtext1 prose-blockquote:border-ctp-lavender prose-hr:border-ctp-surface0 max-w-none"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -62,13 +62,13 @@ interface PostNotFoundProps {
 function PostNotFound({ slug }: PostNotFoundProps) {
   return (
     <div className="mx-auto max-w-2xl py-16 text-center">
-      <h1 className="mb-4 text-3xl font-bold text-slate-900 dark:text-white">Post Not Found</h1>
-      <p className="mb-6 text-slate-600 dark:text-slate-400">
+      <h1 className="text-ctp-text mb-4 text-3xl font-bold">Post Not Found</h1>
+      <p className="text-ctp-subtext0 mb-6">
         The post &ldquo;{slug}&rdquo; doesn&apos;t exist or may have been removed.
       </p>
       <Link
         to="/blog"
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        className="bg-ctp-blue/20 text-ctp-blue hover:bg-ctp-blue\/30 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Blog
@@ -83,18 +83,18 @@ interface PostMetaProps {
 
 function PostMeta({ post }: PostMetaProps) {
   return (
-    <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+    <div className="text-ctp-subtext0 flex flex-wrap items-center gap-4 text-sm">
       <span className="flex items-center gap-1.5">
-        <Calendar className="h-4 w-4" />
+        <Calendar className="text-ctp-sapphire h-4 w-4" />
         {formatDate(post.publishedAt)}
       </span>
       <span className="flex items-center gap-1.5">
-        <Clock className="h-4 w-4" />
+        <Clock className="text-ctp-teal h-4 w-4" />
         {formatReadingTime(post.readingTime)}
       </span>
       {post.author && (
         <span className="flex items-center gap-1.5">
-          <User className="h-4 w-4" />
+          <User className="text-ctp-lavender h-4 w-4" />
           {post.author}
         </span>
       )}
@@ -135,14 +135,14 @@ export function BlogPostPage() {
       {/* Back navigation */}
       <Link
         to="/blog"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+        className="text-ctp-subtext0 hover:text-ctp-blue mb-6 inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Blog
       </Link>
 
       {/* Header */}
-      <header className="mb-8 border-b border-slate-200/80 pb-8 dark:border-slate-700/50">
+      <header className="border-ctp-surface1 mb-8 border-b pb-8">
         {/* Tags */}
         {post.tags.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
@@ -150,7 +150,7 @@ export function BlogPostPage() {
               <Link
                 key={tag}
                 to={`/blog/tag/${tag}`}
-                className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+                className="bg-ctp-pink\/10 text-ctp-pink hover:bg-ctp-pink\/20 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors"
               >
                 <Tag className="h-3 w-3" />
                 {tag}
@@ -160,12 +160,12 @@ export function BlogPostPage() {
         )}
 
         {/* Title */}
-        <h1 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl dark:text-white">
+        <h1 className="text-ctp-text mb-4 text-3xl font-bold tracking-tight md:text-4xl">
           {post.title}
         </h1>
 
         {/* Description */}
-        <p className="mb-4 text-lg text-slate-600 dark:text-slate-400">{post.description}</p>
+        <p className="text-ctp-subtext0 mb-4 text-lg">{post.description}</p>
 
         {/* Meta */}
         <PostMeta post={post} />
@@ -175,18 +175,18 @@ export function BlogPostPage() {
       <PostContent content={post.content} />
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-slate-200/80 pt-8 dark:border-slate-700/50">
+      <footer className="border-ctp-surface1 mt-12 border-t pt-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            className="bg-ctp-surface0 hover:bg-ctp-surface1 border-ctp-surface1 text-ctp-text inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             All Posts
           </Link>
 
           {post.updatedAt && (
-            <span className="text-sm text-slate-500 dark:text-slate-400">
+            <span className="text-ctp-subtext0 text-sm">
               Last updated: {formatDate(post.updatedAt)}
             </span>
           )}

@@ -36,6 +36,52 @@ export const CATEGORY_ORDER: Category[] = [
 ];
 
 /**
+ * Catppuccin accent colors for each category
+ * Natural, unforced - using softer pastel tones
+ * Uses CSS custom properties from index.css
+ */
+export const CATEGORY_COLORS: Record<
+  Category,
+  {
+    text: string; // For text/icon color (subtle)
+    active: string; // For active state background (gentle tint)
+  }
+> = {
+  text: {
+    text: 'text-[var(--ctp-lavender)]',
+    active: 'bg-[var(--ctp-lavender)]/15',
+  },
+  format: {
+    text: 'text-[var(--ctp-teal)]',
+    active: 'bg-[var(--ctp-teal)]/15',
+  },
+  encoding: {
+    text: 'text-[var(--ctp-green)]',
+    active: 'bg-[var(--ctp-green)]/15',
+  },
+  crypto: {
+    text: 'text-[var(--ctp-rosewater)]',
+    active: 'bg-[var(--ctp-rosewater)]/15',
+  },
+  dev: {
+    text: 'text-[var(--ctp-peach)]',
+    active: 'bg-[var(--ctp-peach)]/15',
+  },
+  network: {
+    text: 'text-[var(--ctp-sky)]',
+    active: 'bg-[var(--ctp-sky)]/15',
+  },
+  math: {
+    text: 'text-[var(--ctp-yellow)]',
+    active: 'bg-[var(--ctp-yellow)]/15',
+  },
+  security: {
+    text: 'text-[var(--ctp-flamingo)]',
+    active: 'bg-[var(--ctp-flamingo)]/15',
+  },
+};
+
+/**
  * Input field types supported by the dynamic form renderer
  */
 export type InputType = 'text' | 'textarea' | 'number' | 'select' | 'checkbox' | 'file';
