@@ -113,12 +113,16 @@ export const useToolStore = create<ToolState>()(
         const { toolSettings } = get();
         const savedSettings = toolSettings[toolId] ?? {};
 
-        // Filter out sensitive fields from saved settings
+        // Filter saved settings - only restore config options, not text inputs
         const safeSavedSettings: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(savedSettings)) {
           const inputConfig = tool.inputs.find((i) => i.id === key);
-          // Only restore if input exists and is NOT sensitive
-          if (inputConfig && !inputConfig.sensitive) {
+          // Only restore if input exists, is NOT sensitive, and is a config option (not text/textarea)
+          if (
+            inputConfig &&
+            !inputConfig.sensitive &&
+            !['text', 'textarea'].includes(inputConfig.type)
+          ) {
             safeSavedSettings[key] = value;
           }
         }
@@ -142,15 +146,16 @@ export const useToolStore = create<ToolState>()(
         });
       },
 
-      // Set a single input value and persist to tool settings
+      // Set a single input value and persist to tool settings (config options only)
       setInput: (inputId: string, value: unknown) => {
         const { selectedToolId, toolSettings, selectedTool } = get();
         set((state) => {
           const newInputs = { ...state.inputs, [inputId]: value };
-          // Save input settings for persistence unless marked as sensitive
+          // Only persist config options (select, checkbox, number), not text inputs
           if (selectedToolId && selectedTool) {
             const inputConfig = selectedTool.inputs.find((i) => i.id === inputId);
-            if (inputConfig?.sensitive) {
+            // Skip persistence for sensitive fields and text/textarea inputs
+            if (inputConfig?.sensitive || ['text', 'textarea'].includes(inputConfig?.type ?? '')) {
               return { inputs: newInputs };
             }
 
