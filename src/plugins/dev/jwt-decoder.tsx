@@ -259,18 +259,24 @@ export const jwtDecoder: ToolPlugin = {
       }
 
       const stats = [
-        { label: 'Algorithm', value: typeof header.alg === 'string' ? header.alg : 'unknown' },
+        {
+          label: 'Algorithm',
+          value: typeof header.alg === 'string' ? header.alg : 'unknown',
+          tooltip: 'Signing algorithm. HS256 uses shared secret, RS256 uses public/private keys.',
+        },
         {
           label: 'Signature',
           value: sigStatus.value,
           type: 'badge',
           variant: sigStatus.variant,
+          tooltip: 'Enter the secret/key to verify the signature is valid.',
         },
         {
           label: 'Status',
           value: expiry.isExpired ? 'Expired' : 'Valid',
           type: 'badge',
           variant: expiry.isExpired ? 'error' : 'success',
+          tooltip: 'Based on the exp (expiration) claim in the payload.',
         },
         { label: 'Expiry', value: expiry.text },
       ];

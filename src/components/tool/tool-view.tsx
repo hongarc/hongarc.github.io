@@ -256,26 +256,29 @@ export function ToolView() {
                   const groupName = inputConfig.group;
                   processedGroups.add(groupName);
 
-                  // Collect all inputs with the same group
+                  // Collect all visible inputs with the same group
                   const groupedInputs = selectedTool.inputs.filter(
-                    (inp) => inp.group === groupName
+                    (inp) => inp.group === groupName && isInputVisible(inp)
                   );
 
-                  elements.push(
-                    <div key={`group-${groupName}`} className="grid grid-cols-2 gap-4">
-                      {groupedInputs.map((inp) => (
-                        <ToolInput
-                          key={inp.id}
-                          config={inp}
-                          value={inputs[inp.id]}
-                          onChange={(value) => {
-                            setUserInteracted(true);
-                            setInput(inp.id, value);
-                          }}
-                        />
-                      ))}
-                    </div>
-                  );
+                  // Only render group if there are visible inputs
+                  if (groupedInputs.length > 0) {
+                    elements.push(
+                      <div key={`group-${groupName}`} className="grid grid-cols-2 gap-4">
+                        {groupedInputs.map((inp) => (
+                          <ToolInput
+                            key={inp.id}
+                            config={inp}
+                            value={inputs[inp.id]}
+                            onChange={(value) => {
+                              setUserInteracted(true);
+                              setInput(inp.id, value);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    );
+                  }
                   i++;
                   continue;
                 }

@@ -1,4 +1,4 @@
-import { Check, Copy } from 'lucide-react';
+import { Check, CircleHelp, Copy } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -13,6 +13,7 @@ export interface OutputStat {
   type?: 'text' | 'badge' | 'progress';
   progress?: number; // 0-100 for progress type
   variant?: 'default' | 'success' | 'warning' | 'error';
+  tooltip?: string;
 }
 
 export interface SectionedOutputProps {
@@ -20,6 +21,7 @@ export interface SectionedOutputProps {
   content: string;
   contentLabel?: string;
   language?: string;
+  perLineCopy?: boolean;
 }
 
 const getVariantClasses = (variant: OutputStat['variant'] = 'default'): string => {
@@ -47,11 +49,22 @@ const getProgressColor = (progress: number): string => {
 };
 
 function StatItem({ stat }: { stat: OutputStat }) {
-  const { label, value, type = 'text', progress = 0, variant } = stat;
+  const { label, value, type = 'text', progress = 0, variant, tooltip } = stat;
 
   return (
     <div className="flex items-center justify-between gap-4 py-2">
-      <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
+      <span className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+        {label}
+        {tooltip && (
+          <span className="group relative">
+            <CircleHelp className="h-3.5 w-3.5 cursor-help text-slate-400 dark:text-slate-500" />
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-48 -translate-x-1/2 rounded-lg bg-slate-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-slate-700">
+              {tooltip}
+              <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800 dark:border-t-slate-700" />
+            </span>
+          </span>
+        )}
+      </span>
       <div className="flex items-center gap-2">
         {type === 'progress' && (
           <div className="h-2 w-20 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
@@ -77,11 +90,42 @@ function StatItem({ stat }: { stat: OutputStat }) {
   );
 }
 
+function CopyLineButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch {
+      // Clipboard API failed
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={`flex-shrink-0 rounded p-1 transition-all ${
+        copied
+          ? 'text-green-600 dark:text-green-400'
+          : 'text-slate-400 hover:bg-slate-200 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-300'
+      }`}
+      title={copied ? 'Copied!' : 'Copy'}
+    >
+      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+    </button>
+  );
+}
+
 export function SectionedOutput({
   stats,
   content,
   contentLabel = 'Generated',
   language,
+  perLineCopy = false,
 }: SectionedOutputProps) {
   // Determine highlight language
   const highlightLanguage: HighlightLanguage =
@@ -99,6 +143,8 @@ export function SectionedOutput({
       // Clipboard API failed
     }
   };
+
+  const lines = perLineCopy ? content.split('\n').filter((line) => line.trim()) : [];
 
   return (
     <div className="space-y-4">
@@ -138,12 +184,30 @@ export function SectionedOutput({
             )}
           </button>
         </div>
-        <CodeHighlight
-          code={content}
-          language={highlightLanguage}
-          maxHeight="300px"
-          showLanguageBadge={highlightLanguage !== 'plain'}
-        />
+        {perLineCopy && lines.length > 0 ? (
+          <div className="max-h-[300px] overflow-y-auto bg-slate-50 p-2 dark:bg-slate-900/50">
+            <div className="space-y-1">
+              {lines.map((line, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 rounded bg-white px-3 py-2 dark:bg-slate-800"
+                >
+                  <code className="min-w-0 flex-1 truncate font-mono text-sm text-slate-800 dark:text-slate-200">
+                    {line}
+                  </code>
+                  <CopyLineButton text={line} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <CodeHighlight
+            code={content}
+            language={highlightLanguage}
+            maxHeight="300px"
+            showLanguageBadge={highlightLanguage !== 'plain'}
+          />
+        )}
       </div>
     </div>
   );

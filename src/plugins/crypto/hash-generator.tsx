@@ -131,8 +131,13 @@ export const hashGenerator: ToolPlugin = {
         value: string;
         type?: 'text' | 'badge';
         variant?: 'success' | 'error' | 'default';
+        tooltip?: string;
       }[] = [
-        { label: 'Algorithm', value: algorithm },
+        {
+          label: 'Algorithm',
+          value: algorithm,
+          tooltip: 'Cryptographic hash function used. SHA-256 is recommended for most uses.',
+        },
         { label: 'Length', value: `${String(hash.length)} chars` },
         { label: 'Input', value: inputInfo },
       ];
@@ -150,6 +155,7 @@ export const hashGenerator: ToolPlugin = {
           value: isMatch ? 'Match' : 'No Match',
           type: 'badge',
           variant: isMatch ? 'success' : 'error',
+          tooltip: 'Compares computed hash with provided hash using constant-time comparison.',
         });
       }
 

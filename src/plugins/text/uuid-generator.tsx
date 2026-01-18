@@ -190,11 +190,23 @@ export const uuidGenerator: ToolPlugin = {
         _viewMode: 'sections',
         _sections: {
           stats: [
-            { label: 'Type', value: getTypeLabel(type) },
+            {
+              label: 'Type',
+              value: getTypeLabel(type),
+              tooltip:
+                type === 'uuidv4'
+                  ? 'Fully random, best for most use cases.'
+                  : type === 'uuidv7'
+                    ? 'Time-sortable, good for databases.'
+                    : type === 'cuid'
+                      ? 'Collision-resistant, URL-friendly.'
+                      : 'MongoDB native ID format.',
+            },
             { label: 'Length', value: `${String(sampleId.length)} chars` },
           ],
           content: result,
           contentLabel: `IDs (${String(count)})`,
+          perLineCopy: true,
         },
       });
     } catch (error) {

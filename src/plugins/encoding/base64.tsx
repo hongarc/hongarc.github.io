@@ -69,7 +69,11 @@ export const base64Encoder: ToolPlugin = {
         _sections: {
           stats: [
             { label: 'Mode', value: mode === 'encode' ? 'Encode' : 'Decode' },
-            { label: 'URL Safe', value: urlSafe ? 'Yes' : 'No' },
+            {
+              label: 'URL Safe',
+              value: urlSafe ? 'Yes' : 'No',
+              tooltip: 'Replaces +/ with -_ for safe use in URLs and filenames.',
+            },
             { label: 'Input', value: `${String(input.length)} chars` },
             { label: 'Output', value: `${String(result.length)} chars` },
           ],

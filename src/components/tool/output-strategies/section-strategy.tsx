@@ -3,10 +3,16 @@ import { SectionedOutput } from '@/components/ui/sectioned-output';
 
 import type { OutputStrategyProps } from './types';
 
+interface SectionsData {
+  stats: OutputStat[];
+  content: string;
+  contentLabel?: string;
+  language?: string;
+  perLineCopy?: boolean;
+}
+
 export function SectionStrategy({ result }: OutputStrategyProps) {
-  const sectionsData = result.meta?._sections as
-    | { stats: OutputStat[]; content: string; contentLabel?: string; language?: string }
-    | undefined;
+  const sectionsData = result.meta?._sections as SectionsData | undefined;
 
   if (!sectionsData) return null;
 
@@ -17,6 +23,7 @@ export function SectionStrategy({ result }: OutputStrategyProps) {
         content={sectionsData.content}
         contentLabel={sectionsData.contentLabel}
         language={sectionsData.language}
+        perLineCopy={sectionsData.perLineCopy}
       />
     </div>
   );

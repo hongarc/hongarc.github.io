@@ -113,9 +113,21 @@ export const wordCounter: ToolPlugin = {
         stats: [
           { label: 'Words', value: stats.words.toLocaleString() },
           { label: 'Characters', value: stats.chars.toLocaleString() },
-          { label: 'No Spaces', value: stats.charsNoSpaces.toLocaleString() },
-          { label: 'Sentences', value: stats.sentences.toLocaleString() },
-          { label: 'Paragraphs', value: stats.paragraphs.toLocaleString() },
+          {
+            label: 'No Spaces',
+            value: stats.charsNoSpaces.toLocaleString(),
+            tooltip: 'Character count excluding spaces, tabs, and newlines.',
+          },
+          {
+            label: 'Sentences',
+            value: stats.sentences.toLocaleString(),
+            tooltip: 'Detected by periods, exclamation marks, and question marks.',
+          },
+          {
+            label: 'Paragraphs',
+            value: stats.paragraphs.toLocaleString(),
+            tooltip: 'Text blocks separated by blank lines.',
+          },
           { label: 'Lines', value: stats.lines.toLocaleString() },
         ],
         content: timeInfo,

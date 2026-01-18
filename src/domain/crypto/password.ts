@@ -1,214 +1,26 @@
 import { join, map, pipe, range } from 'ramda';
 
+import effWordlist from './eff-wordlist.json';
+
 // Character sets for password
 export const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
 export const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const NUMBERS = '0123456789';
 export const SYMBOLS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-// Word list for passphrase (EFF short wordlist subset)
-export const WORDS = [
-  'acid',
-  'acorn',
-  'acre',
-  'acts',
-  'afar',
-  'affix',
-  'aged',
-  'agent',
-  'agile',
-  'aging',
-  'agony',
-  'ahead',
-  'aide',
-  'aids',
-  'aim',
-  'ajar',
-  'alarm',
-  'alias',
-  'alibi',
-  'alien',
-  'alike',
-  'alive',
-  'alley',
-  'allot',
-  'allow',
-  'alloy',
-  'ally',
-  'alma',
-  'aloft',
-  'alone',
-  'alpha',
-  'also',
-  'altar',
-  'alter',
-  'amaze',
-  'amber',
-  'amend',
-  'amino',
-  'ample',
-  'amuse',
-  'angel',
-  'anger',
-  'angle',
-  'ankle',
-  'annex',
-  'antic',
-  'anvil',
-  'apart',
-  'apex',
-  'apple',
-  'april',
-  'apron',
-  'aqua',
-  'area',
-  'arena',
-  'argue',
-  'arise',
-  'armor',
-  'army',
-  'aroma',
-  'array',
-  'arrow',
-  'arson',
-  'art',
-  'ashen',
-  'aside',
-  'asked',
-  'asset',
-  'atom',
-  'attic',
-  'audio',
-  'audit',
-  'avoid',
-  'awake',
-  'award',
-  'aware',
-  'awful',
-  'awoke',
-  'axis',
-  'bacon',
-  'badge',
-  'badly',
-  'baker',
-  'balmy',
-  'banana',
-  'banjo',
-  'barge',
-  'barn',
-  'base',
-  'basic',
-  'basin',
-  'batch',
-  'bath',
-  'baton',
-  'beach',
-  'beads',
-  'beak',
-  'beam',
-  'beard',
-  'beast',
-  'beat',
-  'begin',
-  'being',
-  'belly',
-  'below',
-  'bench',
-  'bento',
-  'berry',
-  'bike',
-  'bird',
-  'birth',
-  'black',
-  'blade',
-  'blame',
-  'blank',
-  'blast',
-  'blaze',
-  'bleak',
-  'blend',
-  'bless',
-  'blimp',
-  'blind',
-  'bliss',
-  'block',
-  'blond',
-  'blood',
-  'bloom',
-  'blown',
-  'blue',
-  'blunt',
-  'board',
-  'boat',
-  'body',
-  'bogus',
-  'boil',
-  'bolt',
-  'bomb',
-  'bonus',
-  'book',
-  'booth',
-  'boots',
-  'booze',
-  'boss',
-  'botch',
-  'both',
-  'boxer',
-  'brain',
-  'brake',
-  'brand',
-  'brass',
-  'brave',
-  'bread',
-  'break',
-  'breed',
-  'brick',
-  'bride',
-  'brief',
-  'bring',
-  'brisk',
-  'broad',
-  'broil',
-  'broke',
-  'brook',
-  'broom',
-  'brush',
-  'buddy',
-  'budget',
-  'bugs',
-  'build',
-  'built',
-  'bulge',
-  'bulk',
-  'bully',
-  'bunch',
-  'bunny',
-  'burn',
-  'burst',
-  'bush',
-  'cabin',
-  'cable',
-  'cache',
-  'cadet',
-  'cage',
-  'cake',
-  'calm',
-  'camel',
-  'camp',
-  'canal',
-  'candy',
-  'cane',
-  'canon',
-  'cape',
-  'card',
-  'cargo',
-  'carol',
-  'carry',
-  'carve',
-  'case',
-  'cash',
-  'cast',
-];
+// EFF Long Wordlist (7,776 words = 12.9 bits per word)
+export const WORDS: string[] = effWordlist;
+
+// Separator options for passphrase
+export const SEPARATORS = {
+  dash: '-',
+  space: ' ',
+  dot: '.',
+  underscore: '_',
+  none: '',
+} as const;
+
+export type SeparatorType = keyof typeof SEPARATORS;
 
 // Pure function: generate secure random number
 export const getSecureRandom = (max: number): number => {
@@ -248,6 +60,11 @@ export const getRandomWord = (): string => {
   return WORDS[index] ?? 'word';
 };
 
+// Pure function: get random number (0-99)
+export const getRandomNumber = (): string => {
+  return String(getSecureRandom(100)).padStart(2, '0');
+};
+
 // Pure function: generate single password
 export const generatePassword = (length: number, pool: string): string =>
   pipe(
@@ -256,20 +73,35 @@ export const generatePassword = (length: number, pool: string): string =>
     join('')
   )();
 
+// Passphrase options
+export interface PassphraseOptions {
+  wordCount: number;
+  separator: SeparatorType;
+  capitalize: boolean;
+  includeNumber: boolean;
+}
+
 // Pure function: generate single passphrase
-export const generatePassphrase = (
-  wordCount: number,
-  separator: string,
-  capitalize: boolean
-): string =>
-  pipe(
+export const generatePassphrase = (options: PassphraseOptions): string => {
+  const { wordCount, separator, capitalize, includeNumber } = options;
+  const sep = SEPARATORS[separator];
+
+  const words = pipe(
     () => range(0, wordCount),
     map(() => {
       const word = getRandomWord();
       return capitalize ? word.charAt(0).toUpperCase() + word.slice(1) : word;
-    }),
-    join(separator)
+    })
   )();
+
+  // Optionally add a random number at random position
+  if (includeNumber) {
+    const numPosition = getSecureRandom(words.length + 1);
+    words.splice(numPosition, 0, getRandomNumber());
+  }
+
+  return words.join(sep);
+};
 
 // Pure function: calculate password entropy
 export const calculatePasswordEntropy = (length: number, poolSize: number): number => {
@@ -278,8 +110,40 @@ export const calculatePasswordEntropy = (length: number, poolSize: number): numb
 };
 
 // Pure function: calculate passphrase entropy
-export const calculatePassphraseEntropy = (wordCount: number): number => {
-  return Math.floor(wordCount * Math.log2(WORDS.length));
+export const calculatePassphraseEntropy = (wordCount: number, includeNumber: boolean): number => {
+  // Each word: log2(7776) ≈ 12.9 bits
+  // Number (00-99): log2(100) ≈ 6.6 bits
+  const wordEntropy = wordCount * Math.log2(WORDS.length);
+  const numberEntropy = includeNumber ? Math.log2(100) : 0;
+  return Math.floor(wordEntropy + numberEntropy);
+};
+
+// Pure function: estimate crack time
+export const estimateCrackTime = (entropy: number): string => {
+  // Assuming 10 billion guesses per second (modern GPU cluster)
+  const guessesPerSecond = 10_000_000_000;
+  const totalGuesses = Math.pow(2, entropy);
+  const seconds = totalGuesses / guessesPerSecond / 2; // Average case
+
+  const MINUTE = 60;
+  const HOUR = 3600;
+  const DAY = 86_400;
+  const YEAR = 31_536_000;
+  const THOUSAND_YEARS = YEAR * 1000;
+  const MILLION_YEARS = YEAR * 1_000_000;
+  const BILLION_YEARS = YEAR * 1_000_000_000;
+
+  if (seconds < 1) return 'Instant';
+  if (seconds < MINUTE) return `${String(Math.floor(seconds))} seconds`;
+  if (seconds < HOUR) return `${String(Math.floor(seconds / MINUTE))} minutes`;
+  if (seconds < DAY) return `${String(Math.floor(seconds / HOUR))} hours`;
+  if (seconds < YEAR) return `${String(Math.floor(seconds / DAY))} days`;
+  if (seconds < THOUSAND_YEARS) return `${String(Math.floor(seconds / YEAR))} years`;
+  if (seconds < MILLION_YEARS)
+    return `${String(Math.floor(seconds / THOUSAND_YEARS))} thousand years`;
+  if (seconds < BILLION_YEARS)
+    return `${String(Math.floor(seconds / MILLION_YEARS))} million years`;
+  return `${(seconds / BILLION_YEARS).toExponential(1)} billion years`;
 };
 
 // Pure function: get strength label
@@ -316,14 +180,9 @@ export const generateMultiplePasswords = (count: number, length: number, pool: s
   )();
 
 // Generate multiple passphrases
-export const generateMultiplePassphrases = (
-  count: number,
-  wordCount: number,
-  separator: string,
-  capitalize: boolean
-): string =>
+export const generateMultiplePassphrases = (count: number, options: PassphraseOptions): string =>
   pipe(
     () => range(0, count),
-    map(() => generatePassphrase(wordCount, separator, capitalize)),
+    map(() => generatePassphrase(options)),
     join('\n')
   )();

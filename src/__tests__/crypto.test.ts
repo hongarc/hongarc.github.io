@@ -102,7 +102,7 @@ describe('Crypto Domain', () => {
       });
 
       it('should calculate passphrase entropy', () => {
-        const entropy = calculatePassphraseEntropy(4); // 4 words
+        const entropy = calculatePassphraseEntropy(4, false); // 4 words, no number
         expect(entropy).toBeGreaterThan(0);
       });
     });
@@ -167,13 +167,17 @@ describe('Crypto Domain', () => {
       it('should generate multiple passphrases', () => {
         const count = 2;
         const wordCount = 3;
-        const separator = '-';
-        const result = generateMultiplePassphrases(count, wordCount, separator, false);
+        const result = generateMultiplePassphrases(count, {
+          wordCount,
+          separator: 'dash',
+          capitalize: false,
+          includeNumber: false,
+        });
         const phrases = result.split('\n');
 
         expect(phrases).toHaveLength(count);
         for (const phrase of phrases) {
-          expect(phrase.split(separator)).toHaveLength(wordCount);
+          expect(phrase.split('-')).toHaveLength(wordCount);
         }
       });
     });

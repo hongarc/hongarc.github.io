@@ -133,8 +133,16 @@ export const chmodCalculator: ToolPlugin = {
       _viewMode: 'sections',
       _sections: {
         stats: [
-          { label: 'Numeric', value: numeric },
-          { label: 'Symbolic', value: symbolic },
+          {
+            label: 'Numeric',
+            value: numeric,
+            tooltip: 'Octal format: 4=read, 2=write, 1=execute. Sum for each role.',
+          },
+          {
+            label: 'Symbolic',
+            value: symbolic,
+            tooltip: 'Letters format: r=read, w=write, x=execute, -=denied.',
+          },
           { label: 'Full', value: `-${symbolic}` },
         ],
         content: breakdown,

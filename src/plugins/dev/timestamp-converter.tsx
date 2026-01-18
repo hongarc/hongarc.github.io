@@ -122,9 +122,21 @@ export const timestampConverter: ToolPlugin = {
         _viewMode: 'sections',
         _sections: {
           stats: [
-            { label: 'ISO 8601', value: formats.iso },
-            { label: 'UTC', value: formats.utc },
-            { label: 'Local', value: formats.local },
+            {
+              label: 'ISO 8601',
+              value: formats.iso,
+              tooltip: 'International standard format. Best for APIs and data exchange.',
+            },
+            {
+              label: 'UTC',
+              value: formats.utc,
+              tooltip: 'Coordinated Universal Time. No timezone offset.',
+            },
+            {
+              label: 'Local',
+              value: formats.local,
+              tooltip: 'Formatted for your browser timezone.',
+            },
             { label: 'Relative', value: formats.relative },
           ],
           content: timestamps,
