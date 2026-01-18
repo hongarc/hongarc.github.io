@@ -1,3 +1,4 @@
+import { CodeTextarea } from '@/components/ui/code-textarea';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import type { InputConfig } from '@/types/plugin';
@@ -22,6 +23,22 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
   const renderInput = () => {
     switch (config.type) {
       case 'textarea': {
+        // Use CodeTextarea for syntax highlighting if codeLanguage is specified
+        if (config.codeLanguage) {
+          return (
+            <CodeTextarea
+              id={config.id}
+              value={getStringValue(value)}
+              onChange={(v) => {
+                onChange(v);
+              }}
+              language={config.codeLanguage}
+              placeholder={config.placeholder}
+              rows={config.rows ?? 6}
+              required={config.required}
+            />
+          );
+        }
         return (
           <textarea
             id={config.id}

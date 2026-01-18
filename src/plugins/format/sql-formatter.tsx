@@ -35,6 +35,7 @@ export const sqlFormatter: ToolPlugin = {
       required: true,
       rows: 10,
       sensitive: true,
+      codeLanguage: 'sql',
     },
     {
       id: 'language',
@@ -50,7 +51,7 @@ export const sqlFormatter: ToolPlugin = {
         { value: 'bigquery', label: 'BigQuery' },
         { value: 'spark', label: 'Spark SQL' },
       ],
-      group: 'settings',
+      group: 'row1',
     },
     {
       id: 'keywordCase',
@@ -58,11 +59,11 @@ export const sqlFormatter: ToolPlugin = {
       type: 'select',
       defaultValue: 'upper',
       options: [
-        { value: 'upper', label: 'UPPERCASE' },
-        { value: 'lower', label: 'lowercase' },
-        { value: 'preserve', label: 'Preserve' },
+        { value: 'upper', label: 'UPPER' },
+        { value: 'lower', label: 'lower' },
+        { value: 'preserve', label: 'Keep' },
       ],
-      group: 'settings',
+      group: 'row1',
     },
     {
       id: 'indent',
@@ -70,20 +71,22 @@ export const sqlFormatter: ToolPlugin = {
       type: 'select',
       defaultValue: '2',
       options: [
-        { value: '2', label: '2 spaces' },
-        { value: '4', label: '4 spaces' },
+        { value: '2', label: '2 sp' },
+        { value: '4', label: '4 sp' },
       ],
+      group: 'row2',
     },
     {
       id: 'linesBetweenQueries',
-      label: 'Lines Between Queries',
+      label: 'Query Gap',
       type: 'select',
       defaultValue: '2',
       options: [
-        { value: '1', label: '1 line' },
-        { value: '2', label: '2 lines' },
-        { value: '3', label: '3 lines' },
+        { value: '1', label: '1' },
+        { value: '2', label: '2' },
+        { value: '3', label: '3' },
       ],
+      group: 'row2',
     },
   ],
   transformer: (inputs) => {
@@ -108,6 +111,7 @@ export const sqlFormatter: ToolPlugin = {
       const statementCount = countStatements(formatted);
 
       return success(formatted, {
+        _language: 'sql',
         dialect: language.toUpperCase(),
         statements: statementCount,
       });

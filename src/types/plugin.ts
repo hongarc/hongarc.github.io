@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 /**
  * Categories for grouping tools in the sidebar
@@ -124,6 +124,18 @@ export interface InputConfig {
   searchable?: boolean;
   /** Whether the input value is sensitive and should not be persisted in toolSettings */
   sensitive?: boolean;
+  /** Language for syntax highlighting in textarea (json, typescript, sql, etc.) */
+  codeLanguage?:
+    | 'json'
+    | 'typescript'
+    | 'javascript'
+    | 'sql'
+    | 'css'
+    | 'html'
+    | 'xml'
+    | 'yaml'
+    | 'markdown'
+    | 'bash';
 }
 
 /**
@@ -176,6 +188,8 @@ export interface ToolPlugin {
   preferFresh?: boolean;
   /** Keywords for search */
   keywords?: string[];
+  /** Custom component to render instead of standard input/output layout */
+  customComponent?: ComponentType;
 }
 
 /**

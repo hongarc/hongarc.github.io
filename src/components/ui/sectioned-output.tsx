@@ -1,6 +1,12 @@
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 
+import {
+  CodeHighlight,
+  HighlightStrategyFactory,
+  type HighlightLanguage,
+} from '@/components/ui/code-highlight';
+
 export interface OutputStat {
   label: string;
   value: string;
@@ -13,6 +19,7 @@ export interface SectionedOutputProps {
   stats: OutputStat[];
   content: string;
   contentLabel?: string;
+  language?: string;
 }
 
 const getVariantClasses = (variant: OutputStat['variant'] = 'default'): string => {
@@ -74,7 +81,11 @@ export function SectionedOutput({
   stats,
   content,
   contentLabel = 'Generated',
+  language,
 }: SectionedOutputProps) {
+  // Determine highlight language
+  const highlightLanguage: HighlightLanguage =
+    language && HighlightStrategyFactory.isSupported(language) ? language : 'plain';
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -127,9 +138,12 @@ export function SectionedOutput({
             )}
           </button>
         </div>
-        <pre className="max-h-[300px] overflow-auto bg-slate-900 p-4 font-mono text-[13px] leading-relaxed text-slate-100">
-          {content}
-        </pre>
+        <CodeHighlight
+          code={content}
+          language={highlightLanguage}
+          maxHeight="300px"
+          showLanguageBadge={highlightLanguage !== 'plain'}
+        />
       </div>
     </div>
   );

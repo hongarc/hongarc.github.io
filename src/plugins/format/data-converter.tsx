@@ -189,7 +189,16 @@ export const dataConverter: ToolPlugin = {
       const data = parseInput(input, fromFormat);
       const output = convertTo(data, toFormat, indent);
 
+      // Map format to highlight language
+      const languageMap: Record<Format, string> = {
+        json: 'json',
+        yaml: 'yaml',
+        csv: 'plain',
+        tsv: 'plain',
+      };
+
       return success(output, {
+        _language: languageMap[toFormat],
         from: fromFormat.toUpperCase(),
         to: toFormat.toUpperCase(),
       });

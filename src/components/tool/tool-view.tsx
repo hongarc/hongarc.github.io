@@ -197,6 +197,18 @@ export function ToolView() {
     );
   }
 
+  // Render custom component if available
+  if (selectedTool.customComponent) {
+    const CustomComponent = selectedTool.customComponent;
+    return (
+      <div className="mx-auto max-w-4xl">
+        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-6 shadow-sm">
+          <CustomComponent />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl">
       <div className="space-y-6">

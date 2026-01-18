@@ -1,11 +1,23 @@
+import {
+  CodeHighlight,
+  HighlightStrategyFactory,
+  type HighlightLanguage,
+} from '@/components/ui/code-highlight';
+
 import type { OutputStrategyProps } from './types';
 
 export function DefaultStrategy({ result }: OutputStrategyProps) {
+  // Get language from meta, default to plain text
+  const metaLanguage = result.meta?._language as string | undefined;
+  const language: HighlightLanguage =
+    metaLanguage && HighlightStrategyFactory.isSupported(metaLanguage) ? metaLanguage : 'plain';
+
   return (
-    <div className="relative">
-      <pre className="max-h-[400px] overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-[13px] leading-relaxed text-slate-900 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-100">
-        {result.output}
-      </pre>
-    </div>
+    <CodeHighlight
+      code={result.output ?? ''}
+      language={language}
+      maxHeight="400px"
+      showLanguageBadge={language !== 'plain'}
+    />
   );
 }

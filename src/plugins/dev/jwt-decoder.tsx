@@ -70,6 +70,7 @@ export const jwtDecoder: ToolPlugin = {
       defaultValue: JSON.stringify({ alg: 'HS256', typ: 'JWT' }, null, 2),
       rows: 3,
       visibleWhen: { inputId: 'mode', value: 'generate' },
+      codeLanguage: 'json',
     },
     {
       id: 'alg',
@@ -119,6 +120,7 @@ export const jwtDecoder: ToolPlugin = {
       ),
       rows: 6,
       visibleWhen: { inputId: 'mode', value: 'generate' },
+      codeLanguage: 'json',
     },
     {
       id: 'secret',

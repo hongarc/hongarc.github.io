@@ -159,6 +159,7 @@ export const htmlEntity: ToolPlugin = {
       placeholder: 'Enter text to encode or HTML entities to decode...',
       required: true,
       rows: 5,
+      codeLanguage: 'html',
     },
     {
       id: 'mode',

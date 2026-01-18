@@ -5,7 +5,7 @@ import type { OutputStrategyProps } from './types';
 
 export function SectionStrategy({ result }: OutputStrategyProps) {
   const sectionsData = result.meta?._sections as
-    | { stats: OutputStat[]; content: string; contentLabel?: string }
+    | { stats: OutputStat[]; content: string; contentLabel?: string; language?: string }
     | undefined;
 
   if (!sectionsData) return null;
@@ -16,6 +16,7 @@ export function SectionStrategy({ result }: OutputStrategyProps) {
         stats={sectionsData.stats}
         content={sectionsData.content}
         contentLabel={sectionsData.contentLabel}
+        language={sectionsData.language}
       />
     </div>
   );

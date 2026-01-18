@@ -180,6 +180,7 @@ export const jsonToTs: ToolPlugin = {
       placeholder: 'Paste your JSON here...',
       required: true,
       rows: 12,
+      codeLanguage: 'json',
     },
     {
       id: 'rootName',
@@ -220,6 +221,7 @@ export const jsonToTs: ToolPlugin = {
       const typeCount = (typescript.match(/type\s+\w+/g) ?? []).length;
 
       return success(typescript, {
+        _language: 'typescript',
         interfaces: interfaceCount,
         types: typeCount,
       });

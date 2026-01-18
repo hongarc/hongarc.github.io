@@ -167,6 +167,7 @@ export const csvJson: ToolPlugin = {
       }
       const output = JSON.stringify(result, null, 2);
       return success(output, {
+        _language: 'json',
         rows: result.length,
         mode: 'CSV → JSON',
       });
