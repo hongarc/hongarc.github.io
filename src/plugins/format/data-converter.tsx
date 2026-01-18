@@ -121,9 +121,9 @@ Bob\t25\tLondon`;
 };
 
 export const dataConverter: ToolPlugin = {
-  id: 'data-converter',
+  id: 'data',
   label: 'Data Converter',
-  description: 'Convert between JSON, YAML, CSV, and TSV formats',
+  description: 'Convert between JSON, YAML, CSV, and TSV formats online',
   category: 'format',
   icon: <ArrowLeftRight className="h-4 w-4" />,
   keywords: ['json', 'yaml', 'csv', 'tsv', 'convert', 'transform', 'data', 'format'],

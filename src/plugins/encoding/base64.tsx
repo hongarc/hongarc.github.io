@@ -14,9 +14,9 @@ import {
 const MODE_OPTIONS = ['encode', 'decode'] as const;
 
 export const base64Encoder: ToolPlugin = {
-  id: 'base64-encoder',
-  label: 'Base64 Encode/Decode',
-  description: 'Encode or decode Base64 strings',
+  id: 'base64',
+  label: 'Base64 Tool',
+  description: 'Encode and decode Base64 strings online',
   category: 'encoding',
   icon: <Binary className="h-4 w-4" />,
   keywords: ['base64', 'encode', 'decode', 'binary', 'string'],

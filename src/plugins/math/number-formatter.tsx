@@ -64,9 +64,9 @@ const parseNumber = (input: string): number | null => {
 };
 
 export const numberFormatter: ToolPlugin = {
-  id: 'number-formatter',
+  id: 'number',
   label: 'Number Formatter',
-  description: 'Format numbers in various styles',
+  description: 'Format numbers with currency, percentage, and locale options online',
   category: 'math',
   icon: <Hash className="h-4 w-4" />,
   keywords: ['number', 'format', 'currency', 'percent', 'bytes', 'thousands', 'comma'],

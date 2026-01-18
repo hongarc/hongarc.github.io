@@ -139,9 +139,9 @@ const generators: Record<GenerateType, (count: number, wrapLine?: boolean) => st
 };
 
 export const loremIpsum: ToolPlugin = {
-  id: 'lorem-ipsum',
-  label: 'Lorem Ipsum',
-  description: 'Generate placeholder text for design mockups',
+  id: 'lorem',
+  label: 'Lorem Ipsum Generator',
+  description: 'Generate lorem ipsum placeholder text online',
   category: 'text',
   icon: <FileText className="h-4 w-4" />,
   keywords: ['lorem', 'ipsum', 'placeholder', 'text', 'dummy', 'generate'],

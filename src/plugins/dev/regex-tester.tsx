@@ -67,9 +67,9 @@ const formatMatches = (matches: MatchResult[]): string => {
 };
 
 export const regexTester: ToolPlugin = {
-  id: 'regex-tester',
+  id: 'regex',
   label: 'Regex Tester',
-  description: 'Test regular expressions against text',
+  description: 'Test and debug regular expressions online with match highlighting',
   category: 'dev',
   icon: <Regex className="h-4 w-4" />,
   keywords: ['regex', 'regexp', 'regular', 'expression', 'pattern', 'match', 'test'],

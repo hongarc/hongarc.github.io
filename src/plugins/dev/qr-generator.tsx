@@ -253,9 +253,9 @@ const generateQR = async (inputs: Record<string, unknown>): Promise<TransformRes
 };
 
 export const qrGenerator: ToolPlugin = {
-  id: 'qr-generator',
+  id: 'qr',
   label: 'QR Code Generator',
-  description: 'Generate QR codes for text, URLs, or VietQR bank transfers',
+  description: 'Generate QR codes for text, URLs, and VietQR bank transfers online',
   category: 'dev',
   icon: <QrCode className="h-4 w-4" />,
   keywords: ['qr', 'code', 'barcode', 'vietqr', 'bank', 'transfer', 'vietnam', 'payment'],

@@ -36,9 +36,9 @@ const parseJson = (str: string): Record<string, unknown> | null => {
 };
 
 export const jwtDecoder: ToolPlugin = {
-  id: 'jwt-decoder',
+  id: 'jwt',
   label: 'JWT Tool',
-  description: 'Decode, verify and generate JSON Web Tokens',
+  description: 'Decode, verify, and generate JSON Web Tokens (JWT) online',
   category: 'dev',
   icon: <KeyRound className="h-4 w-4" />,
   keywords: ['jwt', 'token', 'decode', 'encode', 'generate', 'sign', 'verify', 'json', 'auth'],

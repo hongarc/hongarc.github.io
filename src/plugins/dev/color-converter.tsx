@@ -177,9 +177,9 @@ const formatCssOutput = (rgb: RGB, hsl: HSL, hex: string): string => {
 };
 
 export const colorConverter: ToolPlugin = {
-  id: 'color-converter',
+  id: 'color',
   label: 'Color Converter',
-  description: 'Convert colors between HEX, RGB, and HSL formats',
+  description: 'Convert colors between HEX, RGB, HSL formats online',
   category: 'dev',
   icon: <Palette className="h-4 w-4" />,
   keywords: ['color', 'hex', 'rgb', 'hsl', 'convert', 'css', 'palette'],

@@ -20,9 +20,9 @@ const INDENT_OPTIONS = ['2', '4'] as const;
 const SAMPLE_SQL = `SELECT u.id, u.name, u.email, COUNT(o.id) as order_count, SUM(o.total) as total_spent FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE u.created_at > '2024-01-01' AND u.status = 'active' GROUP BY u.id, u.name, u.email HAVING COUNT(o.id) > 0 ORDER BY total_spent DESC LIMIT 10;`;
 
 export const sqlFormatter: ToolPlugin = {
-  id: 'sql-formatter',
+  id: 'sql',
   label: 'SQL Formatter',
-  description: 'Format and beautify SQL queries',
+  description: 'Format and beautify SQL queries online with syntax highlighting',
   category: 'format',
   icon: <Database className="h-4 w-4" />,
   keywords: ['sql', 'format', 'beautify', 'query', 'mysql', 'postgresql', 'database'],

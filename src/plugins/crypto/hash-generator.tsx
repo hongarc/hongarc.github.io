@@ -31,9 +31,9 @@ const formatFileSize = (bytes: number): string => {
 };
 
 export const hashGenerator: ToolPlugin = {
-  id: 'hash-generator',
+  id: 'hash',
   label: 'Hash Generator',
-  description: 'Generate and verify SHA-1, SHA-256, SHA-384, or SHA-512 hashes',
+  description: 'Generate and verify MD5, SHA-1, SHA-256, SHA-512 hashes online',
   category: 'crypto',
   icon: <Hash className="h-4 w-4" />,
   keywords: ['hash', 'sha', 'sha256', 'sha512', 'checksum', 'digest', 'verify', 'compare', 'file'],

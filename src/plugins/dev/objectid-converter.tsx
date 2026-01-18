@@ -221,9 +221,9 @@ function ObjectIdConverterComponent() {
 }
 
 export const objectIdConverter: ToolPlugin = {
-  id: 'objectid-converter',
-  label: 'ObjectId Converter',
-  description: 'Convert MongoDB ObjectId to timestamp and vice versa',
+  id: 'objectid',
+  label: 'MongoDB ObjectId Tool',
+  description: 'Convert MongoDB ObjectId to timestamp and generate ObjectId online',
   category: 'dev',
   icon: <Database className="h-4 w-4" />,
   keywords: ['mongodb', 'objectid', 'timestamp', 'bson', 'id', 'convert', 'mongo'],

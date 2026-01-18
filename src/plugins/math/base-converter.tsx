@@ -79,9 +79,9 @@ const convertToAllBases = (num: number): BaseConversions => {
 };
 
 export const baseConverter: ToolPlugin = {
-  id: 'base-converter',
+  id: 'base',
   label: 'Number Base Converter',
-  description: 'Convert between binary, octal, decimal, and hexadecimal',
+  description: 'Convert between binary, octal, decimal, and hex online',
   category: 'math',
   icon: <Binary className="h-4 w-4" />,
   keywords: ['binary', 'hex', 'octal', 'decimal', 'convert', 'base', 'number'],

@@ -8,9 +8,9 @@ import { failure, getErrorMessage, getSelectInput, getTrimmedInput, success } fr
 const MODE_OPTIONS = ['encode', 'decode', 'encodeComponent', 'decodeComponent'] as const;
 
 export const urlEncoder: ToolPlugin = {
-  id: 'url-encoder',
-  label: 'URL Encode/Decode',
-  description: 'Encode or decode URL components',
+  id: 'url-encode',
+  label: 'URL Encoder',
+  description: 'Encode and decode URL components online',
   category: 'encoding',
   icon: <Link className="h-4 w-4" />,
   keywords: ['url', 'encode', 'decode', 'uri', 'percent', 'escape'],

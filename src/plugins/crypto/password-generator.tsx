@@ -18,9 +18,9 @@ import { failure, getBooleanInput, getNumberInput, getSelectInput, success } fro
 const MODE_OPTIONS = ['password', 'passphrase'] as const;
 
 export const passwordGenerator: ToolPlugin = {
-  id: 'password-generator',
+  id: 'password',
   label: 'Password Generator',
-  description: 'Generate secure passwords or passphrases',
+  description: 'Generate secure random passwords and passphrases online',
   category: 'crypto',
   icon: <KeyRound className="h-4 w-4" />,
   keywords: ['password', 'passphrase', 'generate', 'random', 'secure', 'key', 'words'],

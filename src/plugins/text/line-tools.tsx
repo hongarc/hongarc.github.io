@@ -52,9 +52,9 @@ const shuffleLines = (lines: string[]): string[] => {
 };
 
 export const lineTools: ToolPlugin = {
-  id: 'line-tools',
+  id: 'lines',
   label: 'Line Tools',
-  description: 'Sort, dedupe, reverse, or shuffle lines',
+  description: 'Sort, dedupe, reverse, and shuffle text lines online',
   category: 'text',
   icon: <List className="h-4 w-4" />,
   keywords: ['sort', 'dedupe', 'unique', 'reverse', 'shuffle', 'lines', 'list'],

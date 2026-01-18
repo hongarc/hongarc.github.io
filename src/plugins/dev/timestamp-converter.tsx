@@ -85,9 +85,9 @@ const parseInput = (input: string): Date | null => {
 };
 
 export const timestampConverter: ToolPlugin = {
-  id: 'timestamp-converter',
+  id: 'timestamp',
   label: 'Timestamp Converter',
-  description: 'Convert between Unix timestamps and human-readable dates',
+  description: 'Convert Unix timestamp to date and date to timestamp online',
   category: 'dev',
   icon: <Clock className="h-4 w-4" />,
   keywords: ['timestamp', 'unix', 'epoch', 'date', 'time', 'convert'],

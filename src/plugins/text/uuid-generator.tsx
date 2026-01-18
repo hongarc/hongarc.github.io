@@ -133,9 +133,9 @@ const getTypeLabel = (type: (typeof TYPE_OPTIONS)[number]): string => {
 };
 
 export const uuidGenerator: ToolPlugin = {
-  id: 'uuid-generator',
-  label: 'ID Generator',
-  description: 'Generate UUIDs, CUIDs, and MongoDB ObjectIDs',
+  id: 'uuid',
+  label: 'UUID Generator',
+  description: 'Generate UUID v4, CUID, NanoID, and ULID online',
   category: 'text',
   icon: <Fingerprint className="h-4 w-4" />,
   keywords: ['uuid', 'guid', 'cuid', 'mongodb', 'objectid', 'nanoid', 'unique', 'id', 'identifier'],

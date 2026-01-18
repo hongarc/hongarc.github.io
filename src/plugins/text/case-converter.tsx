@@ -26,9 +26,9 @@ const convertLines = (caseType: CaseType) =>
   pipe(split('\n'), map(caseConverters[caseType]), join('\n'));
 
 export const caseConverter: ToolPlugin = {
-  id: 'case-converter',
+  id: 'case',
   label: 'Case Converter',
-  description: 'Convert text between camelCase, snake_case, PascalCase, and more',
+  description: 'Convert text to camelCase, snake_case, PascalCase, kebab-case online',
   category: 'text',
   icon: <CaseSensitive className="h-4 w-4" />,
   keywords: ['case', 'camel', 'snake', 'pascal', 'kebab', 'constant', 'convert'],

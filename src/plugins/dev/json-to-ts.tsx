@@ -168,7 +168,7 @@ const SAMPLE_JSON = `{
 export const jsonToTs: ToolPlugin = {
   id: 'json-to-ts',
   label: 'JSON to TypeScript',
-  description: 'Generate TypeScript interfaces from JSON',
+  description: 'Generate TypeScript interfaces and types from JSON online',
   category: 'dev',
   icon: <Braces className="h-4 w-4" />,
   keywords: ['json', 'typescript', 'interface', 'type', 'convert', 'generate', 'ts'],

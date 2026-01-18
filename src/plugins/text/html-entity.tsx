@@ -146,8 +146,8 @@ const countEntities = (text: string): number => {
 
 export const htmlEntity: ToolPlugin = {
   id: 'html-entity',
-  label: 'HTML Entity',
-  description: 'Encode and decode HTML entities',
+  label: 'HTML Entity Encoder',
+  description: 'Encode and decode HTML entities online',
   category: 'text',
   icon: <Code className="h-4 w-4" />,
   keywords: ['html', 'entity', 'encode', 'decode', 'escape', 'unescape', 'special', 'characters'],

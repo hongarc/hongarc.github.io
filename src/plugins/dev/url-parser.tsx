@@ -88,9 +88,9 @@ const parseAndFormatParams = (search: string): { formatted: string; count: numbe
 };
 
 export const urlParser: ToolPlugin = {
-  id: 'url-parser',
+  id: 'url-parse',
   label: 'URL Parser',
-  description: 'Parse URLs into components',
+  description: 'Parse and analyze URL components online',
   category: 'dev',
   icon: <Link className="h-4 w-4" />,
   keywords: ['url', 'parse', 'query', 'params', 'link', 'http', 'https'],

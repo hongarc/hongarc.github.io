@@ -92,9 +92,9 @@ const parseInput = (input: string): Permissions | null => {
 };
 
 export const chmodCalculator: ToolPlugin = {
-  id: 'chmod-calculator',
+  id: 'chmod',
   label: 'Chmod Calculator',
-  description: 'Convert Unix file permissions',
+  description: 'Calculate and convert Unix file permissions online',
   category: 'dev',
   icon: <Shield className="h-4 w-4" />,
   keywords: ['chmod', 'permission', 'unix', 'linux', 'file', 'rwx', '755', '644'],

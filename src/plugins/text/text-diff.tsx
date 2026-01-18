@@ -134,9 +134,9 @@ const sanitizeInput = pipe((text: string | undefined) => text ?? '', trim);
 const VIEW_OPTIONS = ['inline', 'side-by-side'] as const;
 
 export const textDiff: ToolPlugin = {
-  id: 'text-diff',
+  id: 'diff',
   label: 'Text Diff',
-  description: 'Compare two texts line by line with word-level highlighting',
+  description: 'Compare two texts and highlight differences online',
   category: 'text',
   icon: <GitCompare className="h-4 w-4" />,
   keywords: ['diff', 'compare', 'difference', 'merge', 'text', 'changes', 'line', 'word'],

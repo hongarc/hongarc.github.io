@@ -19,9 +19,9 @@ const MODE_OPTIONS = ['escape', 'unescape'] as const;
 const FORMAT_OPTIONS = ['javascript', 'json', 'html', 'url', 'sql'] as const;
 
 export const stringEscape: ToolPlugin = {
-  id: 'string-escape',
-  label: 'String Escape',
-  description: 'Escape and unescape strings',
+  id: 'escape',
+  label: 'String Escape Tool',
+  description: 'Escape and unescape strings for JS, JSON, HTML, URL, SQL online',
   category: 'encoding',
   icon: <Quote className="h-4 w-4" />,
   keywords: ['escape', 'unescape', 'string', 'quote', 'javascript', 'json', 'html', 'sql'],

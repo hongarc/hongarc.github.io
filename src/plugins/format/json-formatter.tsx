@@ -5,9 +5,9 @@ import type { ToolPlugin } from '@/types/plugin';
 import { success } from '@/utils';
 
 export const jsonFormatter: ToolPlugin = {
-  id: 'json-formatter',
+  id: 'json',
   label: 'JSON Editor',
-  description: 'Beautify, minify, sort keys, and query JSON with JSONPath',
+  description: 'Beautify, minify, sort keys, and query JSON online with JSONPath',
   category: 'format',
   icon: <Braces className="h-4 w-4" />,
   keywords: [

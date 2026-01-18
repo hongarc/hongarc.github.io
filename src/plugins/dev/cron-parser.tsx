@@ -172,9 +172,9 @@ const matchesValue = (field: string, value: number): boolean => {
 };
 
 export const cronParser: ToolPlugin = {
-  id: 'cron-parser',
+  id: 'cron',
   label: 'Cron Parser',
-  description: 'Parse and explain cron expressions',
+  description: 'Parse and explain cron expressions with next run times online',
   category: 'dev',
   icon: <Clock className="h-4 w-4" />,
   keywords: ['cron', 'schedule', 'crontab', 'job', 'timer', 'expression'],

@@ -55,9 +55,9 @@ const createSlug = (separator: string) =>
   );
 
 export const slugGenerator: ToolPlugin = {
-  id: 'slug-generator',
+  id: 'slug',
   label: 'Slug Generator',
-  description: 'Convert text to URL-friendly slugs',
+  description: 'Convert text to URL-friendly slugs online',
   category: 'text',
   icon: <Link className="h-4 w-4" />,
   keywords: ['slug', 'url', 'seo', 'friendly', 'permalink', 'kebab'],

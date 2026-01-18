@@ -79,9 +79,9 @@ const getTextStats = (text: string): TextStats => {
 };
 
 export const wordCounter: ToolPlugin = {
-  id: 'word-counter',
+  id: 'word-count',
   label: 'Word Counter',
-  description: 'Count words, characters, sentences, and paragraphs',
+  description: 'Count words, characters, sentences, and paragraphs online',
   category: 'text',
   icon: <Hash className="h-4 w-4" />,
   keywords: ['word', 'count', 'character', 'line', 'paragraph', 'sentence'],
