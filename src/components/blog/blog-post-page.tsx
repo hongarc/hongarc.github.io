@@ -49,7 +49,7 @@ function PostContent({ content }: PostContentProps) {
 
   return (
     <div
-      className="prose text-ctp-text prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:text-ctp-text prose-h1:text-2xl prose-h2:text-xl prose-h2:text-ctp-mauve prose-h3:text-lg prose-h3:text-ctp-sapphire prose-p:text-ctp-subtext0 prose-strong:text-ctp-text prose-a:text-ctp-blue prose-a:no-underline hover:prose-a:underline hover:prose-a:text-ctp-sapphire prose-code:text-ctp-pink prose-code:bg-ctp-surface0 prose-code:rounded prose-code:px-1 prose-pre:bg-ctp-mantle prose-pre:text-ctp-text prose-pre:text-sm prose-li:text-ctp-subtext0 prose-li:marker:text-ctp-overlay0 prose-blockquote:text-ctp-subtext1 prose-blockquote:border-ctp-lavender prose-hr:border-ctp-surface0 max-w-none"
+      className="prose text-ctp-text prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:text-ctp-text prose-h1:text-2xl prose-h2:text-xl prose-h2:text-ctp-mauve prose-h3:text-lg prose-h3:text-ctp-sapphire prose-p:text-ctp-subtext1 prose-strong:text-ctp-text prose-a:text-ctp-blue prose-a:no-underline hover:prose-a:underline hover:prose-a:text-ctp-sapphire prose-code:text-ctp-pink prose-code:bg-ctp-surface0 prose-code:rounded prose-code:px-1 prose-pre:bg-ctp-mantle prose-pre:text-ctp-text prose-pre:text-sm prose-li:text-ctp-subtext1 prose-li:marker:text-ctp-overlay0 prose-blockquote:text-ctp-subtext1 prose-blockquote:border-ctp-lavender prose-hr:border-ctp-surface0 max-w-none"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -63,7 +63,7 @@ function PostNotFound({ slug }: PostNotFoundProps) {
   return (
     <div className="mx-auto max-w-2xl py-16 text-center">
       <h1 className="text-ctp-text mb-4 text-3xl font-bold">Post Not Found</h1>
-      <p className="text-ctp-subtext0 mb-6">
+      <p className="text-ctp-subtext1 mb-6">
         The post &ldquo;{slug}&rdquo; doesn&apos;t exist or may have been removed.
       </p>
       <Link
@@ -83,7 +83,7 @@ interface PostMetaProps {
 
 function PostMeta({ post }: PostMetaProps) {
   return (
-    <div className="text-ctp-subtext0 flex flex-wrap items-center gap-4 text-sm">
+    <div className="text-ctp-subtext1 flex flex-wrap items-center gap-4 text-sm">
       <span className="flex items-center gap-1.5">
         <Calendar className="text-ctp-sapphire h-4 w-4" />
         {formatDate(post.publishedAt)}
@@ -135,7 +135,7 @@ export function BlogPostPage() {
       {/* Back navigation */}
       <Link
         to="/blog"
-        className="text-ctp-subtext0 hover:text-ctp-blue mb-6 inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
+        className="text-ctp-subtext1 hover:text-ctp-blue mb-6 inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Blog
@@ -165,7 +165,7 @@ export function BlogPostPage() {
         </h1>
 
         {/* Description */}
-        <p className="text-ctp-subtext0 mb-4 text-lg">{post.description}</p>
+        <p className="text-ctp-subtext1 mb-4 text-lg">{post.description}</p>
 
         {/* Meta */}
         <PostMeta post={post} />
@@ -186,7 +186,7 @@ export function BlogPostPage() {
           </Link>
 
           {post.updatedAt && (
-            <span className="text-ctp-subtext0 text-sm">
+            <span className="text-ctp-subtext1 text-sm">
               Last updated: {formatDate(post.updatedAt)}
             </span>
           )}

@@ -60,7 +60,7 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
       className={`flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-all ${
         copied
           ? 'bg-ctp-green/20 text-ctp-green'
-          : 'text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text'
+          : 'text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text'
       }`}
     >
       {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -197,7 +197,7 @@ function ObjectIdConverterComponent() {
         <div className="space-y-3">
           {/* Stats row */}
           <div className="bg-ctp-mantle flex items-center justify-between rounded-lg px-3 py-2">
-            <span className="text-ctp-subtext0 text-xs">Unix Timestamp</span>
+            <span className="text-ctp-subtext1 text-xs">Unix Timestamp</span>
             <div className="flex items-center gap-2">
               <span className="text-ctp-text font-mono text-sm">{unixSeconds}</span>
               <CopyButton text={String(unixSeconds)} />

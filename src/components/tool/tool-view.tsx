@@ -102,13 +102,13 @@ export function ToolView() {
             <h2 className="text-ctp-text text-2xl font-bold tracking-tight">
               Welcome to Friendly Toolbox
             </h2>
-            <p className="text-ctp-subtext0 mt-3">30+ developer utilities at your fingertips</p>
+            <p className="text-ctp-subtext1 mt-3">30+ developer utilities at your fingertips</p>
           </div>
 
           {/* Pinned Tools - max 3 */}
           {pinnedTools.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-ctp-overlay1 mb-4 flex items-center justify-center gap-2 text-sm font-medium">
+              <h3 className="text-ctp-subtext1 mb-4 flex items-center justify-center gap-2 text-sm font-medium">
                 <Pin className="text-ctp-yellow h-4 w-4" />
                 Pinned Tools
               </h3>
@@ -134,7 +134,7 @@ export function ToolView() {
 
           {/* Popular Tools */}
           <div className="mb-8">
-            <h3 className="text-ctp-overlay1 mb-4 text-center text-sm font-medium">
+            <h3 className="text-ctp-subtext1 mb-4 text-center text-sm font-medium">
               Popular Tools
             </h3>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -144,7 +144,7 @@ export function ToolView() {
                   to={`/${tool.id}`}
                   className="bg-ctp-base border-ctp-surface1 hover:border-ctp-blue group flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all hover:shadow-md"
                 >
-                  <span className="bg-ctp-surface0 text-ctp-subtext0 group-hover:bg-ctp-blue\/10 group-hover:text-ctp-blue flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-colors">
+                  <span className="bg-ctp-surface0 text-ctp-subtext1 group-hover:bg-ctp-blue\/10 group-hover:text-ctp-blue flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-colors">
                     {tool.icon}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -158,7 +158,7 @@ export function ToolView() {
 
           {/* Keyboard Shortcuts */}
           <div className="bg-ctp-mantle border-ctp-surface1 rounded-xl border p-4">
-            <h3 className="text-ctp-overlay1 mb-3 text-center text-sm font-medium">
+            <h3 className="text-ctp-subtext1 mb-3 text-center text-sm font-medium">
               Keyboard Shortcuts
             </h3>
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
@@ -167,21 +167,21 @@ export function ToolView() {
                   <Command className="h-3 w-3" />
                   <span>K</span>
                 </kbd>
-                <span className="text-ctp-subtext0">Search</span>
+                <span className="text-ctp-subtext1">Search</span>
               </div>
               <div className="flex items-center gap-2">
                 <kbd className="bg-ctp-surface0 border-ctp-surface2 text-ctp-text flex items-center gap-0.5 rounded border px-2 py-1 font-mono text-xs">
                   <Command className="h-3 w-3" />
                   <span>D</span>
                 </kbd>
-                <span className="text-ctp-subtext0">Dark mode</span>
+                <span className="text-ctp-subtext1">Dark mode</span>
               </div>
               <div className="flex items-center gap-2">
                 <kbd className="bg-ctp-surface0 border-ctp-surface2 text-ctp-text flex items-center gap-0.5 rounded border px-2 py-1 font-mono text-xs">
                   <Command className="h-3 w-3" />
                   <span>B</span>
                 </kbd>
-                <span className="text-ctp-subtext0">Sidebar</span>
+                <span className="text-ctp-subtext1">Sidebar</span>
               </div>
             </div>
           </div>
@@ -208,14 +208,14 @@ export function ToolView() {
         {/* Input Section */}
         <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <div className="text-ctp-overlay1 flex items-center gap-2 text-xs">
+            <div className="text-ctp-subtext1 flex items-center gap-2 text-xs">
               <Zap className="text-ctp-yellow h-3.5 w-3.5" />
               <span>Auto-transform enabled</span>
             </div>
             <button
               type="button"
               onClick={clearInputs}
-              className="text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors"
+              className="text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               Clear

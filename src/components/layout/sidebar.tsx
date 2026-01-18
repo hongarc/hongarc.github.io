@@ -118,7 +118,7 @@ export function Sidebar() {
                     `flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-all ${
                       isActive
                         ? 'bg-ctp-blue/20 text-ctp-blue shadow-md'
-                        : 'text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text'
+                        : 'text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text'
                     }`
                   }
                   aria-label={plugin.label}
@@ -143,7 +143,7 @@ export function Sidebar() {
             <UserMenuCompact />
             <button
               onClick={toggleSidebar}
-              className="text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text flex h-10 w-full cursor-pointer items-center justify-center rounded-lg transition-colors"
+              className="text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text flex h-10 w-full cursor-pointer items-center justify-center rounded-lg transition-colors"
               aria-label="Expand sidebar"
             >
               <ChevronRight className="h-5 w-5" />
@@ -172,7 +172,7 @@ export function Sidebar() {
           onClick={() => {
             setMobileSidebarOpen(false);
           }}
-          className="text-ctp-subtext0 hover:bg-ctp-surface0 hover:text-ctp-text rounded-lg p-2 transition-colors lg:hidden"
+          className="text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text rounded-lg p-2 transition-colors lg:hidden"
           aria-label="Close sidebar"
         >
           <X className="h-5 w-5" />
@@ -192,7 +192,7 @@ export function Sidebar() {
             }}
             className="bg-ctp-base border-ctp-surface1 text-ctp-text placeholder-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue\/10 w-full rounded-xl border py-2.5 pr-16 pl-10 text-sm shadow-sm transition-all focus:ring-4 focus:outline-none"
           />
-          <kbd className="bg-ctp-surface0 border-ctp-surface1 text-ctp-subtext0 absolute top-1/2 right-3 hidden -translate-y-1/2 items-center gap-0.5 rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium select-none sm:flex">
+          <kbd className="bg-ctp-surface0 border-ctp-surface1 text-ctp-subtext1 absolute top-1/2 right-3 hidden -translate-y-1/2 items-center gap-0.5 rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium select-none sm:flex">
             <span className="text-xs">⌘</span>K
           </kbd>
         </div>
@@ -521,7 +521,7 @@ export function Sidebar() {
         <UserMenu />
         <div className="bg-ctp-surface0 rounded-lg px-3 py-2">
           <div className="flex items-center justify-between">
-            <span className="text-ctp-subtext0 text-xs font-medium">
+            <span className="text-ctp-subtext1 text-xs font-medium">
               {effectiveSection === 'blog'
                 ? `${String(allBlogPosts.length)} posts`
                 : `${String(registry.count)} tools available`}
@@ -529,7 +529,7 @@ export function Sidebar() {
             {/* Desktop collapse button */}
             <button
               onClick={toggleSidebar}
-              className="text-ctp-subtext0 hover:bg-ctp-surface1 hover:text-ctp-text hidden cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors lg:flex"
+              className="text-ctp-subtext1 hover:bg-ctp-surface1 hover:text-ctp-text hidden cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors lg:flex"
               aria-label="Collapse sidebar"
             >
               <ChevronLeft className="h-3.5 w-3.5" />

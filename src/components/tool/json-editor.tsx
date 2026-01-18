@@ -300,7 +300,7 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
               className="text-ctp-text hover:bg-ctp-surface1 border-ctp-surface1 flex cursor-pointer items-center gap-1 rounded-r-md border-l px-2 py-1.5 text-xs font-medium transition-colors"
               title="Indent settings"
             >
-              <span className="text-ctp-subtext0">{indentLabel}</span>
+              <span className="text-ctp-subtext1">{indentLabel}</span>
               <ChevronDown className="h-3 w-3" />
             </button>
           </div>
@@ -507,7 +507,7 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
       {/* JSONPath Result Preview */}
       {pathResult && jsonPath.trim() && !pathError && (
         <div className="space-y-2">
-          <div className="text-ctp-subtext0 flex items-center gap-2 text-xs font-medium">
+          <div className="text-ctp-subtext1 flex items-center gap-2 text-xs font-medium">
             <span>Query Result</span>
             <span className="bg-ctp-mauve/20 text-ctp-mauve rounded-full px-2 py-0.5">
               {jsonPath}

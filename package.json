@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
+    "lighthouse": "node scripts/lighthouse.mjs",
     "prepare": "husky"
   },
   "dependencies": {
@@ -64,6 +65,7 @@
     "globals": "^17.0.0",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
+    "lighthouse": "^12.8.2",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",

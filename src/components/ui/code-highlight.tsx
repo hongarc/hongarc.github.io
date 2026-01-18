@@ -231,7 +231,7 @@ export function CodeHighlight({
     return (
       <div className={`relative ${className}`}>
         {showLanguageBadge && (
-          <div className="bg-ctp-surface0 text-ctp-subtext0 absolute top-2 right-2 rounded px-2 py-0.5 text-xs">
+          <div className="bg-ctp-surface0 text-ctp-subtext1 absolute top-2 right-2 rounded px-2 py-0.5 text-xs">
             {strategy.getDisplayLanguage()}
           </div>
         )}
@@ -250,7 +250,7 @@ export function CodeHighlight({
   return (
     <div className={`relative ${className}`}>
       {showLanguageBadge && (
-        <div className="bg-ctp-surface0 text-ctp-subtext0 absolute top-2 right-2 z-10 rounded px-2 py-0.5 text-xs">
+        <div className="bg-ctp-surface0 text-ctp-subtext1 absolute top-2 right-2 z-10 rounded px-2 py-0.5 text-xs">
           {strategy.getDisplayLanguage()}
         </div>
       )}

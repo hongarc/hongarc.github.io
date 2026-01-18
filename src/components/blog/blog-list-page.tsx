@@ -43,7 +43,7 @@ function PostCard({ post }: PostCardProps) {
             </Link>
           ))}
           {post.tags.length > 3 && (
-            <span className="bg-ctp-surface1 text-ctp-subtext0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
+            <span className="bg-ctp-surface1 text-ctp-subtext1 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
               +{post.tags.length - 3}
             </span>
           )}
@@ -62,7 +62,7 @@ function PostCard({ post }: PostCardProps) {
 
       {/* Excerpt */}
       {post.excerpt && (
-        <p className="text-ctp-subtext0 mb-4 line-clamp-3 text-sm">{post.excerpt}</p>
+        <p className="text-ctp-subtext1 mb-4 line-clamp-3 text-sm">{post.excerpt}</p>
       )}
 
       {/* Meta */}
@@ -117,7 +117,7 @@ export function BlogListPage() {
             'Blog'
           )}
         </h1>
-        <p className="text-ctp-subtext0">
+        <p className="text-ctp-subtext1">
           {tagName
             ? `${String(posts.length)} post${posts.length === 1 ? '' : 's'} with this tag`
             : 'Technical articles, tutorials, and updates'}
@@ -152,7 +152,7 @@ export function BlogListPage() {
               <Link
                 key={tag}
                 to={`/blog/tag/${tag}`}
-                className="bg-ctp-surface0 text-ctp-subtext0 border-ctp-surface1 hover:border-ctp-pink hover:bg-ctp-pink\/10 hover:text-ctp-pink rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+                className="bg-ctp-surface0 text-ctp-subtext1 border-ctp-surface1 hover:border-ctp-pink hover:bg-ctp-pink\/10 hover:text-ctp-pink rounded-full border px-3 py-1 text-xs font-medium transition-colors"
               >
                 {tag}
               </Link>
@@ -164,7 +164,7 @@ export function BlogListPage() {
       {/* Posts grid */}
       {posts.length === 0 ? (
         <div className="bg-ctp-mantle border-ctp-surface1 rounded-2xl border border-dashed p-12 text-center">
-          <p className="text-ctp-subtext0">
+          <p className="text-ctp-subtext1">
             {searchQuery
               ? 'No posts match your search'
               : tagName

@@ -96,6 +96,7 @@ export function Header({ onShowShortcuts: _onShowShortcuts }: HeaderProps) {
             onClick={() => {
               setActiveSection('tools');
             }}
+            aria-label="Tools"
             className={`flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
               effectiveSection === 'tools'
                 ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
@@ -110,6 +111,7 @@ export function Header({ onShowShortcuts: _onShowShortcuts }: HeaderProps) {
             onClick={() => {
               setActiveSection('blog');
             }}
+            aria-label="Blog"
             className={`flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
               effectiveSection === 'blog'
                 ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
