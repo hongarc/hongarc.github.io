@@ -21,7 +21,7 @@ export const urlEncoder: ToolPlugin = {
       type: 'textarea',
       placeholder: 'Enter text to encode or URL-encoded text to decode',
       required: true,
-      rows: 4,
+      rows: 3,
     },
     {
       id: 'mode',
@@ -29,9 +29,9 @@ export const urlEncoder: ToolPlugin = {
       type: 'select',
       defaultValue: 'encode',
       options: [
-        { value: 'encode', label: 'Encode (encodeURI)' },
-        { value: 'decode', label: 'Decode (decodeURI)' },
-        { value: 'encodeComponent', label: 'Encode Component (stricter)' },
+        { value: 'encode', label: 'Encode' },
+        { value: 'decode', label: 'Decode' },
+        { value: 'encodeComponent', label: 'Encode Component' },
         { value: 'decodeComponent', label: 'Decode Component' },
       ],
     },

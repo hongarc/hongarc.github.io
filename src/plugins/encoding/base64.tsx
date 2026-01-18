@@ -27,7 +27,7 @@ export const base64Encoder: ToolPlugin = {
       type: 'textarea',
       placeholder: 'Enter text to encode or Base64 to decode',
       required: true,
-      rows: 6,
+      rows: 4,
       sensitive: true,
     },
     {
@@ -36,16 +36,17 @@ export const base64Encoder: ToolPlugin = {
       type: 'select',
       defaultValue: 'encode',
       options: [
-        { value: 'encode', label: 'Encode to Base64' },
-        { value: 'decode', label: 'Decode from Base64' },
+        { value: 'encode', label: 'Encode' },
+        { value: 'decode', label: 'Decode' },
       ],
+      group: 'options',
     },
     {
       id: 'urlSafe',
       label: 'URL Safe',
       type: 'checkbox',
       defaultValue: false,
-      placeholder: 'Use URL-safe Base64 (replace +/ with -_)',
+      group: 'options',
     },
   ],
   transformer: (inputs) => {

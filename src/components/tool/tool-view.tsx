@@ -202,7 +202,7 @@ export function ToolView() {
     const CustomComponent = selectedTool.customComponent;
     return (
       <div className="mx-auto max-w-4xl">
-        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-6 shadow-sm">
+        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-4 shadow-sm">
           <CustomComponent />
         </div>
       </div>
@@ -211,10 +211,10 @@ export function ToolView() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Input Section */}
-        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-6 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
+        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
             <div className="text-ctp-overlay1 flex items-center gap-2 text-xs">
               <Zap className="text-ctp-yellow h-3.5 w-3.5" />
               <span>Auto-transform enabled</span>
@@ -228,7 +228,7 @@ export function ToolView() {
               Clear
             </button>
           </div>
-          <div className="space-y-5">
+          <div className="space-y-4">
             {(() => {
               const elements: React.ReactNode[] = [];
               let i = 0;
@@ -346,7 +346,7 @@ export function ToolView() {
         </div>
 
         {/* Output Section */}
-        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-6 shadow-sm">
+        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-4 shadow-sm">
           <ToolOutput
             result={
               selectedTool.preferFresh && !hasTransformedOnClient && !userInteracted ? null : result

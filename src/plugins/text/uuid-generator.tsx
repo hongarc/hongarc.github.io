@@ -152,6 +152,7 @@ export const uuidGenerator: ToolPlugin = {
         { value: 'cuid', label: 'CUID' },
         { value: 'mongodb', label: 'MongoDB' },
       ],
+      group: 'row1',
     },
     {
       id: 'count',
@@ -160,6 +161,7 @@ export const uuidGenerator: ToolPlugin = {
       defaultValue: 5,
       min: 1,
       max: 100,
+      group: 'row1',
     },
     {
       id: 'uppercase',
@@ -169,7 +171,7 @@ export const uuidGenerator: ToolPlugin = {
     },
     {
       id: 'noDashes',
-      label: 'No Dashes',
+      label: 'No dashes',
       type: 'checkbox',
       defaultValue: false,
     },

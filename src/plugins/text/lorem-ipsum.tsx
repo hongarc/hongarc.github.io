@@ -149,7 +149,7 @@ export const loremIpsum: ToolPlugin = {
   inputs: [
     {
       id: 'type',
-      label: 'Generate',
+      label: 'Type',
       type: 'select',
       defaultValue: 'paragraphs',
       options: [
@@ -157,6 +157,7 @@ export const loremIpsum: ToolPlugin = {
         { value: 'sentences', label: 'Sentences' },
         { value: 'paragraphs', label: 'Paragraphs' },
       ],
+      group: 'row1',
     },
     {
       id: 'count',
@@ -166,13 +167,13 @@ export const loremIpsum: ToolPlugin = {
       min: 1,
       max: 100,
       required: true,
+      group: 'row1',
     },
     {
       id: 'wrapLine',
       label: 'Wrap lines',
       type: 'checkbox',
       defaultValue: false,
-      placeholder: 'Add line breaks between sentences',
     },
   ],
   transformer: (inputs) => {

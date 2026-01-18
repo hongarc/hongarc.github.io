@@ -134,7 +134,7 @@ export const dataConverter: ToolPlugin = {
       type: 'textarea',
       placeholder: 'Paste your data here...',
       required: true,
-      rows: 10,
+      rows: 6,
     },
     {
       id: 'fromFormat',
@@ -147,7 +147,7 @@ export const dataConverter: ToolPlugin = {
         { value: 'csv', label: 'CSV' },
         { value: 'tsv', label: 'TSV' },
       ],
-      group: 'format',
+      group: 'row1',
     },
     {
       id: 'toFormat',
@@ -160,7 +160,7 @@ export const dataConverter: ToolPlugin = {
         { value: 'csv', label: 'CSV' },
         { value: 'tsv', label: 'TSV' },
       ],
-      group: 'format',
+      group: 'row1',
     },
     {
       id: 'indent',
@@ -168,9 +168,10 @@ export const dataConverter: ToolPlugin = {
       type: 'select',
       defaultValue: '2',
       options: [
-        { value: '2', label: '2 spaces' },
-        { value: '4', label: '4 spaces' },
+        { value: '2', label: '2 sp' },
+        { value: '4', label: '4 sp' },
       ],
+      group: 'row1',
     },
   ],
   transformer: (inputs) => {

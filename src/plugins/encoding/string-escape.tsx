@@ -32,7 +32,7 @@ export const stringEscape: ToolPlugin = {
       type: 'textarea',
       placeholder: 'Enter string to escape or unescape...',
       required: true,
-      rows: 6,
+      rows: 4,
     },
     {
       id: 'mode',
@@ -43,6 +43,7 @@ export const stringEscape: ToolPlugin = {
         { value: 'escape', label: 'Escape' },
         { value: 'unescape', label: 'Unescape' },
       ],
+      group: 'options',
     },
     {
       id: 'format',
@@ -50,12 +51,13 @@ export const stringEscape: ToolPlugin = {
       type: 'select',
       defaultValue: 'javascript',
       options: [
-        { value: 'javascript', label: 'JavaScript' },
+        { value: 'javascript', label: 'JS' },
         { value: 'json', label: 'JSON' },
         { value: 'html', label: 'HTML' },
         { value: 'url', label: 'URL' },
         { value: 'sql', label: 'SQL' },
       ],
+      group: 'options',
     },
   ],
   transformer: (inputs) => {

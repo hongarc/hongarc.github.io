@@ -57,7 +57,7 @@ export function Layout() {
             setShowShortcuts(true);
           }}
         />
-        <main className="relative flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8">
+        <main className="relative flex-1 overflow-x-hidden overflow-y-auto px-4 pt-2 pb-4 md:px-6 md:pt-3 md:pb-6 lg:px-8 lg:pt-4 lg:pb-8">
           <Outlet />
         </main>
       </div>
