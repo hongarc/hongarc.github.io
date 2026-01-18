@@ -6,6 +6,7 @@ import { colorConverter } from './dev/color-converter';
 import { cronParser } from './dev/cron-parser';
 import { jsonToTs } from './dev/json-to-ts';
 import { jwtDecoder } from './dev/jwt-decoder';
+import { objectIdConverter } from './dev/objectid-converter';
 import { qrGenerator } from './dev/qr-generator';
 import { regexTester } from './dev/regex-tester';
 import { timestampConverter } from './dev/timestamp-converter';
@@ -45,6 +46,7 @@ registry.registerAll([
   jsonToTs,
   qrGenerator,
   timestampConverter,
+  objectIdConverter,
   jwtDecoder,
   urlParser,
   colorConverter,
