@@ -1,6 +1,7 @@
 import { AlertCircle, Check, Copy, FileOutput, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
+import { useTracking } from '@/hooks/use-tracking';
 import type { TransformResult } from '@/types/plugin';
 
 import { DefaultStrategy } from './output-strategies/default-strategy';
@@ -13,6 +14,7 @@ interface ToolOutputProps {
 
 export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
   const [copied, setCopied] = useState(false);
+  const { trackCopy } = useTracking();
 
   const handleCopy = async () => {
     if (!result?.success || !result.output) return;
@@ -23,6 +25,8 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
       setTimeout(() => {
         setCopied(false);
       }, 2000);
+
+      trackCopy();
     } catch {
       // Clipboard API failed
     }

@@ -6,6 +6,7 @@ import {
   HighlightStrategyFactory,
   type HighlightLanguage,
 } from '@/components/ui/code-highlight';
+import { useTracking } from '@/hooks/use-tracking';
 
 export interface OutputStat {
   label: string;
@@ -92,6 +93,7 @@ function StatItem({ stat }: { stat: OutputStat }) {
 
 function CopyLineButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+  const { trackCopy } = useTracking();
 
   const handleCopy = async () => {
     try {
@@ -100,6 +102,8 @@ function CopyLineButton({ text }: { text: string }) {
       setTimeout(() => {
         setCopied(false);
       }, 2000);
+
+      trackCopy();
     } catch {
       // Clipboard API failed
     }
@@ -131,6 +135,7 @@ export function SectionedOutput({
   const highlightLanguage: HighlightLanguage =
     language && HighlightStrategyFactory.isSupported(language) ? language : 'plain';
   const [copied, setCopied] = useState(false);
+  const { trackCopy } = useTracking();
 
   const handleCopy = async () => {
     try {
@@ -139,6 +144,8 @@ export function SectionedOutput({
       setTimeout(() => {
         setCopied(false);
       }, 2000);
+
+      trackCopy();
     } catch {
       // Clipboard API failed
     }

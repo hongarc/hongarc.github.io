@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 import { CommandPalette } from '@/components/ui/command-palette';
 import { ShortcutsHelp } from '@/components/ui/shortcuts-help';
+import { useInteractionTracking } from '@/hooks/use-interaction-tracking';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useToolStore } from '@/store/tool-store';
 
@@ -13,6 +14,9 @@ export function Layout() {
   const { mobileSidebarOpen, setMobileSidebarOpen } = useToolStore();
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showPalette, setShowPalette] = useState(false);
+
+  // Enable automatic click tracking via data-track attributes
+  useInteractionTracking();
 
   useKeyboardShortcuts({
     onToggleHelp: () => {

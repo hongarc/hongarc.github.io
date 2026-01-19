@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { NavigationSection } from '@/blog/types';
+import { trackThemeToggle, trackToolPin, trackToolTransform, trackToolView } from '@/lib/analytics';
 import { registry } from '@/plugins/registry';
 import type { ToolPlugin, TransformResult } from '@/types/plugin';
 import { executeTransformer } from '@/utils/transformer';
@@ -144,6 +145,9 @@ export const useToolStore = create<ToolState>()(
           recentToolIds: updatedRecent,
           mobileSidebarOpen: false,
         });
+
+        // Track tool view
+        trackToolView(toolId, tool.category);
       },
 
       // Set a single input value and persist to tool settings (config options only)
@@ -200,15 +204,24 @@ export const useToolStore = create<ToolState>()(
         if (!selectedTool) return;
 
         set({ isProcessing: true });
+        const startTime = performance.now();
 
         try {
           const result = await executeTransformer(selectedTool, inputs);
+          const durationMs = Math.round(performance.now() - startTime);
           set({ result, isProcessing: false });
+
+          // Track transform
+          trackToolTransform(selectedTool.id, result.success, durationMs);
         } catch {
+          const durationMs = Math.round(performance.now() - startTime);
           set({
             result: { success: false, error: 'Unexpected error occurred' },
             isProcessing: false,
           });
+
+          // Track failed transform
+          trackToolTransform(selectedTool.id, false, durationMs);
         }
       },
 
@@ -220,6 +233,11 @@ export const useToolStore = create<ToolState>()(
       // Set theme
       setTheme: (newTheme: 'light' | 'dark' | 'system') => {
         set({ theme: newTheme });
+
+        // Track theme change (only for explicit light/dark, not system)
+        if (newTheme !== 'system') {
+          trackThemeToggle(newTheme);
+        }
       },
 
       // Toggle sidebar
@@ -249,11 +267,16 @@ export const useToolStore = create<ToolState>()(
       togglePinTool: (toolId: string) => {
         const { pinnedToolIds } = get();
         const isPinned = pinnedToolIds.includes(toolId);
+        const action = isPinned ? 'unpin' : 'pin';
+
         set({
           pinnedToolIds: isPinned
             ? pinnedToolIds.filter((id) => id !== toolId)
             : [...pinnedToolIds, toolId],
         });
+
+        // Track pin action
+        trackToolPin(toolId, action);
       },
 
       // Check if a tool is pinned

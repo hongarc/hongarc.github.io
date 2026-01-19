@@ -166,6 +166,7 @@ export function Header({ onShowShortcuts: _onShowShortcuts }: HeaderProps) {
                   <button
                     key={option.value}
                     type="button"
+                    data-track="theme-change"
                     onClick={() => {
                       setTheme(option.value);
                       setDropdownOpen(false);

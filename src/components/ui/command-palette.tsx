@@ -29,6 +29,7 @@ function ToolItem({ tool, index, isSelected, onSelect, onHover }: ToolItemProps)
   return (
     <button
       type="button"
+      data-track="palette-select"
       onClick={() => {
         onSelect(tool.id);
       }}

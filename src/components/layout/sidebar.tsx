@@ -4,6 +4,8 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { blogRegistry } from '@/blog';
 import { UserMenu, UserMenuCompact } from '@/components/layout/user-menu';
+import { useDebounce } from '@/hooks/use-debounce';
+import { trackToolSearch } from '@/lib/analytics';
 import { registry } from '@/plugins/registry';
 import { useToolStore } from '@/store/tool-store';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ORDER } from '@/types/plugin';
@@ -90,6 +92,24 @@ export function Sidebar() {
     }
   }, [selectedToolId]);
 
+  // Debounce search query for analytics tracking
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const lastTrackedSearch = useRef<string>('');
+
+  // Track tool search analytics (only for tools section)
+  useEffect(() => {
+    // Only track if user has typed something and it's a new search
+    if (
+      effectiveSection === 'tools' &&
+      debouncedSearchQuery.trim() &&
+      debouncedSearchQuery !== lastTrackedSearch.current
+    ) {
+      lastTrackedSearch.current = debouncedSearchQuery;
+      const resultCount = filteredPlugins?.length ?? 0;
+      trackToolSearch(resultCount);
+    }
+  }, [debouncedSearchQuery, effectiveSection, filteredPlugins?.length]);
+
   if (sidebarCollapsed) {
     return (
       <aside className="bg-ctp-mantle border-ctp-surface0 hidden h-full w-16 flex-col border-r lg:flex">
@@ -142,6 +162,7 @@ export function Sidebar() {
           <div className="flex flex-col items-center gap-2">
             <UserMenuCompact />
             <button
+              data-track="toggle-sidebar"
               onClick={toggleSidebar}
               className="text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text flex h-10 w-full cursor-pointer items-center justify-center rounded-lg transition-colors"
               aria-label="Expand sidebar"
@@ -528,6 +549,7 @@ export function Sidebar() {
             </span>
             {/* Desktop collapse button */}
             <button
+              data-track="toggle-sidebar"
               onClick={toggleSidebar}
               className="text-ctp-subtext1 hover:bg-ctp-surface1 hover:text-ctp-text hidden cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors lg:flex"
               aria-label="Collapse sidebar"

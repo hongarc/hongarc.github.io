@@ -7,6 +7,8 @@
 
 import * as R from 'ramda';
 
+import { trackInteraction } from '@/lib/analytics';
+
 import type {
   ExecutionContext,
   IShortcutManager,
@@ -174,6 +176,10 @@ export class ShortcutManager implements IShortcutManager {
       if (matchingBinding && command.canExecute(ctx)) {
         event.preventDefault();
         void command.execute(ctx);
+
+        // Track keyboard interaction
+        trackInteraction(command.id, 'keyboard');
+
         return true;
       }
     }

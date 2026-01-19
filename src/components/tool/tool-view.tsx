@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useDebounce } from '@/hooks/use-debounce';
+import { TrackingProvider } from '@/hooks/use-tracking';
 import { registry } from '@/plugins/registry';
 import { useToolStore } from '@/store/tool-store';
 import type { InputConfig } from '@/types/plugin';
@@ -342,14 +343,18 @@ export function ToolView() {
         </div>
 
         {/* Output Section */}
-        <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-4 shadow-sm">
-          <ToolOutput
-            result={
-              selectedTool.preferFresh && !hasTransformedOnClient && !userInteracted ? null : result
-            }
-            isProcessing={isProcessing}
-          />
-        </div>
+        <TrackingProvider toolId={selectedTool.id}>
+          <div className="bg-ctp-base border-ctp-surface1 rounded-xl border p-4 shadow-sm">
+            <ToolOutput
+              result={
+                selectedTool.preferFresh && !hasTransformedOnClient && !userInteracted
+                  ? null
+                  : result
+              }
+              isProcessing={isProcessing}
+            />
+          </div>
+        </TrackingProvider>
       </div>
     </div>
   );
