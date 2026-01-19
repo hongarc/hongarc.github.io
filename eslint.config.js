@@ -11,7 +11,7 @@ import prettierConfig from 'eslint-config-prettier';
 export default tseslint.config(
   // Ignore patterns
   {
-    ignores: ['dist/**', 'node_modules/**', '*.config.js', '*.config.ts'],
+    ignores: ['dist/**', 'node_modules/**', 'scripts/**', '*.config.js', '*.config.ts'],
   },
 
   // Base JS recommended rules
