@@ -47,10 +47,10 @@ async function logSafe(event: AnalyticsEvent): Promise<void> {
     const analytics = await getAnalyticsInstance();
     if (analytics) {
       logEvent(analytics, event.name, event.params);
+      console.info('📊', event.name, event.params);
     }
-  } catch {
-    // Silently fail - analytics should never break the app
-    // Debug logging intentionally omitted to avoid console noise
+  } catch (error) {
+    console.warn('📊 Analytics error:', error);
   }
 }
 

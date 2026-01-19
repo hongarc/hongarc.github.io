@@ -21,6 +21,7 @@ export const getAnalyticsInstance = async (): Promise<Analytics | null> => {
   const supported = await isSupported();
   if (supported) {
     analyticsInstance = getAnalytics(app);
+    console.info('📊 Analytics enabled');
   }
   return analyticsInstance;
 };
