@@ -1,70 +1,148 @@
 import { Regex } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 
+import { CopyButton } from '@/components/ui/copy-button';
+import { HighlightedTextarea } from '@/components/ui/highlighted-textarea';
+import { useRegex, type RegexFlags } from '@/hooks/use-regex';
 import type { ToolPlugin } from '@/types/plugin';
-import { failure, getBooleanInput, getTrimmedInput, success } from '@/utils';
+import { success } from '@/utils';
 
-interface MatchResult {
-  match: string;
-  index: number;
-  groups: string[];
-}
+// Flag configuration - declarative, easy to extend
+const FLAG_CONFIG = [
+  { key: 'caseInsensitive', label: 'i (ignore case)' },
+  { key: 'multiline', label: 'm (multiline)' },
+  { key: 'dotAll', label: 's (dot all)' },
+] as const;
 
-// Pure function: parse regex pattern and flags
-const parseRegex = (pattern: string, flags: string): RegExp | null => {
-  try {
-    return new RegExp(pattern, flags);
-  } catch {
-    return null;
-  }
-};
+type FlagKey = (typeof FLAG_CONFIG)[number]['key'];
 
-// Pure function: get all matches with groups
-const getMatches = (regex: RegExp, text: string): MatchResult[] => {
-  const matches: MatchResult[] = [];
-  const globalRegex = new RegExp(
-    regex.source,
-    regex.flags.includes('g') ? regex.flags : `${regex.flags}g`
+// Checkbox styles
+const CHECKBOX_CLASS =
+  'border-ctp-surface2 bg-ctp-surface0 text-ctp-blue focus:ring-ctp-blue/20 h-4 w-4 cursor-pointer rounded transition-colors focus:ring-2';
+
+function RegexTesterComponent() {
+  const [pattern, setPattern] = useState('');
+  const [text, setText] = useState('');
+  const [flags, setFlags] = useState<RegexFlags>({
+    caseInsensitive: false,
+    multiline: false,
+    dotAll: false,
+  });
+
+  // Use the regex hook - all matching logic encapsulated
+  const { matches, ranges, error, flagString } = useRegex(pattern, text, flags);
+
+  const handleFlagChange = useCallback((key: FlagKey) => {
+    setFlags((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  // Memoize match count text
+  const matchCountText = useMemo(() => {
+    if (matches.length === 0) return 'No matches found';
+    return `Found ${String(matches.length)} match${matches.length === 1 ? '' : 'es'}`;
+  }, [matches.length]);
+
+  return (
+    <div className="space-y-4">
+      {/* Pattern Input */}
+      <div>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label htmlFor="pattern" className="text-ctp-subtext1 text-sm font-medium">
+            Pattern <span className="text-ctp-red">*</span>
+          </label>
+          {pattern && <CopyButton text={pattern} />}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-ctp-overlay1 font-mono text-sm">/</span>
+          <input
+            id="pattern"
+            type="text"
+            value={pattern}
+            onChange={(e) => {
+              setPattern(e.target.value);
+            }}
+            placeholder={String.raw`\d+|[a-z]+`}
+            className={`bg-ctp-mantle border-ctp-surface1 text-ctp-text placeholder:text-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue/20 flex-1 rounded-lg border px-3 py-2 font-mono text-sm focus:ring-2 focus:outline-none ${
+              error ? 'border-ctp-red' : ''
+            }`}
+          />
+          <span className="text-ctp-overlay1 font-mono text-sm">/{flagString}</span>
+        </div>
+        {error && <p className="text-ctp-red mt-1 text-xs">{error}</p>}
+      </div>
+
+      {/* Flags - rendered from config (tabIndex=-1 to skip in tab order) */}
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
+        {FLAG_CONFIG.map(({ key, label }) => (
+          <label key={key} className="inline-flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              tabIndex={-1}
+              checked={Boolean(flags[key])}
+              onChange={() => {
+                handleFlagChange(key);
+              }}
+              className={CHECKBOX_CLASS}
+            />
+            <span className="text-ctp-subtext1 text-sm">{label}</span>
+          </label>
+        ))}
+      </div>
+
+      {/* Test String with Inline Highlighting */}
+      <div>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label htmlFor="text" className="text-ctp-subtext1 text-sm font-medium">
+            Test String <span className="text-ctp-red">*</span>
+          </label>
+          {text && <CopyButton text={text} />}
+        </div>
+        <HighlightedTextarea
+          id="text"
+          value={text}
+          onChange={setText}
+          ranges={ranges}
+          placeholder="Enter text to test against..."
+          rows={6}
+        />
+      </div>
+
+      {/* Match Results Summary */}
+      {pattern && text && !error && (
+        <div className="bg-ctp-mantle border-ctp-surface1 rounded-lg border p-3">
+          <div className="text-ctp-subtext1 mb-2 text-xs font-medium">{matchCountText}</div>
+          {matches.length > 0 && (
+            <div className="max-h-48 space-y-2 overflow-auto">
+              {matches.map((m, i) => (
+                <div
+                  key={`${String(i)}-${String(m.index)}`}
+                  className="bg-ctp-base rounded px-2 py-1.5 font-mono text-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-ctp-subtext0">
+                      Match {String(i + 1)} at index {String(m.index)}
+                    </span>
+                    <CopyButton text={m.match} variant="ghost" />
+                  </div>
+                  <div className="text-ctp-text mt-1">&quot;{m.match}&quot;</div>
+                  {m.groups.length > 0 && (
+                    <div className="text-ctp-subtext1 border-ctp-surface1 mt-1 space-y-0.5 border-t border-dashed pt-1">
+                      {m.groups.map((g, gi) => (
+                        <div key={gi}>
+                          Group {String(gi + 1)}: &quot;{g}&quot;
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
-
-  let result;
-  while ((result = globalRegex.exec(text)) !== null) {
-    matches.push({
-      match: result[0],
-      index: result.index,
-      groups: result.slice(1),
-    });
-    // Prevent infinite loop for zero-length matches
-    if (result[0].length === 0) {
-      globalRegex.lastIndex++;
-    }
-  }
-
-  return matches;
-};
-
-// Pure function: format matches output
-const formatMatches = (matches: MatchResult[]): string => {
-  if (matches.length === 0) {
-    return 'No matches found';
-  }
-
-  const lines: string[] = [
-    `Found ${String(matches.length)} match${matches.length === 1 ? '' : 'es'}:`,
-    '',
-  ];
-
-  for (const [i, m] of matches.entries()) {
-    lines.push(`Match ${String(i + 1)} at index ${String(m.index)}:`, `  "${m.match}"`);
-    if (m.groups.length > 0) {
-      for (const [gi, g] of m.groups.entries()) {
-        lines.push(`  Group ${String(gi + 1)}: "${g}"`);
-      }
-    }
-    lines.push('');
-  }
-
-  return lines.join('\n');
-};
+}
 
 export const regexTester: ToolPlugin = {
   id: 'regex',
@@ -73,78 +151,7 @@ export const regexTester: ToolPlugin = {
   category: 'dev',
   icon: <Regex className="h-4 w-4" />,
   keywords: ['regex', 'regexp', 'regular', 'expression', 'pattern', 'match', 'test'],
-  inputs: [
-    {
-      id: 'pattern',
-      label: 'Pattern',
-      type: 'text',
-      placeholder: String.raw`\d+|[a-z]+`,
-      required: true,
-      helpText: 'Regular expression pattern (without delimiters)',
-    },
-    {
-      id: 'text',
-      label: 'Test String',
-      type: 'textarea',
-      placeholder: 'Enter text to test against...',
-      required: true,
-      rows: 5,
-    },
-    {
-      id: 'caseInsensitive',
-      label: 'i (ignore case)',
-      type: 'checkbox',
-      defaultValue: false,
-    },
-    {
-      id: 'multiline',
-      label: 'm (multiline)',
-      type: 'checkbox',
-      defaultValue: false,
-    },
-    {
-      id: 'dotAll',
-      label: 's (dot all)',
-      type: 'checkbox',
-      defaultValue: false,
-    },
-  ],
-  transformer: (inputs) => {
-    const pattern = getTrimmedInput(inputs, 'pattern');
-    const text = (inputs.text as string | undefined) ?? '';
-    const caseInsensitive = getBooleanInput(inputs, 'caseInsensitive');
-    const multiline = getBooleanInput(inputs, 'multiline');
-    const dotAll = getBooleanInput(inputs, 'dotAll');
-
-    if (!pattern) {
-      return failure('Please enter a regex pattern');
-    }
-
-    if (!text) {
-      return failure('Please enter test text');
-    }
-
-    // Build flags
-    let flags = 'g';
-    if (caseInsensitive) flags += 'i';
-    if (multiline) flags += 'm';
-    if (dotAll) flags += 's';
-
-    const regex = parseRegex(pattern, flags);
-    if (!regex) {
-      return failure('Invalid regular expression pattern');
-    }
-
-    const matches = getMatches(regex, text);
-    const matchOutput = formatMatches(matches);
-
-    const output = [`Pattern: /${pattern}/${flags}`, '', matchOutput].join('\n');
-
-    return success(output, {
-      matches: matches.length,
-      flags,
-      _viewMode: 'regex',
-      _regexData: { text, matches },
-    });
-  },
+  inputs: [],
+  transformer: () => success(''),
+  customComponent: RegexTesterComponent,
 };

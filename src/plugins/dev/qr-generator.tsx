@@ -1,126 +1,18 @@
-import { Download, QrCode } from 'lucide-react';
+import jsQR from 'jsqr';
+import { Download, QrCode, ScanLine, Upload } from 'lucide-react';
 import QRCode from 'qrcode';
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-import type { ToolPlugin, TransformResult } from '@/types/plugin';
-import { failure, getSelectInput, getTrimmedInput, instruction, success } from '@/utils';
+import type { ToolPlugin } from '@/types/plugin';
+import { success } from '@/utils';
 
-const MODE_OPTIONS = ['text', 'vietqr'] as const;
+import { VIETNAM_BANKS } from './qr-types';
+import { DecodedResult } from './qr-types/decoded-result';
 
-// Vietnamese banks for VietQR
-const VIETNAM_BANKS = [
-  { bin: '970415', name: 'VietinBank', shortName: 'VTB' },
-  { bin: '970436', name: 'Vietcombank', shortName: 'VCB' },
-  { bin: '970418', name: 'BIDV', shortName: 'BIDV' },
-  { bin: '970405', name: 'Agribank', shortName: 'AGR' },
-  { bin: '970407', name: 'Techcombank', shortName: 'TCB' },
-  { bin: '970423', name: 'TPBank', shortName: 'TPB' },
-  { bin: '970432', name: 'VPBank', shortName: 'VPB' },
-  { bin: '970422', name: 'MBBank', shortName: 'MBB' },
-  { bin: '970416', name: 'ACB', shortName: 'ACB' },
-  { bin: '970403', name: 'Sacombank', shortName: 'STB' },
-  { bin: '970448', name: 'OCB', shortName: 'OCB' },
-  { bin: '970437', name: 'HDBank', shortName: 'HDB' },
-  { bin: '970426', name: 'MSB', shortName: 'MSB' },
-  { bin: '970441', name: 'VIB', shortName: 'VIB' },
-  { bin: '970443', name: 'SHB', shortName: 'SHB' },
-  { bin: '970449', name: 'LPBank', shortName: 'LPB' },
-  { bin: '970454', name: 'VietCapitalBank', shortName: 'VCCB' },
-  { bin: '970429', name: 'SeABank', shortName: 'SEAB' },
-  { bin: '970414', name: 'OceanBank', shortName: 'OCB' },
-  { bin: '970431', name: 'Eximbank', shortName: 'EIB' },
-  { bin: '970428', name: 'NamABank', shortName: 'NAB' },
-  { bin: '970406', name: 'DongABank', shortName: 'DAB' },
-  { bin: '970439', name: 'PublicBank', shortName: 'PVB' },
-  { bin: '970458', name: 'UOB', shortName: 'UOB' },
-  { bin: '970400', name: 'SaigonBank', shortName: 'SGB' },
-  { bin: '970427', name: 'VietABank', shortName: 'VAB' },
-  { bin: '970419', name: 'NCB', shortName: 'NCB' },
-  { bin: '970412', name: 'PVcomBank', shortName: 'PVCB' },
-  { bin: '970425', name: 'ABBank', shortName: 'ABB' },
-  { bin: '970424', name: 'ShinhanBank', shortName: 'SHBVN' },
-  { bin: '970462', name: 'KookminBank', shortName: 'KBVN' },
-  { bin: '970433', name: 'VietBank', shortName: 'VIETBANK' },
-  { bin: '970438', name: 'BaoVietBank', shortName: 'BVB' },
-  { bin: '970446', name: 'COOPBANK', shortName: 'COOPBANK' },
-  { bin: '970452', name: 'KienLongBank', shortName: 'KLB' },
-  { bin: '970440', name: 'CBBank', shortName: 'CBB' },
-  { bin: '970457', name: 'Woori', shortName: 'WRB' },
-  { bin: '970421', name: 'VRB', shortName: 'VRB' },
-  { bin: '546034', name: 'MoMo', shortName: 'MOMO' },
-  { bin: '546035', name: 'ZaloPay', shortName: 'ZALOPAY' },
-  { bin: '546036', name: 'VNPay', shortName: 'VNPAY' },
-] as const;
+type MainMode = 'generate' | 'decode';
+type GenerateMode = 'text' | 'vietqr';
 
-// Generate VietQR content string
-const generateVietQRContent = (
-  bankBin: string,
-  accountNumber: string,
-  amount?: string,
-  description?: string,
-  accountName?: string
-): string => {
-  // VietQR uses EMVCo QR Code standard
-  // Format: https://www.vietqr.io/portal-service/download/documents/QRCode%20Pay%20Merchant%20Presented%20Mode%20for%20VietQR%20v1.1%20-%20Vietnamese.pdf
-
-  // Build the QR data
-  let qrData = '';
-
-  // Payload Format Indicator (ID 00)
-  qrData += '000201';
-
-  // Point of Initiation Method (ID 01) - 12 = Dynamic QR
-  qrData += '010212';
-
-  // Merchant Account Information (ID 38) - VietQR specific
-  let beneficiaryInfo = '';
-  beneficiaryInfo += `00${String(bankBin.length).padStart(2, '0')}${bankBin}`; // 00: Bank BIN
-  beneficiaryInfo += `01${String(accountNumber.length).padStart(2, '0')}${accountNumber}`; // 01: Account Number
-
-  let merchantInfo = '';
-  merchantInfo += '0010A000000727'; // 00: GUID
-  merchantInfo += `01${String(beneficiaryInfo.length).padStart(2, '0')}${beneficiaryInfo}`; // 01: Beneficiary Info
-  merchantInfo += '0208QRIBFTTA'; // 02: Service Code
-
-  qrData += `38${String(merchantInfo.length).padStart(2, '0')}${merchantInfo}`;
-
-  // Transaction Currency (ID 53) - 704 = VND
-  qrData += '5303704';
-
-  // Transaction Amount (ID 54) - optional
-  if (amount && Number(amount) > 0) {
-    const amountStr = amount;
-    qrData += `54${String(amountStr.length).padStart(2, '0')}${amountStr}`;
-  }
-
-  // Country Code (ID 58)
-  qrData += '5802VN';
-
-  // Beneficiary Name (ID 59) - optional but recommended
-  if (accountName) {
-    const name = accountName.toUpperCase().slice(0, 25);
-    qrData += `59${String(name.length).padStart(2, '0')}${name}`;
-  }
-
-  // Additional Data Field Template (ID 62)
-  if (description) {
-    let additionalData = '';
-    const desc = description.slice(0, 50); // EMVCo allows more, but keep reasonable
-    additionalData += `08${String(desc.length).padStart(2, '0')}${desc}`;
-    qrData += `62${String(additionalData.length).padStart(2, '0')}${additionalData}`;
-  }
-
-  // Calculate CRC (ID 63)
-  qrData += '6304';
-
-  // CRC16-CCITT calculation
-  const crc = calculateCRC16(qrData);
-  qrData += crc;
-
-  return qrData;
-};
-
-// CRC16-CCITT calculation for VietQR (Byte-based)
+// CRC16-CCITT calculation for VietQR
 const calculateCRC16 = (str: string): string => {
   let crc = 0xff_ff;
   const polynomial = 0x10_21;
@@ -141,196 +33,526 @@ const calculateCRC16 = (str: string): string => {
   return crc.toString(16).toUpperCase().padStart(4, '0');
 };
 
-// Custom QR display component
-function QRDisplay({ dataUrl, content }: { dataUrl: string; content: string }) {
+// Generate VietQR content string
+const generateVietQRContent = (
+  bankBin: string,
+  accountNumber: string,
+  amount?: string,
+  description?: string,
+  accountName?: string
+): string => {
+  let qrData = '';
+  qrData += '000201';
+  qrData += '010212';
+
+  let beneficiaryInfo = '';
+  beneficiaryInfo += `00${String(bankBin.length).padStart(2, '0')}${bankBin}`;
+  beneficiaryInfo += `01${String(accountNumber.length).padStart(2, '0')}${accountNumber}`;
+
+  let merchantInfo = '';
+  merchantInfo += '0010A000000727';
+  merchantInfo += `01${String(beneficiaryInfo.length).padStart(2, '0')}${beneficiaryInfo}`;
+  merchantInfo += '0208QRIBFTTA';
+
+  qrData += `38${String(merchantInfo.length).padStart(2, '0')}${merchantInfo}`;
+  qrData += '5303704';
+
+  if (amount && Number(amount) > 0) {
+    qrData += `54${String(amount.length).padStart(2, '0')}${amount}`;
+  }
+
+  qrData += '5802VN';
+
+  if (accountName) {
+    const name = accountName.toUpperCase().slice(0, 25);
+    qrData += `59${String(name.length).padStart(2, '0')}${name}`;
+  }
+
+  if (description) {
+    let additionalData = '';
+    const desc = description.slice(0, 50);
+    additionalData += `08${String(desc.length).padStart(2, '0')}${desc}`;
+    qrData += `62${String(additionalData.length).padStart(2, '0')}${additionalData}`;
+  }
+
+  qrData += '6304';
+  qrData += calculateCRC16(qrData);
+
+  return qrData;
+};
+
+// Decode QR from image file
+const decodeQRFromFile = async (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.addEventListener('load', () => {
+      const img = new Image();
+
+      img.addEventListener('load', () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+        if (code) {
+          resolve(code.data);
+        } else {
+          reject(new Error('No QR code found in image'));
+        }
+      });
+
+      img.addEventListener('error', () => {
+        reject(new Error('Failed to load image'));
+      });
+
+      img.src = reader.result as string;
+    });
+
+    reader.addEventListener('error', () => {
+      reject(new Error('Failed to read file'));
+    });
+
+    reader.readAsDataURL(file);
+  });
+};
+
+// Styles
+const INPUT_CLASS =
+  'bg-ctp-mantle border-ctp-surface1 text-ctp-text placeholder:text-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue/20 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none';
+
+const TAB_CLASS = (active: boolean) =>
+  `flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+    active
+      ? 'bg-ctp-blue text-ctp-base'
+      : 'text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text'
+  }`;
+
+function QRToolComponent() {
+  // Main mode: generate or decode
+  const [mainMode, setMainMode] = useState<MainMode>('generate');
+
+  // Generate state
+  const [generateMode, setGenerateMode] = useState<GenerateMode>('text');
+  const [content, setContent] = useState('');
+  const [bankBin, setBankBin] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [qrContent, setQrContent] = useState<string | null>(null);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+
+  // Decode state
+  const [decodedContent, setDecodedContent] = useState<string | null>(null);
+  const [decodeError, setDecodeError] = useState<string | null>(null);
+  const [isDecoding, setIsDecoding] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Generate QR code
+  const handleGenerate = useCallback(async () => {
+    setGenerateError(null);
+    setQrDataUrl(null);
+    setQrContent(null);
+
+    try {
+      let qrData: string;
+
+      if (generateMode === 'text') {
+        if (!content.trim()) {
+          setGenerateError('Please enter text or URL');
+          return;
+        }
+        qrData = content;
+      } else {
+        if (!bankBin || !accountNumber.trim()) {
+          setGenerateError('Please select a bank and enter account number');
+          return;
+        }
+        qrData = generateVietQRContent(bankBin, accountNumber, amount, description, accountName);
+      }
+
+      const dataUrl = await QRCode.toDataURL(qrData, {
+        width: 512,
+        margin: 2,
+        color: { dark: '#000000', light: '#FFFFFF' },
+        errorCorrectionLevel: 'M',
+      });
+
+      setQrDataUrl(dataUrl);
+      setQrContent(qrData);
+    } catch (error) {
+      setGenerateError(error instanceof Error ? error.message : 'QR generation failed');
+    }
+  }, [generateMode, content, bankBin, accountNumber, accountName, amount, description]);
+
+  // Handle file selection for decode
+  const handleFileSelect = useCallback(async (file: File) => {
+    setDecodeError(null);
+    setDecodedContent(null);
+    setIsDecoding(true);
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    try {
+      const decoded = await decodeQRFromFile(file);
+      setDecodedContent(decoded);
+    } catch (error) {
+      setDecodeError(error instanceof Error ? error.message : 'Decode failed');
+    } finally {
+      setIsDecoding(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file?.type.startsWith('image/')) {
+        void handleFileSelect(file);
+      }
+    },
+    [handleFileSelect]
+  );
+
+  const handleDropZoneClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleDropZoneKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  }, []);
+
   const handleDownload = useCallback(() => {
+    if (!qrDataUrl) return;
     const link = document.createElement('a');
     link.download = 'qrcode.png';
-    link.href = dataUrl;
+    link.href = qrDataUrl;
     link.click();
-  }, [dataUrl]);
+  }, [qrDataUrl]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-        <img src={dataUrl} alt="QR Code" className="h-64 w-64" />
-      </div>
-      <div className="flex gap-2">
+    <div className="space-y-4">
+      {/* Main Mode Tabs */}
+      <div className="bg-ctp-surface0 flex gap-1 rounded-xl p-1">
         <button
           type="button"
-          onClick={handleDownload}
-          className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          className={TAB_CLASS(mainMode === 'generate')}
+          onClick={() => {
+            setMainMode('generate');
+          }}
         >
-          <Download className="h-4 w-4" />
-          Download PNG
+          <QrCode className="mr-2 inline h-4 w-4" />
+          Generate
+        </button>
+        <button
+          type="button"
+          className={TAB_CLASS(mainMode === 'decode')}
+          onClick={() => {
+            setMainMode('decode');
+          }}
+        >
+          <ScanLine className="mr-2 inline h-4 w-4" />
+          Decode
         </button>
       </div>
-      <p className="max-w-md text-center text-xs break-all text-slate-500 dark:text-slate-400">
-        {content.length > 100 ? `${content.slice(0, 100)}...` : content}
-      </p>
+
+      {/* Generate Mode */}
+      {mainMode === 'generate' && (
+        <div className="space-y-4">
+          {/* Generate Type Tabs */}
+          <div className="bg-ctp-mantle flex gap-1 rounded-lg p-1">
+            <button
+              type="button"
+              className={`flex-1 cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                generateMode === 'text'
+                  ? 'bg-ctp-surface1 text-ctp-text'
+                  : 'text-ctp-subtext0 hover:text-ctp-text'
+              }`}
+              onClick={() => {
+                setGenerateMode('text');
+              }}
+            >
+              Text / URL
+            </button>
+            <button
+              type="button"
+              className={`flex-1 cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                generateMode === 'vietqr'
+                  ? 'bg-ctp-surface1 text-ctp-text'
+                  : 'text-ctp-subtext0 hover:text-ctp-text'
+              }`}
+              onClick={() => {
+                setGenerateMode('vietqr');
+              }}
+            >
+              VietQR
+            </button>
+          </div>
+
+          {/* Text/URL Input */}
+          {generateMode === 'text' && (
+            <div>
+              <label
+                htmlFor="qr-content"
+                className="text-ctp-subtext1 mb-1.5 block text-sm font-medium"
+              >
+                Content
+              </label>
+              <textarea
+                id="qr-content"
+                value={content}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                }}
+                placeholder="Enter text or URL..."
+                rows={3}
+                className={`${INPUT_CLASS} resize-y`}
+              />
+            </div>
+          )}
+
+          {/* VietQR Inputs */}
+          {generateMode === 'vietqr' && (
+            <>
+              <div>
+                <label
+                  htmlFor="qr-bank"
+                  className="text-ctp-subtext1 mb-1.5 block text-sm font-medium"
+                >
+                  Bank
+                </label>
+                <select
+                  id="qr-bank"
+                  value={bankBin}
+                  onChange={(e) => {
+                    setBankBin(e.target.value);
+                  }}
+                  className={`${INPUT_CLASS} cursor-pointer`}
+                >
+                  <option value="">Select a bank...</option>
+                  {VIETNAM_BANKS.map((bank) => (
+                    <option key={bank.bin} value={bank.bin}>
+                      {bank.name} ({bank.shortName})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="qr-account"
+                    className="text-ctp-subtext1 mb-1.5 block text-sm font-medium"
+                  >
+                    Account Number
+                  </label>
+                  <input
+                    id="qr-account"
+                    type="text"
+                    value={accountNumber}
+                    onChange={(e) => {
+                      setAccountNumber(e.target.value);
+                    }}
+                    placeholder="Enter account number"
+                    className={INPUT_CLASS}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="qr-name"
+                    className="text-ctp-subtext1 mb-1.5 block text-sm font-medium"
+                  >
+                    Account Name
+                  </label>
+                  <input
+                    id="qr-name"
+                    type="text"
+                    value={accountName}
+                    onChange={(e) => {
+                      setAccountName(e.target.value);
+                    }}
+                    placeholder="Owner name (optional)"
+                    className={INPUT_CLASS}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="qr-amount"
+                    className="text-ctp-subtext1 mb-1.5 block text-sm font-medium"
+                  >
+                    Amount (VND)
+                  </label>
+                  <input
+                    id="qr-amount"
+                    type="text"
+                    value={amount}
+                    onChange={(e) => {
+                      setAmount(e.target.value);
+                    }}
+                    placeholder="Optional"
+                    className={INPUT_CLASS}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="qr-desc"
+                    className="text-ctp-subtext1 mb-1.5 block text-sm font-medium"
+                  >
+                    Description
+                  </label>
+                  <input
+                    id="qr-desc"
+                    type="text"
+                    value={description}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
+                    placeholder="Optional"
+                    className={INPUT_CLASS}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Generate Button */}
+          <button
+            type="button"
+            onClick={() => {
+              void handleGenerate();
+            }}
+            className="bg-ctp-blue text-ctp-base hover:bg-ctp-blue/90 w-full cursor-pointer rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
+          >
+            Generate QR Code
+          </button>
+
+          {/* Error */}
+          {generateError && <p className="text-ctp-red text-sm">{generateError}</p>}
+
+          {/* QR Result */}
+          {qrDataUrl && (
+            <div className="flex flex-col items-center gap-4 pt-2">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700">
+                <img src={qrDataUrl} alt="QR Code" className="h-64 w-64" />
+              </div>
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                <Download className="h-4 w-4" />
+                Download PNG
+              </button>
+              {qrContent && (
+                <p className="text-ctp-subtext0 max-w-md text-center text-xs break-all">
+                  {qrContent.length > 100 ? `${qrContent.slice(0, 100)}...` : qrContent}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Decode Mode */}
+      {mainMode === 'decode' && (
+        <div className="space-y-4">
+          {/* Drop Zone */}
+          <div
+            role="button"
+            tabIndex={0}
+            onDrop={handleDrop}
+            onDragOver={(e) => {
+              e.preventDefault();
+            }}
+            onClick={handleDropZoneClick}
+            onKeyDown={handleDropZoneKeyDown}
+            className="border-ctp-surface2 bg-ctp-mantle hover:border-ctp-blue hover:bg-ctp-surface0 focus:border-ctp-blue focus:ring-ctp-blue/20 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-colors focus:ring-2 focus:outline-none"
+          >
+            <Upload className="text-ctp-overlay1 mb-3 h-10 w-10" />
+            <p className="text-ctp-text text-sm font-medium">
+              Drop an image here or click to upload
+            </p>
+            <p className="text-ctp-subtext0 mt-1 text-xs">Supports PNG, JPG, GIF, WebP</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void handleFileSelect(file);
+              }}
+              className="hidden"
+            />
+          </div>
+
+          {/* Preview */}
+          {previewUrl && (
+            <div className="flex justify-center">
+              <img
+                src={previewUrl}
+                alt="QR Preview"
+                className="border-ctp-surface1 max-h-48 rounded-lg border"
+              />
+            </div>
+          )}
+
+          {/* Loading */}
+          {isDecoding && (
+            <div className="text-ctp-subtext1 flex items-center justify-center gap-2 py-4">
+              <div className="border-ctp-blue h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+              Decoding...
+            </div>
+          )}
+
+          {/* Decode Error */}
+          {decodeError && <p className="text-ctp-red text-center text-sm">{decodeError}</p>}
+
+          {/* Decoded Result - uses Strategy Pattern */}
+          {decodedContent && <DecodedResult content={decodedContent} />}
+        </div>
+      )}
     </div>
   );
 }
 
-// Async transformer for QR generation
-const generateQR = async (inputs: Record<string, unknown>): Promise<TransformResult> => {
-  const mode = getSelectInput(inputs, 'mode', MODE_OPTIONS, 'text');
-  const content = getTrimmedInput(inputs, 'content');
-
-  if (mode === 'text') {
-    if (!content) {
-      return instruction('Please enter text or URL to generate QR code');
-    }
-
-    try {
-      const dataUrl = await QRCode.toDataURL(content, {
-        width: 512,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF',
-        },
-        errorCorrectionLevel: 'M',
-      });
-
-      return success(content, {
-        _viewMode: 'qr',
-        _qrData: { dataUrl, content },
-        type: 'Text/URL',
-        length: content.length,
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'QR generation failed';
-      return failure(message);
-    }
-  }
-
-  // VietQR mode
-  const bankBin = getTrimmedInput(inputs, 'bankBin');
-  const accountNumber = getTrimmedInput(inputs, 'accountNumber');
-  const accountName = getTrimmedInput(inputs, 'accountName');
-  const amount = getTrimmedInput(inputs, 'amount');
-  const description = getTrimmedInput(inputs, 'description');
-
-  if (!bankBin || !accountNumber) {
-    return instruction('Please select a bank and enter account number');
-  }
-
-  try {
-    const qrContent = generateVietQRContent(
-      bankBin,
-      accountNumber,
-      amount,
-      description,
-      accountName
-    );
-
-    const dataUrl = await QRCode.toDataURL(qrContent, {
-      width: 512,
-      margin: 2,
-      color: {
-        dark: '#000000',
-        light: '#FFFFFF',
-      },
-      errorCorrectionLevel: 'M',
-    });
-
-    const bank = VIETNAM_BANKS.find((b) => b.bin === bankBin);
-
-    return success(qrContent, {
-      _viewMode: 'qr',
-      _qrData: { dataUrl, content: qrContent },
-      Bank: bank ? `${bank.name} (${bank.shortName})` : bankBin,
-      Account: accountName ? `${accountNumber} (${accountName})` : accountNumber,
-      'Account Name': accountName,
-      Amount: amount ? `${Number(amount).toLocaleString('vi-VN')} VND` : 'Not specified',
-      Message: description,
-    });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'QR generation failed';
-    return failure(message);
-  }
-};
-
 export const qrGenerator: ToolPlugin = {
   id: 'qr',
-  label: 'QR Code Generator',
-  description: 'Generate QR codes for text, URLs, and VietQR bank transfers online',
+  label: 'QR Code Tool',
+  description: 'Generate and decode QR codes for text, URLs, and VietQR bank transfers',
   category: 'dev',
   icon: <QrCode className="h-4 w-4" />,
-  keywords: ['qr', 'code', 'barcode', 'vietqr', 'bank', 'transfer', 'vietnam', 'payment'],
-  isAsync: true,
-  inputs: [
-    {
-      id: 'mode',
-      label: 'Mode',
-      type: 'select',
-      defaultValue: 'text',
-      options: [
-        { value: 'text', label: 'Text / URL' },
-        { value: 'vietqr', label: 'Bank Transfer' },
-      ],
-    },
-    {
-      id: 'content',
-      label: 'Content',
-      type: 'textarea',
-      placeholder: 'Enter text or URL...',
-      rows: 3,
-      visibleWhen: { inputId: 'mode', value: 'text' },
-      sensitive: true,
-    },
-    {
-      id: 'bankBin',
-      label: 'Bank',
-      type: 'select',
-      defaultValue: '',
-      searchable: true,
-      options: [
-        { value: '', label: 'Select a bank...' },
-        ...VIETNAM_BANKS.map((bank) => ({
-          value: bank.bin,
-          label: `${bank.name} (${bank.shortName})`,
-        })),
-      ],
-      visibleWhen: { inputId: 'mode', value: 'vietqr' },
-    },
-    {
-      id: 'accountNumber',
-      label: 'Account Number',
-      type: 'text',
-      placeholder: 'Enter account number',
-      visibleWhen: { inputId: 'mode', value: 'vietqr' },
-      sensitive: true,
-    },
-    {
-      id: 'accountName',
-      label: 'Account Name',
-      type: 'text',
-      placeholder: 'Owner name (optional)',
-      visibleWhen: { inputId: 'mode', value: 'vietqr' },
-      sensitive: true,
-    },
-    {
-      id: 'amount',
-      label: 'Amount (VND)',
-      type: 'text',
-      placeholder: 'Optional - e.g., 100000',
-      helpText: 'Leave empty for any amount',
-      visibleWhen: { inputId: 'mode', value: 'vietqr' },
-      sensitive: true,
-    },
-    {
-      id: 'description',
-      label: 'Description',
-      type: 'text',
-      placeholder: 'Optional - max 25 characters',
-      helpText: 'Transfer description',
-      visibleWhen: { inputId: 'mode', value: 'vietqr' },
-    },
+  keywords: [
+    'qr',
+    'code',
+    'barcode',
+    'vietqr',
+    'bank',
+    'transfer',
+    'vietnam',
+    'payment',
+    'decode',
+    'scan',
+    'read',
+    'wifi',
   ],
-  transformer: generateQR,
+  inputs: [],
+  transformer: () => success(''),
+  customComponent: QRToolComponent,
 };
-
-// Export QR display component for use in tool-output
-export { QRDisplay };

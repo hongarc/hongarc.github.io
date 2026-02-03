@@ -24,6 +24,7 @@
     "diff": "^8.0.2",
     "firebase": "^12.7.0",
     "jsonpath-plus": "^10.3.0",
+    "jsqr": "^1.4.0",
     "lucide-react": "^0.562.0",
     "marked": "^17.0.1",
     "prism-react-renderer": "^2.4.1",

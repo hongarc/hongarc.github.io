@@ -1,6 +1,7 @@
-import { ArrowDownUp, Check, Copy, Database } from 'lucide-react';
+import { ArrowDownUp, Database } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
+import { CopyButton } from '@/components/ui/copy-button';
 import type { ToolPlugin } from '@/types/plugin';
 import { success } from '@/utils';
 
@@ -36,38 +37,6 @@ const parseIsoTimestamp = (iso: string): Date | null => {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? null : date;
 };
-
-// Copy button component
-function CopyButton({ text, label }: { text: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    } catch {
-      // Clipboard API failed
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className={`flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-all ${
-        copied
-          ? 'bg-ctp-green/20 text-ctp-green'
-          : 'text-ctp-subtext1 hover:bg-ctp-surface0 hover:text-ctp-text'
-      }`}
-    >
-      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-      {label ?? (copied ? 'Copied' : 'Copy')}
-    </button>
-  );
-}
 
 // Get initial values based on current time
 const getInitialValues = () => {
