@@ -106,13 +106,9 @@ export const getCharIndexFromClick = (input: HTMLInputElement, offsetX: number):
   return text.length - 1;
 };
 
-export const normalizeTimestamp = (v: string, fallback: string): string => {
+export const normalizeTimestamp = (v: string): string => {
   if (v.length === 20) return v;
-  const fixed = toFixedIso(v);
-  if (fixed) return fixed;
-  if (fallback.length === 20) return fallback;
-  const fixedFallback = toFixedIso(fallback);
-  return fixedFallback ?? TEMPLATE;
+  return toFixedIso(v) ?? TEMPLATE;
 };
 
 export const commitBufferPure = (buffer: string, seg: Segment, currentValue: string): string => {

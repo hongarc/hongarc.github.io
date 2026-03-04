@@ -42,7 +42,7 @@ export function useSegmentedInput({ value, onChange }: UseSegmentedInputOptions)
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.metaKey || e.ctrlKey) return;
 
-      const current = normalizeTimestamp(value, value);
+      const current = normalizeTimestamp(value);
       const segIdx = segmentIndexRef.current;
       const seg = getSegment(segIdx);
 
@@ -109,7 +109,7 @@ export function useSegmentedInput({ value, onChange }: UseSegmentedInputOptions)
   }, [value, onChange, selectSegment]);
 
   const onBlur = useCallback(() => {
-    const current = normalizeTimestamp(value, value);
+    const current = normalizeTimestamp(value);
     const segIdx = segmentIndexRef.current;
     const seg = getSegment(segIdx);
     const buffer = bufferRef.current;
