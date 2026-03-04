@@ -123,6 +123,39 @@ export function useSegmentedInput({ value, onChange }: UseSegmentedInputOptions)
     }
   }, [value, updateAndNotify]);
 
+  const onWheel = useCallback(
+    (e: React.WheelEvent<HTMLInputElement>) => {
+      if (document.activeElement !== inputRef.current) return;
+      e.preventDefault();
+
+      const current = normalizeTimestamp(value);
+      const segIdx = segmentIndexRef.current;
+      const seg = getSegment(segIdx);
+
+      const result = dispatchSegmentKey({
+        key: e.deltaY < 0 ? 'ArrowUp' : 'ArrowDown',
+        shiftKey: false,
+        currentValue: current,
+        segIdx,
+        seg,
+        buffer: bufferRef.current,
+      });
+
+      if (!result) return;
+
+      if (result.buffer !== undefined) {
+        bufferRef.current = result.buffer;
+      }
+      if (result.value !== undefined) {
+        updateAndNotify(result.value);
+      }
+      if (result.segIdx !== undefined) {
+        selectSegment(result.segIdx);
+      }
+    },
+    [value, updateAndNotify, selectSegment]
+  );
+
   const onPaste = useCallback(
     (e: React.ClipboardEvent<HTMLInputElement>) => {
       e.preventDefault();
@@ -139,6 +172,6 @@ export function useSegmentedInput({ value, onChange }: UseSegmentedInputOptions)
 
   return {
     inputRef,
-    handlers: { onKeyDown, onMouseDown, onFocus, onBlur, onPaste },
+    handlers: { onKeyDown, onMouseDown, onFocus, onBlur, onWheel, onPaste },
   };
 }
