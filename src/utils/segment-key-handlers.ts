@@ -176,13 +176,55 @@ const tabHandler: SegmentKeyHandler = {
 
 const backspaceHandler: SegmentKeyHandler = {
   id: 'backspace',
-  matches: (ctx) => ctx.key === 'Backspace',
+  matches: (ctx) => ctx.key === 'Backspace' || ctx.key === 'Delete',
   execute: (ctx) => {
     const { seg, segIdx, currentValue } = ctx;
     return {
       value: replaceSegment(currentValue, seg, seg.min),
       buffer: '',
       segIdx,
+    };
+  },
+};
+
+const homeHandler: SegmentKeyHandler = {
+  id: 'home',
+  matches: (ctx) => ctx.key === 'Home',
+  execute: (ctx) => {
+    const { seg, currentValue, buffer } = ctx;
+    const afterCommit = commitBufferPure(buffer, seg, currentValue);
+    return {
+      value: afterCommit === currentValue ? undefined : afterCommit,
+      buffer: '',
+      segIdx: 0,
+    };
+  },
+};
+
+const endHandler: SegmentKeyHandler = {
+  id: 'end',
+  matches: (ctx) => ctx.key === 'End',
+  execute: (ctx) => {
+    const { seg, currentValue, buffer } = ctx;
+    const afterCommit = commitBufferPure(buffer, seg, currentValue);
+    return {
+      value: afterCommit === currentValue ? undefined : afterCommit,
+      buffer: '',
+      segIdx: SEGMENT_COUNT - 1,
+    };
+  },
+};
+
+const escapeHandler: SegmentKeyHandler = {
+  id: 'escape',
+  matches: (ctx) => ctx.key === 'Escape',
+  execute: (ctx) => {
+    const { seg, currentValue, buffer } = ctx;
+    const afterCommit = commitBufferPure(buffer, seg, currentValue);
+    return {
+      value: afterCommit === currentValue ? undefined : afterCommit,
+      buffer: '',
+      blur: true,
     };
   },
 };
@@ -201,6 +243,9 @@ const handlers: SegmentKeyHandler[] = [
   arrowRightHandler,
   tabHandler,
   backspaceHandler,
+  homeHandler,
+  endHandler,
+  escapeHandler,
   blockOtherKeysHandler,
 ];
 

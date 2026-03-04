@@ -57,8 +57,9 @@ export function useSegmentedInput({ value, onChange }: UseSegmentedInputOptions)
 
       if (!result) return;
 
-      // Let browser handle Tab out (blur)
-      if (!result.blur) {
+      if (result.blur) {
+        inputRef.current?.blur();
+      } else {
         e.preventDefault();
       }
 
