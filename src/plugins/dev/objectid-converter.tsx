@@ -2,6 +2,7 @@ import { ArrowDownUp, Database } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { CopyButton } from '@/components/ui/copy-button';
+import { SegmentedTimestampInput } from '@/components/ui/segmented-timestamp-input';
 import type { ToolPlugin } from '@/types/plugin';
 import { success } from '@/utils';
 
@@ -29,7 +30,7 @@ const generateObjectIdPrefix = (timestamp: number): string => {
 
 // Format date to ISO string without milliseconds for cleaner display
 const formatIsoTimestamp = (date: Date): string => {
-  return date.toISOString().replace('.000Z', 'Z');
+  return date.toISOString().replace(/\.\d{3}Z$/, 'Z');
 };
 
 // Parse ISO timestamp string to Date
@@ -143,17 +144,12 @@ function ObjectIdConverterComponent() {
             </label>
             {timestamp && <CopyButton text={timestamp} />}
           </div>
-          <input
+          <SegmentedTimestampInput
             id="timestamp"
-            type="text"
             value={timestamp}
-            onChange={(e) => {
-              handleTimestampChange(e.target.value);
-            }}
+            onChange={handleTimestampChange}
             placeholder="2024-01-01T00:00:00Z"
-            className={`bg-ctp-mantle border-ctp-surface1 text-ctp-text placeholder:text-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue/20 w-full rounded-lg border px-3 py-2 font-mono text-sm focus:ring-2 focus:outline-none ${
-              lastEdited === 'timestamp' && error ? 'border-ctp-red' : ''
-            }`}
+            hasError={lastEdited === 'timestamp' && !!error}
           />
         </div>
       </div>
