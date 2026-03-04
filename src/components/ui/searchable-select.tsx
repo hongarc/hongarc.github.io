@@ -150,9 +150,9 @@ export function SearchableSelect({
           }
         }}
         onKeyDown={handleKeyDown}
-        className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+        className="border-ctp-surface1 bg-ctp-mantle text-ctp-text flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border px-3.5 py-2.5 text-sm transition-colors focus:border-ctp-blue focus:ring-2 focus:ring-ctp-blue/10 focus:outline-none"
       >
-        <span className={selectedOption ? '' : 'text-slate-400 dark:text-slate-500'}>
+        <span className={selectedOption ? '' : 'text-ctp-overlay0'}>
           {selectedOption?.label ?? placeholder}
         </span>
         <div className="flex items-center gap-1">
@@ -160,24 +160,24 @@ export function SearchableSelect({
             <button
               type="button"
               onClick={handleClear}
-              className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+              className="text-ctp-overlay0 hover:bg-ctp-surface0 hover:text-ctp-subtext1 rounded p-0.5"
             >
               <X className="h-3.5 w-3.5" />
             </button>
           )}
           <ChevronDown
-            className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`text-ctp-overlay0 h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           />
         </div>
       </div>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+        <div className="border-ctp-surface1 bg-ctp-base absolute z-50 mt-1 w-full rounded-lg border shadow-lg">
           {/* Search Input */}
-          <div className="border-b border-slate-200 p-2 dark:border-slate-700">
+          <div className="border-ctp-surface1 border-b p-2">
             <div className="relative">
-              <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="text-ctp-overlay0 absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
               <input
                 ref={inputRef}
                 type="text"
@@ -187,7 +187,7 @@ export function SearchableSelect({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Search..."
-                className="w-full rounded-md border border-slate-200 bg-white py-1.5 pr-3 pl-8 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-500"
+                className="border-ctp-surface1 bg-ctp-mantle text-ctp-text placeholder-ctp-overlay0 w-full rounded-md border py-1.5 pr-3 pl-8 text-sm focus:border-ctp-blue focus:ring-1 focus:ring-ctp-blue/10 focus:outline-none"
               />
             </div>
           </div>
@@ -200,7 +200,7 @@ export function SearchableSelect({
             className="max-h-60 overflow-y-auto p-1"
           >
             {filteredOptions.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
+              <li className="text-ctp-overlay0 px-3 py-2 text-sm">
                 No results found
               </li>
             ) : (
@@ -224,10 +224,10 @@ export function SearchableSelect({
                   tabIndex={-1}
                   className={`cursor-pointer rounded-md px-3 py-2 text-sm transition-colors ${
                     index === highlightedIndex
-                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
+                      ? 'bg-ctp-blue/10 text-ctp-blue'
                       : option.value === value
-                        ? 'bg-slate-100 dark:bg-slate-700'
-                        : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50'
+                        ? 'bg-ctp-surface0'
+                        : 'text-ctp-text hover:bg-ctp-surface0'
                   }`}
                 >
                   {option.label}

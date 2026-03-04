@@ -89,7 +89,7 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
             />
           );
         }
-        // Use segmented control for 5 or fewer options, dropdown for more
+        // Use segmented control for 5 or fewer options, searchable select for more
         if (options.length <= 5) {
           return (
             <SegmentedControl
@@ -103,21 +103,16 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
           );
         }
         return (
-          <select
+          <SearchableSelect
             id={config.id}
+            options={options}
             value={getStringValue(value)}
-            onChange={(e) => {
-              onChange(e.target.value);
+            onChange={(v) => {
+              onChange(v);
             }}
-            className={`${baseInputClass} cursor-pointer`}
+            placeholder={config.placeholder}
             required={config.required}
-          >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          />
         );
       }
 
