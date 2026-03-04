@@ -28,7 +28,6 @@ export interface SegmentKeyResult {
 }
 
 interface SegmentKeyHandler {
-  id: string;
   matches: (ctx: SegmentKeyContext) => boolean;
   execute: (ctx: SegmentKeyContext) => SegmentKeyResult;
 }
@@ -94,7 +93,6 @@ const executeFourDigitInput = (digit: string, ctx: SegmentKeyContext): SegmentKe
 // --- Handler implementations ---
 
 const digitHandler: SegmentKeyHandler = {
-  id: 'digit',
   matches: (ctx) => /^\d$/.test(ctx.key),
   execute: (ctx) => {
     if (ctx.seg.length === 2) {
@@ -105,7 +103,6 @@ const digitHandler: SegmentKeyHandler = {
 };
 
 const arrowUpDownHandler: SegmentKeyHandler = {
-  id: 'arrowUpDown',
   matches: (ctx) => ctx.key === 'ArrowUp' || ctx.key === 'ArrowDown',
   execute: (ctx) => {
     const { seg, segIdx, currentValue, buffer } = ctx;
@@ -123,7 +120,6 @@ const arrowUpDownHandler: SegmentKeyHandler = {
 };
 
 const arrowLeftHandler: SegmentKeyHandler = {
-  id: 'arrowLeft',
   matches: (ctx) => ctx.key === 'ArrowLeft',
   execute: (ctx) => {
     const { seg, segIdx, currentValue, buffer } = ctx;
@@ -137,7 +133,6 @@ const arrowLeftHandler: SegmentKeyHandler = {
 };
 
 const arrowRightHandler: SegmentKeyHandler = {
-  id: 'arrowRight',
   matches: (ctx) => ctx.key === 'ArrowRight',
   execute: (ctx) => {
     const { seg, segIdx, currentValue, buffer } = ctx;
@@ -151,7 +146,6 @@ const arrowRightHandler: SegmentKeyHandler = {
 };
 
 const tabHandler: SegmentKeyHandler = {
-  id: 'tab',
   matches: (ctx) => ctx.key === 'Tab',
   execute: (ctx) => {
     const { seg, segIdx, currentValue, buffer, shiftKey } = ctx;
@@ -175,7 +169,6 @@ const tabHandler: SegmentKeyHandler = {
 };
 
 const backspaceHandler: SegmentKeyHandler = {
-  id: 'backspace',
   matches: (ctx) => ctx.key === 'Backspace' || ctx.key === 'Delete',
   execute: (ctx) => {
     const { seg, segIdx, currentValue } = ctx;
@@ -188,7 +181,6 @@ const backspaceHandler: SegmentKeyHandler = {
 };
 
 const homeHandler: SegmentKeyHandler = {
-  id: 'home',
   matches: (ctx) => ctx.key === 'Home',
   execute: (ctx) => {
     const { seg, currentValue, buffer } = ctx;
@@ -202,7 +194,6 @@ const homeHandler: SegmentKeyHandler = {
 };
 
 const endHandler: SegmentKeyHandler = {
-  id: 'end',
   matches: (ctx) => ctx.key === 'End',
   execute: (ctx) => {
     const { seg, currentValue, buffer } = ctx;
@@ -216,7 +207,6 @@ const endHandler: SegmentKeyHandler = {
 };
 
 const escapeHandler: SegmentKeyHandler = {
-  id: 'escape',
   matches: (ctx) => ctx.key === 'Escape',
   execute: (ctx) => {
     const { seg, currentValue, buffer } = ctx;
@@ -230,7 +220,6 @@ const escapeHandler: SegmentKeyHandler = {
 };
 
 const blockOtherKeysHandler: SegmentKeyHandler = {
-  id: 'blockOtherKeys',
   matches: (ctx) => ctx.key.length === 1,
   execute: () => ({}),
 };
