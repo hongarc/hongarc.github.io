@@ -1,14 +1,18 @@
 pre-commit:
-  parallel: true
-  jobs:
-    - name: lint
+  commands:
+    lint:
       glob: '*.{ts,tsx}'
-      run: npx eslint --fix {staged_files} && git add {staged_files}
+      run: npx eslint --fix {staged_files}
+      stage_fixed: true
+      priority: 1
 
-    - name: format-ts
+    format-ts:
       glob: '*.{ts,tsx}'
-      run: npx prettier --write {staged_files} && git add {staged_files}
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+      priority: 2
 
-    - name: format-assets
+    format-assets:
       glob: '*.{json,css}'
-      run: npx prettier --write {staged_files} && git add {staged_files}
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
