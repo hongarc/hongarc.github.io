@@ -28,7 +28,7 @@ export function Layout() {
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="bg-ctp-base flex h-screen overflow-hidden">
       {/* Mobile sidebar overlay */}
       {mobileSidebarOpen && (
         <div

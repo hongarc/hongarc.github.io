@@ -37,17 +37,17 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
       <div className="space-y-3">
         {/* Header skeleton */}
         <div className="flex items-center justify-between">
-          <div className="h-5 w-16 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-          <div className="h-8 w-20 animate-pulse rounded-md bg-slate-200 dark:bg-slate-700" />
+          <div className="bg-ctp-surface0 h-5 w-16 animate-pulse rounded" />
+          <div className="bg-ctp-surface0 h-8 w-20 animate-pulse rounded-md" />
         </div>
         {/* Content skeleton */}
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+        <div className="border-ctp-surface1 bg-ctp-mantle rounded-lg border p-4">
           <div className="space-y-3">
-            <div className="h-4 w-full animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-            <div className="h-4 w-5/6 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-            <div className="h-4 w-4/6 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-            <div className="h-4 w-full animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-            <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            <div className="bg-ctp-surface0 h-4 w-full animate-pulse rounded" />
+            <div className="bg-ctp-surface0 h-4 w-5/6 animate-pulse rounded" />
+            <div className="bg-ctp-surface0 h-4 w-4/6 animate-pulse rounded" />
+            <div className="bg-ctp-surface0 h-4 w-full animate-pulse rounded" />
+            <div className="bg-ctp-surface0 h-4 w-3/4 animate-pulse rounded" />
           </div>
         </div>
       </div>
@@ -56,11 +56,11 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
 
   if (!result) {
     return (
-      <div className="flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200/50 bg-white/60 p-8 text-center backdrop-blur-sm transition-all dark:border-slate-700/50 dark:bg-slate-800/20">
-        <div className="rounded-full bg-slate-100 p-3 ring-1 ring-slate-200/50 dark:bg-slate-800 dark:ring-slate-700/50">
-          <FileOutput className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+      <div className="border-ctp-surface1 bg-ctp-mantle flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition-all">
+        <div className="bg-ctp-surface0 ring-ctp-surface1 rounded-full p-3 ring-1">
+          <FileOutput className="text-ctp-overlay0 h-5 w-5" />
         </div>
-        <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
+        <p className="text-ctp-overlay0 mt-3 text-sm font-medium">
           Output will appear here
         </p>
       </div>
@@ -111,13 +111,13 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
       {/* Show header/copy button unless it's a special view that handles its own header (like sections)  */}
       {strategy?.id !== 'sections' && strategy?.id !== 'qr' && (
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Output</span>
+          <span className="text-ctp-subtext1 text-sm font-medium">Output</span>
           <button
             onClick={handleCopy}
             className={`flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all ${
               copied
-                ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400'
-                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'
+                ? 'bg-ctp-green/10 text-ctp-green'
+                : 'text-ctp-overlay0 hover:bg-ctp-surface0 hover:text-ctp-text'
             }`}
           >
             {copied ? (
@@ -146,9 +146,9 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
           {Object.entries(displayMeta).map(([key, value]) => (
             <span
               key={key}
-              className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+              className="bg-ctp-surface0 text-ctp-subtext0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
             >
-              <span className="text-slate-400 dark:text-slate-500">{key}:</span>
+              <span className="text-ctp-overlay0">{key}:</span>
               <span className="ml-1">{String(value)}</span>
             </span>
           ))}

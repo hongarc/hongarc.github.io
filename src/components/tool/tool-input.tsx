@@ -18,7 +18,7 @@ const getStringValue = (value: unknown): string => {
 
 export function ToolInput({ config, value, onChange }: ToolInputProps) {
   const baseInputClass =
-    'w-full rounded-lg border border-slate-200/50 bg-white/50 px-3.5 py-2.5 text-sm text-slate-900 shadow-sm backdrop-blur-sm placeholder-slate-400 transition-all focus:border-blue-500/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-500/50 dark:focus:bg-slate-800';
+    'w-full rounded-lg border border-ctp-surface1 bg-ctp-mantle px-3.5 py-2.5 text-sm text-ctp-text shadow-sm placeholder-ctp-overlay0 transition-all focus:border-ctp-blue focus:outline-none focus:ring-4 focus:ring-ctp-blue/10';
 
   const renderInput = () => {
     switch (config.type) {
@@ -131,9 +131,9 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
               onChange={(e) => {
                 onChange(e.target.checked);
               }}
-              className="h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-2 focus:ring-blue-500/20 dark:border-slate-600 dark:bg-slate-700"
+              className="border-ctp-surface1 bg-ctp-mantle text-ctp-blue h-4 w-4 cursor-pointer rounded transition-colors focus:ring-2 focus:ring-ctp-blue/10"
             />
-            <span className="text-sm text-slate-700 dark:text-slate-300">{config.label}</span>
+            <span className="text-ctp-subtext1 text-sm">{config.label}</span>
           </label>
         );
       }
@@ -150,7 +150,7 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
                 onChange(file);
               }
             }}
-            className={`${baseInputClass} cursor-pointer file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-500/10 dark:file:text-blue-400`}
+            className={`${baseInputClass} cursor-pointer file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-ctp-blue/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ctp-blue hover:file:bg-ctp-blue/20`}
             required={config.required}
           />
         );
@@ -180,15 +180,15 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
       {config.type !== 'checkbox' && (
         <label
           htmlFor={config.id}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="text-ctp-subtext1 block text-sm font-medium"
         >
           {config.label}
-          {config.required && <span className="ml-1 text-red-500">*</span>}
+          {config.required && <span className="text-ctp-red ml-1">*</span>}
         </label>
       )}
       {renderInput()}
       {config.helpText && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">{config.helpText}</p>
+        <p className="text-ctp-overlay0 text-xs">{config.helpText}</p>
       )}
     </div>
   );

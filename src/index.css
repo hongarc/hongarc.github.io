@@ -408,6 +408,22 @@
   --tw-ring-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
 }
 
+/* Ring colors */
+.ring-ctp-surface1 {
+  --tw-ring-color: var(--ctp-surface1);
+}
+
+/* File input pseudo-element */
+.file\:bg-ctp-blue\/10::file-selector-button {
+  background-color: color-mix(in srgb, var(--ctp-blue) 10%, transparent);
+}
+.file\:text-ctp-blue::file-selector-button {
+  color: var(--ctp-blue);
+}
+.hover\:file\:bg-ctp-blue\/20:hover::file-selector-button {
+  background-color: color-mix(in srgb, var(--ctp-blue) 20%, transparent);
+}
+
 /* Border color with opacity */
 .border-ctp-yellow {
   border-color: var(--ctp-yellow);
