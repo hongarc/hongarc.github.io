@@ -22,6 +22,7 @@ import { numberFormatter } from './math/number-formatter';
 import { registry } from './registry';
 import { caseConverter } from './text/case-converter';
 import { htmlEntity } from './text/html-entity';
+import { invisibleCharInspector } from './text/invisible-char-inspector';
 import { lineTools } from './text/line-tools';
 import { loremIpsum } from './text/lorem-ipsum';
 import { slugGenerator } from './text/slug-generator';
@@ -63,6 +64,7 @@ registry.registerAll([
   uuidGenerator,
   slugGenerator,
   wordCounter,
+  invisibleCharInspector,
   lineTools,
   loremIpsum,
   htmlEntity,
