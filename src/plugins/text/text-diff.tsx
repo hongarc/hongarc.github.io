@@ -1,21 +1,28 @@
 import { diffWords, diffLines } from 'diff';
 import { GitCompare } from 'lucide-react';
-import { pipe, map, filter, reduce, join, trim, reject, curry, equals } from 'ramda';
+import { pipe, map, filter, reduce, join, trim, reject, curry, equals, prop, sum } from 'ramda';
 
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, success } from '@/utils';
 
-interface WordDiff {
+export interface WordDiff {
   type: 'equal' | 'added' | 'removed';
   value: string;
 }
 
-interface LineDiffResult {
+export interface LineDiffResult {
   type: 'equal' | 'added' | 'removed';
   content: string;
   oldLineNum?: number;
   newLineNum?: number;
   wordDiffs?: WordDiff[];
+}
+
+export interface DiffData {
+  lines: LineDiffResult[];
+  stats: { insertions: number; deletions: number };
+  viewMode?: 'inline' | 'side-by-side';
+  hasWordHighlighting?: boolean;
 }
 
 // Pure function: transform diff change to WordDiff using Ramda
@@ -42,17 +49,18 @@ const filterWordDiffsByType = curry((excludeType: string, wordDiffs: WordDiff[])
 // Pure function: compute similarity ratio between two lines via word diff
 // Returns 0..1 where 1 means identical, 0 means completely different
 const computeSimilarity = (wordDiffs: WordDiff[]): number => {
-  let equalLen = 0;
-  let totalLen = 0;
-  for (const diff of wordDiffs) {
-    totalLen += diff.value.length;
-    if (diff.type === 'equal') {
-      equalLen += diff.value.length;
-    }
-  }
-  return totalLen === 0 ? 0 : equalLen / totalLen;
+  const lengths = map(
+    pipe(prop('value'), (v: string) => v.length),
+    wordDiffs
+  );
+  const totalLen = sum(lengths);
+  if (totalLen === 0) return 0;
+  const equalLen = sum(map((d: WordDiff) => (d.type === 'equal' ? d.value.length : 0), wordDiffs));
+  return equalLen / totalLen;
 };
 
+// Below 30% shared content, paired lines are too dissimilar for word-level
+// highlighting to be useful — it just highlights nearly everything as changed.
 const WORD_DIFF_SIMILARITY_THRESHOLD = 0.3;
 
 // Pure function: ensure text ends with newline for consistent diffLines comparison

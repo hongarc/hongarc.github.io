@@ -43,8 +43,8 @@ function DiffContent({
             key={i}
             className={`font-bold ${
               part.type === 'delete'
-                ? 'bg-red-200/50 text-red-900 dark:bg-red-500/30 dark:text-red-100'
-                : 'bg-green-200/50 text-green-900 dark:bg-green-500/30 dark:text-green-100'
+                ? 'bg-ctp-red/20 text-ctp-red'
+                : 'bg-ctp-green/20 text-ctp-green'
             }`}
           >
             {part.value}
@@ -83,10 +83,10 @@ function CopyButton({ content }: { content: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-slate-400 opacity-0 transition-all group-hover/row:opacity-100 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+      className="text-ctp-overlay0 hover:bg-ctp-surface1 hover:text-ctp-text flex h-5 w-5 cursor-pointer items-center justify-center rounded opacity-0 transition-all group-hover/row:opacity-100"
       aria-label="Copy line"
     >
-      {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+      {copied ? <Check className="text-ctp-green h-3 w-3" /> : <Copy className="h-3 w-3" />}
     </button>
   );
 }
@@ -139,28 +139,28 @@ function InlineView({ lines }: { lines: DiffLine[] }) {
               data-line-idx={i}
               className={`group/row ${
                 line.type === 'insert'
-                  ? 'bg-green-50 dark:bg-green-500/10'
+                  ? 'bg-ctp-green/10'
                   : line.type === 'delete'
-                    ? 'bg-red-50 dark:bg-red-500/10'
+                    ? 'bg-ctp-red/10'
                     : ''
               }`}
             >
               {/* Old line number */}
-              <td className="w-10 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500">
+              <td className="border-ctp-surface0 text-ctp-overlay0 w-10 border-r px-2 py-0.5 text-right text-xs select-none">
                 {line.type === 'insert' ? '' : line.oldLineNum}
               </td>
               {/* New line number */}
-              <td className="w-10 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500">
+              <td className="border-ctp-surface0 text-ctp-overlay0 w-10 border-r px-2 py-0.5 text-right text-xs select-none">
                 {line.type === 'delete' ? '' : line.newLineNum}
               </td>
               {/* Sign */}
               <td
                 className={`w-6 px-2 py-0.5 text-center font-bold select-none ${
                   line.type === 'insert'
-                    ? 'text-green-600 dark:text-green-400'
+                    ? 'text-ctp-green'
                     : line.type === 'delete'
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-slate-300 dark:text-slate-600'
+                      ? 'text-ctp-red'
+                      : 'text-ctp-overlay0'
                 }`}
               >
                 {line.type === 'insert' ? '+' : line.type === 'delete' ? '-' : ' '}
@@ -169,10 +169,10 @@ function InlineView({ lines }: { lines: DiffLine[] }) {
               <td
                 className={`py-0.5 pr-2 break-all whitespace-pre-wrap ${
                   line.type === 'insert'
-                    ? 'text-green-800 dark:text-green-200'
+                    ? 'text-ctp-green'
                     : line.type === 'delete'
-                      ? 'text-red-800 dark:text-red-200'
-                      : 'text-slate-700 dark:text-slate-300'
+                      ? 'text-ctp-red'
+                      : 'text-ctp-text'
                 }`}
               >
                 <DiffContent content={line.content} parts={line.parts} type={line.type} />
@@ -259,11 +259,11 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
 
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const cell = target.closest('[data-side]') as HTMLElement | null;
+      const cell = target.closest('[data-side]');
       table.classList.remove('selecting-left', 'selecting-right');
-      if (cell?.dataset.side === 'left') {
+      if (cell instanceof HTMLElement && cell.dataset.side === 'left') {
         table.classList.add('selecting-left');
-      } else if (cell?.dataset.side === 'right') {
+      } else if (cell instanceof HTMLElement && cell.dataset.side === 'right') {
         table.classList.add('selecting-right');
       }
     };
@@ -323,114 +323,97 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
   }, [sideBySideLines]);
 
   return (
-    <>
-      <style>{`
-        .selecting-left [data-side="right"],
-        .selecting-right [data-side="left"] {
-          -webkit-user-select: none;
-          user-select: none;
-        }
-      `}</style>
-      <table ref={tableRef} className="w-full border-collapse font-mono text-[13px]">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
-            <th
-              colSpan={3}
-              className="w-1/2 border-r border-slate-200 px-3 py-1.5 text-left text-xs font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-400"
-            >
-              Original
-            </th>
-            <th
-              colSpan={3}
-              className="w-1/2 px-3 py-1.5 text-left text-xs font-semibold text-slate-600 dark:text-slate-400"
-            >
-              New
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sideBySideLines.map((pair, i) => {
-            const leftBg =
-              pair.left?.type === 'delete' ? 'bg-red-50 dark:bg-red-500/10' : '';
-            const rightBg =
-              pair.right?.type === 'insert' ? 'bg-green-50 dark:bg-green-500/10' : '';
+    <table ref={tableRef} className="diff-table w-full border-collapse font-mono text-[13px]">
+      <thead>
+        <tr className="border-ctp-surface0 bg-ctp-surface0 border-b">
+          <th
+            colSpan={3}
+            className="border-ctp-surface0 text-ctp-subtext0 w-1/2 border-r px-3 py-1.5 text-left text-xs font-semibold"
+          >
+            Original
+          </th>
+          <th
+            colSpan={3}
+            className="text-ctp-subtext0 w-1/2 px-3 py-1.5 text-left text-xs font-semibold"
+          >
+            New
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {sideBySideLines.map((pair, i) => {
+          const leftBg = pair.left?.type === 'delete' ? 'bg-ctp-red/10' : '';
+          const rightBg = pair.right?.type === 'insert' ? 'bg-ctp-green/10' : '';
 
-            return (
-              <tr key={i} data-row-idx={i} className="group/row">
-                {/* Left line number */}
-                <td
-                  className={`w-8 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500 ${leftBg}`}
-                >
-                  {pair.left?.oldLineNum ?? ''}
-                </td>
-                {/* Left content */}
-                <td
-                  data-side="left"
-                  className={`w-[calc(50%-2rem-1rem)] break-all whitespace-pre-wrap px-2 py-0.5 ${leftBg} ${
-                    pair.left?.type === 'delete'
-                      ? 'text-red-800 dark:text-red-200'
-                      : 'text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  <DiffContent
-                    content={pair.left?.content ?? ''}
-                    parts={pair.left?.parts}
-                    type="delete"
-                  />
-                </td>
-                {/* Left copy */}
-                <td
-                  className={`w-8 border-r border-slate-200 px-1 py-0.5 select-none dark:border-slate-700 ${leftBg}`}
-                >
-                  {pair.left?.content ? <CopyButton content={pair.left.content} /> : null}
-                </td>
-                {/* Right line number */}
-                <td
-                  className={`w-8 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500 ${rightBg}`}
-                >
-                  {pair.right?.newLineNum ?? ''}
-                </td>
-                {/* Right content */}
-                <td
-                  data-side="right"
-                  className={`break-all whitespace-pre-wrap px-2 py-0.5 ${rightBg} ${
-                    pair.right?.type === 'insert'
-                      ? 'text-green-800 dark:text-green-200'
-                      : 'text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  <DiffContent
-                    content={pair.right?.content ?? ''}
-                    parts={pair.right?.parts}
-                    type="insert"
-                  />
-                </td>
-                {/* Right copy */}
-                <td className={`w-8 px-1 py-0.5 select-none ${rightBg}`}>
-                  {pair.right?.content ? <CopyButton content={pair.right.content} /> : null}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </>
+          return (
+            <tr key={i} data-row-idx={i} className="group/row">
+              {/* Left line number */}
+              <td
+                className={`border-ctp-surface0 text-ctp-overlay0 w-8 border-r px-2 py-0.5 text-right text-xs select-none ${leftBg}`}
+              >
+                {pair.left?.oldLineNum ?? ''}
+              </td>
+              {/* Left content */}
+              <td
+                data-side="left"
+                className={`w-[calc(50%-2rem-1rem)] px-2 py-0.5 break-all whitespace-pre-wrap ${leftBg} ${
+                  pair.left?.type === 'delete' ? 'text-ctp-red' : 'text-ctp-text'
+                }`}
+              >
+                <DiffContent
+                  content={pair.left?.content ?? ''}
+                  parts={pair.left?.parts}
+                  type="delete"
+                />
+              </td>
+              {/* Left copy */}
+              <td className={`border-ctp-surface0 w-8 border-r px-1 py-0.5 select-none ${leftBg}`}>
+                {pair.left?.content ? <CopyButton content={pair.left.content} /> : null}
+              </td>
+              {/* Right line number */}
+              <td
+                className={`border-ctp-surface0 text-ctp-overlay0 w-8 border-r px-2 py-0.5 text-right text-xs select-none ${rightBg}`}
+              >
+                {pair.right?.newLineNum ?? ''}
+              </td>
+              {/* Right content */}
+              <td
+                data-side="right"
+                className={`px-2 py-0.5 break-all whitespace-pre-wrap ${rightBg} ${
+                  pair.right?.type === 'insert' ? 'text-ctp-green' : 'text-ctp-text'
+                }`}
+              >
+                <DiffContent
+                  content={pair.right?.content ?? ''}
+                  parts={pair.right?.parts}
+                  type="insert"
+                />
+              </td>
+              {/* Right copy */}
+              <td className={`w-8 px-1 py-0.5 select-none ${rightBg}`}>
+                {pair.right?.content ? <CopyButton content={pair.right.content} /> : null}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 
 export function DiffView({ lines, stats, viewMode = 'inline' }: DiffViewProps) {
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+    <div className="border-ctp-surface0 overflow-hidden rounded-lg border">
       {/* Stats header */}
-      <div className="flex items-center gap-4 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-700 dark:bg-slate-800/50">
-        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Changes:</span>
-        <span className="flex items-center gap-1 text-xs font-semibold text-green-600 dark:text-green-400">
+      <div className="border-ctp-surface0 bg-ctp-mantle flex items-center gap-4 border-b px-4 py-2">
+        <span className="text-ctp-subtext0 text-xs font-medium">Changes:</span>
+        <span className="text-ctp-green flex items-center gap-1 text-xs font-semibold">
           <span>+{stats.insertions}</span>
         </span>
-        <span className="flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400">
+        <span className="text-ctp-red flex items-center gap-1 text-xs font-semibold">
           <span>-{stats.deletions}</span>
         </span>
-        <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">
+        <span className="text-ctp-overlay0 ml-auto text-xs">
           Select text to copy multiple lines
         </span>
       </div>

@@ -1,26 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import type { DiffData } from '@/plugins/text/text-diff';
 import { textDiff } from '@/plugins/text/text-diff';
-
-interface WordDiff {
-  type: 'equal' | 'added' | 'removed';
-  value: string;
-}
-
-interface LineDiffResult {
-  type: 'equal' | 'added' | 'removed';
-  content: string;
-  oldLineNum?: number;
-  newLineNum?: number;
-  wordDiffs?: WordDiff[];
-}
-
-interface DiffData {
-  lines: LineDiffResult[];
-  stats: { insertions: number; deletions: number };
-  viewMode?: 'inline' | 'side-by-side';
-  hasWordHighlighting?: boolean;
-}
 
 describe('Text Diff Plugin', () => {
   it('should identify intra-line differences for single line modification', async () => {

@@ -455,6 +455,13 @@
   background-color: var(--ctp-surface1);
 }
 
+/* Diff table: isolate mouse selection to one side in side-by-side view */
+.diff-table.selecting-left [data-side='right'],
+.diff-table.selecting-right [data-side='left'] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
