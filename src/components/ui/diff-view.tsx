@@ -250,13 +250,34 @@ function buildSideBySideLines(lines: DiffLine[]): SideBySideLine[] {
 
 function SideBySideView({ lines }: { lines: DiffLine[] }) {
   const sideBySideLines = buildSideBySideLines(lines);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const rightRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
 
-  // Handle copy event to preserve newlines for left side
+  // Isolate selection: mousedown on left disables right selection, and vice versa
   useEffect(() => {
-    const container = leftRef.current;
-    if (!container) return;
+    const table = tableRef.current;
+    if (!table) return;
+
+    const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const cell = target.closest('[data-side]') as HTMLElement | null;
+      table.classList.remove('selecting-left', 'selecting-right');
+      if (cell?.dataset.side === 'left') {
+        table.classList.add('selecting-left');
+      } else if (cell?.dataset.side === 'right') {
+        table.classList.add('selecting-right');
+      }
+    };
+
+    table.addEventListener('mousedown', handleMouseDown);
+    return () => {
+      table.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
+
+  // Handle copy event to preserve newlines for the selected side
+  useEffect(() => {
+    const table = tableRef.current;
+    if (!table) return;
 
     const handleCopy = (e: ClipboardEvent) => {
       const selection = globalThis.getSelection();
@@ -264,14 +285,27 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
 
       const range = selection.getRangeAt(0);
       const selectedLines: string[] = [];
+      const side = table.classList.contains('selecting-left')
+        ? 'left'
+        : table.classList.contains('selecting-right')
+          ? 'right'
+          : null;
 
-      const rows = container.querySelectorAll('tr[data-left-idx]');
+      const rows = table.querySelectorAll('tr[data-row-idx]');
       for (const row of rows) {
         if (range.intersectsNode(row) && row instanceof HTMLElement) {
-          const idx = Number.parseInt(row.dataset.leftIdx ?? '-1', 10);
-          const content = sideBySideLines[idx]?.left?.content;
-          if (idx >= 0 && content !== undefined) {
-            selectedLines.push(content);
+          const idx = Number.parseInt(row.dataset.rowIdx ?? '-1', 10);
+          const pair = sideBySideLines[idx];
+          if (idx >= 0 && pair) {
+            const content =
+              side === 'left'
+                ? pair.left?.content
+                : side === 'right'
+                  ? pair.right?.content
+                  : (pair.right?.content ?? pair.left?.content);
+            if (content !== undefined) {
+              selectedLines.push(content);
+            }
           }
         }
       }
@@ -282,145 +316,105 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
       }
     };
 
-    container.addEventListener('copy', handleCopy);
+    table.addEventListener('copy', handleCopy);
     return () => {
-      container.removeEventListener('copy', handleCopy);
-    };
-  }, [sideBySideLines]);
-
-  // Handle copy event to preserve newlines for right side
-  useEffect(() => {
-    const container = rightRef.current;
-    if (!container) return;
-
-    const handleCopy = (e: ClipboardEvent) => {
-      const selection = globalThis.getSelection();
-      if (!selection || selection.rangeCount === 0) return;
-
-      const range = selection.getRangeAt(0);
-      const selectedLines: string[] = [];
-
-      const rows = container.querySelectorAll('tr[data-right-idx]');
-      for (const row of rows) {
-        if (range.intersectsNode(row) && row instanceof HTMLElement) {
-          const idx = Number.parseInt(row.dataset.rightIdx ?? '-1', 10);
-          const content = sideBySideLines[idx]?.right?.content;
-          if (idx >= 0 && content !== undefined) {
-            selectedLines.push(content);
-          }
-        }
-      }
-
-      if (selectedLines.length > 0) {
-        e.preventDefault();
-        e.clipboardData?.setData('text/plain', selectedLines.join('\n'));
-      }
-    };
-
-    container.addEventListener('copy', handleCopy);
-    return () => {
-      container.removeEventListener('copy', handleCopy);
+      table.removeEventListener('copy', handleCopy);
     };
   }, [sideBySideLines]);
 
   return (
-    <div className="grid grid-cols-2 divide-x divide-slate-200 dark:divide-slate-700">
-      {/* Left side (Original) */}
-      <div ref={leftRef} className="overflow-x-auto">
-        <table className="w-full border-collapse font-mono text-[13px]">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
-              <th className="px-3 py-1.5 text-left text-xs font-semibold text-slate-600 dark:text-slate-400">
-                Original
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sideBySideLines.map((pair, i) => (
-              <tr
-                key={i}
-                data-left-idx={i}
-                className={`group/row ${
-                  pair.left?.type === 'delete' ? 'bg-red-50 dark:bg-red-500/10' : ''
-                }`}
-              >
-                <td className="flex items-center">
-                  <span className="w-8 flex-shrink-0 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500">
-                    {pair.left?.oldLineNum ?? ''}
-                  </span>
-                  <span
-                    className={`min-h-[1.5rem] flex-1 px-2 py-0.5 break-all whitespace-pre-wrap ${
-                      pair.left?.type === 'delete'
-                        ? 'text-red-800 dark:text-red-200'
-                        : 'text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <DiffContent
-                      content={pair.left?.content ?? ''}
-                      parts={pair.left?.parts}
-                      type="delete"
-                    />
-                  </span>
-                  {pair.left?.content && (
-                    <span className="flex-shrink-0 px-1">
-                      <CopyButton content={pair.left.content} />
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <>
+      <style>{`
+        .selecting-left [data-side="right"],
+        .selecting-right [data-side="left"] {
+          -webkit-user-select: none;
+          user-select: none;
+        }
+      `}</style>
+      <table ref={tableRef} className="w-full border-collapse font-mono text-[13px]">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+            <th
+              colSpan={3}
+              className="w-1/2 border-r border-slate-200 px-3 py-1.5 text-left text-xs font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-400"
+            >
+              Original
+            </th>
+            <th
+              colSpan={3}
+              className="w-1/2 px-3 py-1.5 text-left text-xs font-semibold text-slate-600 dark:text-slate-400"
+            >
+              New
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sideBySideLines.map((pair, i) => {
+            const leftBg =
+              pair.left?.type === 'delete' ? 'bg-red-50 dark:bg-red-500/10' : '';
+            const rightBg =
+              pair.right?.type === 'insert' ? 'bg-green-50 dark:bg-green-500/10' : '';
 
-      {/* Right side (New) */}
-      <div ref={rightRef} className="overflow-x-auto">
-        <table className="w-full border-collapse font-mono text-[13px]">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
-              <th className="px-3 py-1.5 text-left text-xs font-semibold text-slate-600 dark:text-slate-400">
-                New
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sideBySideLines.map((pair, i) => (
-              <tr
-                key={i}
-                data-right-idx={i}
-                className={`group/row ${
-                  pair.right?.type === 'insert' ? 'bg-green-50 dark:bg-green-500/10' : ''
-                }`}
-              >
-                <td className="flex items-center">
-                  <span className="w-8 flex-shrink-0 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500">
-                    {pair.right?.newLineNum ?? ''}
-                  </span>
-                  <span
-                    className={`min-h-[1.5rem] flex-1 px-2 py-0.5 break-all whitespace-pre-wrap ${
-                      pair.right?.type === 'insert'
-                        ? 'text-green-800 dark:text-green-200'
-                        : 'text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <DiffContent
-                      content={pair.right?.content ?? ''}
-                      parts={pair.right?.parts}
-                      type="insert"
-                    />
-                  </span>
-                  {pair.right?.content && (
-                    <span className="flex-shrink-0 px-1">
-                      <CopyButton content={pair.right.content} />
-                    </span>
-                  )}
+            return (
+              <tr key={i} data-row-idx={i} className="group/row">
+                {/* Left line number */}
+                <td
+                  className={`w-8 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500 ${leftBg}`}
+                >
+                  {pair.left?.oldLineNum ?? ''}
+                </td>
+                {/* Left content */}
+                <td
+                  data-side="left"
+                  className={`w-[calc(50%-2rem-1rem)] break-all whitespace-pre-wrap px-2 py-0.5 ${leftBg} ${
+                    pair.left?.type === 'delete'
+                      ? 'text-red-800 dark:text-red-200'
+                      : 'text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <DiffContent
+                    content={pair.left?.content ?? ''}
+                    parts={pair.left?.parts}
+                    type="delete"
+                  />
+                </td>
+                {/* Left copy */}
+                <td
+                  className={`w-8 border-r border-slate-200 px-1 py-0.5 select-none dark:border-slate-700 ${leftBg}`}
+                >
+                  {pair.left?.content ? <CopyButton content={pair.left.content} /> : null}
+                </td>
+                {/* Right line number */}
+                <td
+                  className={`w-8 border-r border-slate-200 px-2 py-0.5 text-right text-xs text-slate-400 select-none dark:border-slate-700 dark:text-slate-500 ${rightBg}`}
+                >
+                  {pair.right?.newLineNum ?? ''}
+                </td>
+                {/* Right content */}
+                <td
+                  data-side="right"
+                  className={`break-all whitespace-pre-wrap px-2 py-0.5 ${rightBg} ${
+                    pair.right?.type === 'insert'
+                      ? 'text-green-800 dark:text-green-200'
+                      : 'text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <DiffContent
+                    content={pair.right?.content ?? ''}
+                    parts={pair.right?.parts}
+                    type="insert"
+                  />
+                </td>
+                {/* Right copy */}
+                <td className={`w-8 px-1 py-0.5 select-none ${rightBg}`}>
+                  {pair.right?.content ? <CopyButton content={pair.right.content} /> : null}
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+            );
+          })}
+        </tbody>
+      </table>
+    </>
   );
 }
 

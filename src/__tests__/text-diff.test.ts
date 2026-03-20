@@ -93,4 +93,28 @@ describe('Text Diff Plugin', () => {
     expect(modDel.wordDiffs?.some((p) => p.type === 'removed' && p.value === 'changes')).toBe(true);
     expect(modIns.wordDiffs?.some((p) => p.type === 'added' && p.value === 'fixed')).toBe(true);
   });
+
+  it('should match common trailing lines when only one text has extra lines at the end', async () => {
+    const oldText = 'AAA=xxx\nBBB=xxx\nCCC=xxx';
+    const newText = 'AAA=xxx\nBBB=xxx';
+
+    const result = await textDiff.transformer({ oldText, newText });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+
+    const diffData = result.meta?._diffData as DiffData;
+
+    // BBB=xxx should be equal in both, only CCC=xxx should be removed
+    const bbbLine = diffData.lines.find((l) => l.content === 'BBB=xxx');
+    expect(bbbLine).toBeDefined();
+    expect(bbbLine?.type).toBe('equal');
+
+    const cccLine = diffData.lines.find((l) => l.content === 'CCC=xxx');
+    expect(cccLine).toBeDefined();
+    expect(cccLine?.type).toBe('removed');
+
+    expect(diffData.stats.deletions).toBe(1);
+    expect(diffData.stats.insertions).toBe(0);
+  });
 });

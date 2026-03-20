@@ -39,9 +39,29 @@ const filterWordDiffsByType = curry((excludeType: string, wordDiffs: WordDiff[])
   reject((diff: WordDiff) => equals(excludeType, diff.type), wordDiffs)
 );
 
+// Pure function: compute similarity ratio between two lines via word diff
+// Returns 0..1 where 1 means identical, 0 means completely different
+const computeSimilarity = (wordDiffs: WordDiff[]): number => {
+  let equalLen = 0;
+  let totalLen = 0;
+  for (const diff of wordDiffs) {
+    totalLen += diff.value.length;
+    if (diff.type === 'equal') {
+      equalLen += diff.value.length;
+    }
+  }
+  return totalLen === 0 ? 0 : equalLen / totalLen;
+};
+
+const WORD_DIFF_SIMILARITY_THRESHOLD = 0.3;
+
+// Pure function: ensure text ends with newline for consistent diffLines comparison
+const ensureTrailingNewline = (text: string): string =>
+  text.length > 0 && !text.endsWith('\n') ? `${text}\n` : text;
+
 // Pure function: process lines and add word-level diffs
 const processLinesWithWordDiff = (oldText: string, newText: string): LineDiffResult[] => {
-  const diffResults = diffLines(oldText, newText);
+  const diffResults = diffLines(ensureTrailingNewline(oldText), ensureTrailingNewline(newText));
   const lines: LineDiffResult[] = [];
   let oldLineNum = 1;
   let newLineNum = 1;
@@ -96,9 +116,11 @@ const processLinesWithWordDiff = (oldText: string, newText: string): LineDiffRes
         newLine: next.content,
       });
 
-      // Split word diffs between removed and added lines using Ramda
-      current.wordDiffs = filterWordDiffsByType('added', wordDiffs);
-      next.wordDiffs = filterWordDiffsByType('removed', wordDiffs);
+      // Only apply word-level highlighting if lines are sufficiently similar
+      if (computeSimilarity(wordDiffs) >= WORD_DIFF_SIMILARITY_THRESHOLD) {
+        current.wordDiffs = filterWordDiffsByType('added', wordDiffs);
+        next.wordDiffs = filterWordDiffsByType('removed', wordDiffs);
+      }
 
       i++; // Skip next line as we processed the pair
     }
