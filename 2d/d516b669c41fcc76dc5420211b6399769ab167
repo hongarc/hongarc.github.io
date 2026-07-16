@@ -1,0 +1,24 @@
+src/components/tool/output-strategies/registry.ts
+  s_f2957c71ac7697::t_816c8e4c5bb479 4,20-23
+  s_f2957c71ac7697::t_f7ed2adf893958 24
+src/components/ui/sectioned-output.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 28,52
+src/plugins/dev/jwt-decoder.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 199-200,203-208,210-214,300-301,303-307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2dd516b669c41fcc76dc5420211b6399769ab167",
+  "prompts": {},
+  "sessions": {
+    "s_f2957c71ac7697": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f389f5ce-b77d-40b8-abe3-d87741202025",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "hongarc <hongtu@everfit.io>"
+    }
+  }
+}
