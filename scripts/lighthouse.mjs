@@ -3,16 +3,7 @@ import { execSync, spawn } from 'node:child_process';
 import { existsSync, statSync, writeFileSync } from 'node:fs';
 
 // Routes to test (from vite.config.ts)
-const routes = [
-  '/',
-  '/json',
-  '/hash',
-  '/uuid',
-  '/base64',
-  '/password',
-  '/jwt',
-  '/timestamp',
-];
+const routes = ['/', '/json', '/hash', '/uuid', '/base64', '/password', '/jwt', '/timestamp'];
 
 const PORT = 4173;
 const BASE_URL = `http://localhost:${PORT}`;
@@ -80,7 +71,8 @@ try {
       results.push(scores);
 
       const perfColor = scores.performance >= 90 ? '🟢' : scores.performance >= 50 ? '🟡' : '🔴';
-      const a11yColor = scores.accessibility >= 90 ? '🟢' : scores.accessibility >= 50 ? '🟡' : '🔴';
+      const a11yColor =
+        scores.accessibility >= 90 ? '🟢' : scores.accessibility >= 50 ? '🟡' : '🔴';
       const bpColor = scores.bestPractices >= 90 ? '🟢' : scores.bestPractices >= 50 ? '🟡' : '🔴';
       const seoColor = scores.seo >= 90 ? '🟢' : scores.seo >= 50 ? '🟡' : '🔴';
 

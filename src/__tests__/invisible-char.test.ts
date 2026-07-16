@@ -48,25 +48,19 @@ describe('Invisible Char Domain', () => {
       expect(result.invisibleChars).toBe(1);
       expect(result.visibleChars).toBe(10);
       expect(result.totalChars).toBe(11);
-      expect(result.findings).toMatchObject([
-        { index: 5, info: { unicode: 'U+200B' } },
-      ]);
+      expect(result.findings).toMatchObject([{ index: 5, info: { unicode: 'U+200B' } }]);
     });
 
     it('should detect word joiner', () => {
       const result = analyzeText('hidden:\u2060email@test.com');
       expect(result.invisibleChars).toBe(1);
-      expect(result.findings).toMatchObject([
-        { index: 7, info: { name: 'Word Joiner' } },
-      ]);
+      expect(result.findings).toMatchObject([{ index: 7, info: { name: 'Word Joiner' } }]);
     });
 
     it('should detect BOM', () => {
       const result = analyzeText('\uFEFFhello');
       expect(result.invisibleChars).toBe(1);
-      expect(result.findings).toMatchObject([
-        { index: 0, info: { unicode: 'U+FEFF' } },
-      ]);
+      expect(result.findings).toMatchObject([{ index: 0, info: { unicode: 'U+FEFF' } }]);
     });
 
     it('should not flag non-breaking space (has visible width)', () => {
@@ -85,17 +79,13 @@ describe('Invisible Char Domain', () => {
       const result = analyzeText('\u200Bhello\u200Bworld\u200B');
       expect(result.invisibleChars).toBe(3);
       expect(result.grouped).toHaveLength(1);
-      expect(result.grouped).toMatchObject([
-        { count: 3, positions: [0, 6, 12] },
-      ]);
+      expect(result.grouped).toMatchObject([{ count: 3, positions: [0, 6, 12] }]);
     });
 
     it('should detect variation selectors', () => {
       const result = analyzeText('a\uFE0Fb');
       expect(result.invisibleChars).toBe(1);
-      expect(result.findings).toMatchObject([
-        { info: { name: 'Variation Selector 16' } },
-      ]);
+      expect(result.findings).toMatchObject([{ info: { name: 'Variation Selector 16' } }]);
     });
 
     it('should detect bidi formatting chars', () => {
@@ -168,19 +158,13 @@ describe('Invisible Char Domain', () => {
     it('should handle invisible char at start', () => {
       const segments = buildSegments('\u200Bhello');
       expect(segments).toHaveLength(2);
-      expect(segments).toMatchObject([
-        { type: 'invisible' },
-        { type: 'text', value: 'hello' },
-      ]);
+      expect(segments).toMatchObject([{ type: 'invisible' }, { type: 'text', value: 'hello' }]);
     });
 
     it('should handle invisible char at end', () => {
       const segments = buildSegments('hello\u200B');
       expect(segments).toHaveLength(2);
-      expect(segments).toMatchObject([
-        { type: 'text', value: 'hello' },
-        { type: 'invisible' },
-      ]);
+      expect(segments).toMatchObject([{ type: 'text', value: 'hello' }, { type: 'invisible' }]);
     });
 
     it('should handle consecutive invisible chars', () => {

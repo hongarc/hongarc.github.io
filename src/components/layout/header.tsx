@@ -128,12 +128,8 @@ export function Header({ onShowShortcuts: _onShowShortcuts }: HeaderProps) {
           <div className="hidden items-center gap-3 md:flex">
             <span className="text-ctp-overlay0">{selectedTool.icon}</span>
             <div>
-              <h2 className="text-ctp-text text-sm font-semibold">
-                {selectedTool.label}
-              </h2>
-              <p className="text-ctp-overlay0 text-xs">
-                {selectedTool.description}
-              </p>
+              <h2 className="text-ctp-text text-sm font-semibold">{selectedTool.label}</h2>
+              <p className="text-ctp-overlay0 text-xs">{selectedTool.description}</p>
             </div>
           </div>
         )}

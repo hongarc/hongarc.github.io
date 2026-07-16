@@ -65,16 +65,17 @@ function InvisibleCharInspectorComponent() {
             >
               Fill Example
             </button>
-            {showClearHint && (
-              <span className="text-ctp-peach text-xs">Clear text first</span>
-            )}
+            {showClearHint && <span className="text-ctp-peach text-xs">Clear text first</span>}
           </div>
           {text && <CopyButton text={text} />}
         </div>
         <textarea
           id="inspect-input"
           value={text}
-          onChange={(e) => { setText(e.target.value); setShowClearHint(false); }}
+          onChange={(e) => {
+            setText(e.target.value);
+            setShowClearHint(false);
+          }}
           placeholder="Paste text here to detect invisible characters..."
           rows={6}
           className="bg-ctp-mantle border-ctp-surface1 text-ctp-text placeholder:text-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue/20 w-full rounded-lg border px-3 py-2 font-mono text-sm focus:ring-2 focus:outline-none"
@@ -86,15 +87,17 @@ function InvisibleCharInspectorComponent() {
         <div>
           <div className="text-ctp-subtext1 mb-1.5 text-sm font-medium">Character Map</div>
           <div className="bg-ctp-mantle border-ctp-surface1 max-h-60 overflow-auto rounded-lg border p-2">
-            <span className="break-words whitespace-pre-wrap font-mono text-sm">
+            <span className="font-mono text-sm break-words whitespace-pre-wrap">
               {segments.map((seg, i) =>
                 seg.type === 'text' ? (
-                  <span key={i} className="text-ctp-text">{seg.value}</span>
+                  <span key={i} className="text-ctp-text">
+                    {seg.value}
+                  </span>
                 ) : (
                   <span
                     key={i}
                     title={seg.info.name}
-                    className={`mx-0.5 inline-block rounded px-1 py-0.5 align-baseline font-mono text-[10px] font-semibold leading-none ring-1 transition-colors ${
+                    className={`mx-0.5 inline-block rounded px-1 py-0.5 align-baseline font-mono text-[10px] leading-none font-semibold ring-1 transition-colors ${
                       hoveredPosition === seg.index
                         ? 'bg-ctp-red text-ctp-base ring-ctp-red scale-110'
                         : 'bg-ctp-red/20 text-ctp-red ring-ctp-red/40'
@@ -102,7 +105,7 @@ function InvisibleCharInspectorComponent() {
                   >
                     {seg.info.unicode}
                   </span>
-                ),
+                )
               )}
             </span>
           </div>
@@ -140,30 +143,31 @@ function InvisibleCharInspectorComponent() {
               <div key={g.info.codePoint} className="bg-ctp-base rounded px-2 py-1.5 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-ctp-text font-medium">{g.info.name}</span>
-                  <span className="text-ctp-subtext0">
-                    {String(g.count)}&times;
-                  </span>
+                  <span className="text-ctp-subtext0">{String(g.count)}&times;</span>
                 </div>
                 <div className="text-ctp-subtext1 mt-1 flex flex-wrap gap-x-4 gap-y-0.5 font-mono">
                   <span>{g.info.unicode}</span>
                   <span>{g.info.html}</span>
                   <span>
                     at{' '}
-                    {(g.positions.length <= 10
-                      ? g.positions
-                      : g.positions.slice(0, 10)
-                    ).map((pos, pi) => (
-                      <span key={pos}>
-                        {pi > 0 && ', '}
-                        <span
-                          onMouseEnter={() => { setHoveredPosition(pos); }}
-                          onMouseLeave={() => { setHoveredPosition(null); }}
-                          className="hover:text-ctp-red cursor-pointer underline decoration-dotted"
-                        >
-                          {String(pos)}
+                    {(g.positions.length <= 10 ? g.positions : g.positions.slice(0, 10)).map(
+                      (pos, pi) => (
+                        <span key={pos}>
+                          {pi > 0 && ', '}
+                          <span
+                            onMouseEnter={() => {
+                              setHoveredPosition(pos);
+                            }}
+                            onMouseLeave={() => {
+                              setHoveredPosition(null);
+                            }}
+                            className="hover:text-ctp-red cursor-pointer underline decoration-dotted"
+                          >
+                            {String(pos)}
+                          </span>
                         </span>
-                      </span>
-                    ))}
+                      )
+                    )}
                     {g.positions.length > 10 && '…'}
                   </span>
                 </div>
@@ -181,7 +185,12 @@ function InvisibleCharInspectorComponent() {
       )}
 
       {/* Known characters reference */}
-      <details open={refOpen} onToggle={(e) => { setRefOpen(e.currentTarget.open); }}>
+      <details
+        open={refOpen}
+        onToggle={(e) => {
+          setRefOpen(e.currentTarget.open);
+        }}
+      >
         <summary className="text-ctp-subtext0 hover:text-ctp-subtext1 cursor-pointer text-xs transition-colors">
           Known invisible characters reference ({String(INVISIBLE_CHARS.length)})
         </summary>

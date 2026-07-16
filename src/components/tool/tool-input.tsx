@@ -126,7 +126,7 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
               onChange={(e) => {
                 onChange(e.target.checked);
               }}
-              className="border-ctp-surface1 bg-ctp-mantle text-ctp-blue h-4 w-4 cursor-pointer rounded transition-colors focus:ring-2 focus:ring-ctp-blue/10"
+              className="border-ctp-surface1 bg-ctp-mantle text-ctp-blue focus:ring-ctp-blue/10 h-4 w-4 cursor-pointer rounded transition-colors focus:ring-2"
             />
             <span className="text-ctp-subtext1 text-sm">{config.label}</span>
           </label>
@@ -145,7 +145,7 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
                 onChange(file);
               }
             }}
-            className={`${baseInputClass} cursor-pointer file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-ctp-blue/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ctp-blue hover:file:bg-ctp-blue/20`}
+            className={`${baseInputClass} file:bg-ctp-blue/10 file:text-ctp-blue hover:file:bg-ctp-blue/20 cursor-pointer file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:px-3 file:py-1.5 file:text-sm file:font-medium`}
             required={config.required}
           />
         );
@@ -173,18 +173,13 @@ export function ToolInput({ config, value, onChange }: ToolInputProps) {
   return (
     <div className="space-y-1.5">
       {config.type !== 'checkbox' && (
-        <label
-          htmlFor={config.id}
-          className="text-ctp-subtext1 block text-sm font-medium"
-        >
+        <label htmlFor={config.id} className="text-ctp-subtext1 block text-sm font-medium">
           {config.label}
           {config.required && <span className="text-ctp-red ml-1">*</span>}
         </label>
       )}
       {renderInput()}
-      {config.helpText && (
-        <p className="text-ctp-overlay0 text-xs">{config.helpText}</p>
-      )}
+      {config.helpText && <p className="text-ctp-overlay0 text-xs">{config.helpText}</p>}
     </div>
   );
 }

@@ -449,13 +449,14 @@ function QRToolComponent() {
           {/* QR Result */}
           {qrDataUrl && (
             <div className="flex flex-col items-center gap-4 pt-2">
-              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700">
+              {/* bg-white is intentional: a QR code needs a white quiet zone to stay scannable in both themes */}
+              <div className="border-ctp-surface1 rounded-xl border bg-white p-4 shadow-sm">
                 <img src={qrDataUrl} alt="QR Code" className="h-64 w-64" />
               </div>
               <button
                 type="button"
                 onClick={handleDownload}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                className="bg-ctp-blue/20 text-ctp-blue hover:bg-ctp-blue/30 flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
               >
                 <Download className="h-4 w-4" />
                 Download PNG

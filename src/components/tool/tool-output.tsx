@@ -60,9 +60,7 @@ export function ToolOutput({ result, isProcessing }: ToolOutputProps) {
         <div className="bg-ctp-surface0 ring-ctp-surface1 rounded-full p-3 ring-1">
           <FileOutput className="text-ctp-overlay0 h-5 w-5" />
         </div>
-        <p className="text-ctp-overlay0 mt-3 text-sm font-medium">
-          Output will appear here
-        </p>
+        <p className="text-ctp-overlay0 mt-3 text-sm font-medium">Output will appear here</p>
       </div>
     );
   }

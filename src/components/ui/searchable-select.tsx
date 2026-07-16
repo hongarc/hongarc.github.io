@@ -150,7 +150,7 @@ export function SearchableSelect({
           }
         }}
         onKeyDown={handleKeyDown}
-        className="border-ctp-surface1 bg-ctp-mantle text-ctp-text flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border px-3.5 py-2.5 text-sm transition-colors focus:border-ctp-blue focus:ring-2 focus:ring-ctp-blue/10 focus:outline-none"
+        className="border-ctp-surface1 bg-ctp-mantle text-ctp-text focus:border-ctp-blue focus:ring-ctp-blue/10 flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border px-3.5 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none"
       >
         <span className={selectedOption ? '' : 'text-ctp-overlay0'}>
           {selectedOption?.label ?? placeholder}
@@ -187,7 +187,7 @@ export function SearchableSelect({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Search..."
-                className="border-ctp-surface1 bg-ctp-mantle text-ctp-text placeholder-ctp-overlay0 w-full rounded-md border py-1.5 pr-3 pl-8 text-sm focus:border-ctp-blue focus:ring-1 focus:ring-ctp-blue/10 focus:outline-none"
+                className="border-ctp-surface1 bg-ctp-mantle text-ctp-text placeholder-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue/10 w-full rounded-md border py-1.5 pr-3 pl-8 text-sm focus:ring-1 focus:outline-none"
               />
             </div>
           </div>
@@ -200,9 +200,7 @@ export function SearchableSelect({
             className="max-h-60 overflow-y-auto p-1"
           >
             {filteredOptions.length === 0 ? (
-              <li className="text-ctp-overlay0 px-3 py-2 text-sm">
-                No results found
-              </li>
+              <li className="text-ctp-overlay0 px-3 py-2 text-sm">No results found</li>
             ) : (
               filteredOptions.map((option, index) => (
                 <li

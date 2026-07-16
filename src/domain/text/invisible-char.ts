@@ -1,13 +1,4 @@
-import {
-  filter,
-  groupBy,
-  join,
-  length,
-  map,
-  pipe,
-  prop,
-  reject,
-} from 'ramda';
+import { filter, groupBy, join, length, map, pipe, prop, reject } from 'ramda';
 
 // ---------------------------------------------------------------------------
 // Invisible character database
@@ -43,7 +34,12 @@ export const INVISIBLE_CHARS: InvisibleCharInfo[] = [
   { codePoint: 0x20_67, name: 'Right-to-Left Isolate', unicode: 'U+2067', html: '&#8295;' },
   { codePoint: 0x20_68, name: 'First Strong Isolate', unicode: 'U+2068', html: '&#8296;' },
   { codePoint: 0x20_69, name: 'Pop Directional Isolate', unicode: 'U+2069', html: '&#8297;' },
-  { codePoint: 0xfe_ff, name: 'BOM / Zero Width No-Break Space', unicode: 'U+FEFF', html: '&#65279;' },
+  {
+    codePoint: 0xfe_ff,
+    name: 'BOM / Zero Width No-Break Space',
+    unicode: 'U+FEFF',
+    html: '&#65279;',
+  },
   // Variation Selectors
   { codePoint: 0xfe_00, name: 'Variation Selector 1', unicode: 'U+FE00', html: '&#65024;' },
   { codePoint: 0xfe_01, name: 'Variation Selector 2', unicode: 'U+FE01', html: '&#65025;' },
@@ -121,7 +117,7 @@ export interface AnalysisResult {
 /** Extract findings from indexed chars */
 const toFindings: (chars: IndexedChar[]) => InvisibleCharFinding[] = pipe(
   filter(isInvisible),
-  map((ic: IndexedChar) => ({ index: ic.index, char: ic.char, info: lookupInfo(ic) })),
+  map((ic: IndexedChar) => ({ index: ic.index, char: ic.char, info: lookupInfo(ic) }))
 );
 
 /** Group findings by code point */
@@ -138,7 +134,7 @@ const groupFindings = (findings: InvisibleCharFinding[]): GroupedFinding[] =>
         count: length(group),
         positions: map(prop('index'), group),
       };
-    }),
+    })
   )(findings);
 
 export function analyzeText(text: string): AnalysisResult {
@@ -158,7 +154,7 @@ export const removeInvisibleChars: (text: string) => string = pipe(
   toIndexedChars,
   reject(isInvisible),
   map(prop('char')),
-  join(''),
+  join('')
 );
 
 // ---------------------------------------------------------------------------
@@ -194,7 +190,8 @@ const segmentReducer = (acc: SegmentAccumulator, ic: IndexedChar): SegmentAccumu
 
 export const buildSegments: (text: string) => Segment[] = pipe(
   toIndexedChars,
-  (chars: IndexedChar[]) => chars.reduce((acc, ic) => segmentReducer(acc, ic), { segments: [] as Segment[], run: '' }),
+  (chars: IndexedChar[]) =>
+    chars.reduce((acc, ic) => segmentReducer(acc, ic), { segments: [] as Segment[], run: '' }),
   flushRun,
-  prop('segments'),
+  prop('segments')
 );
