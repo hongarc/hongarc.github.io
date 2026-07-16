@@ -1,58 +1,10 @@
 import { Link } from 'lucide-react';
-import { pipe, toLower, trim } from 'ramda';
 
+import { createSlug, type SeparatorType, separators } from '@/domain/generators/slug';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
 
 const SEPARATOR_OPTIONS = ['dash', 'underscore', 'dot'] as const;
-type SeparatorType = (typeof SEPARATOR_OPTIONS)[number];
-
-const separators: Record<SeparatorType, string> = {
-  dash: '-',
-  underscore: '_',
-  dot: '.',
-};
-
-// Pure function: remove accents/diacritics
-const removeAccents = (str: string): string =>
-  str.normalize('NFD').replaceAll(/[\u0300-\u036F]/g, '');
-
-// Pure function: remove special characters
-const removeSpecialChars = (str: string): string => str.replaceAll(/[^\w\s-]/g, '');
-
-// Pure function: collapse whitespace
-const collapseWhitespace = (str: string): string => str.replaceAll(/\s+/g, ' ');
-
-// Pure function: replace spaces with separator
-const replaceSpaces =
-  (separator: string) =>
-  (str: string): string =>
-    str.replaceAll(/\s/g, separator);
-
-// Pure function: collapse repeated separators
-const collapseSeparators =
-  (separator: string) =>
-  (str: string): string =>
-    str.replaceAll(new RegExp(`${separator}+`, 'g'), separator);
-
-// Pure function: trim separators from ends
-const trimSeparators =
-  (separator: string) =>
-  (str: string): string =>
-    str.replaceAll(new RegExp(`^${separator}+|${separator}+$`, 'g'), '');
-
-// Compose slug transformation using Ramda pipe
-const createSlug = (separator: string) =>
-  pipe(
-    trim,
-    toLower,
-    removeAccents,
-    removeSpecialChars,
-    collapseWhitespace,
-    replaceSpaces(separator),
-    collapseSeparators(separator),
-    trimSeparators(separator)
-  );
 
 export const slugGenerator: ToolPlugin = {
   id: 'slug',

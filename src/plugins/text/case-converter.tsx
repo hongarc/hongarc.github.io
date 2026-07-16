@@ -1,29 +1,10 @@
-import { camelCase, constantCase, kebabCase, pascalCase, snakeCase } from 'change-case';
 import { CaseSensitive } from 'lucide-react';
-import { join, map, pipe, split } from 'ramda';
 
+import { type CaseType, convertLines } from '@/domain/text/case';
 import type { ToolPlugin } from '@/types/plugin';
 import { getErrorMessage, getSelectInput, getTrimmedInput, success, failure } from '@/utils';
 
 const CASE_OPTIONS = ['camel', 'pascal', 'snake', 'kebab', 'constant', 'upper', 'lower'] as const;
-type CaseType = (typeof CASE_OPTIONS)[number];
-
-const caseConverters: Record<CaseType, (s: string) => string> = {
-  camel: camelCase,
-  pascal: pascalCase,
-  snake: snakeCase,
-  kebab: kebabCase,
-  constant: constantCase,
-  upper: (s) => s.toUpperCase(),
-  lower: (s) => s.toLowerCase(),
-};
-
-/**
- * Convert each line using the selected case converter
- * Uses Ramda pipe for functional composition
- */
-const convertLines = (caseType: CaseType) =>
-  pipe(split('\n'), map(caseConverters[caseType]), join('\n'));
 
 export const caseConverter: ToolPlugin = {
   id: 'case',
