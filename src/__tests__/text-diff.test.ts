@@ -98,4 +98,19 @@ describe('Text Diff Plugin', () => {
     expect(diffData.stats.deletions).toBe(1);
     expect(diffData.stats.insertions).toBe(0);
   });
+
+  it('treats reordered-key JSON as identical when normalizeFormat is json', async () => {
+    const result = await textDiff.transformer({
+      oldText: '{"b":2,"a":1}',
+      newText: '{"a":1,"b":2}',
+      normalizeFormat: 'json',
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+
+    const diffData = result.meta?._diffData as DiffData;
+    expect(diffData.stats).toEqual({ insertions: 0, deletions: 0 });
+    expect(diffData.lines.every((line) => line.type === 'equal')).toBe(true);
+  });
 });

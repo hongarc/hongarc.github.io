@@ -2,8 +2,9 @@ import { diffWords, diffLines } from 'diff';
 import { GitCompare } from 'lucide-react';
 import { pipe, map, filter, reduce, join, trim, reject, curry, equals, prop, sum } from 'ramda';
 
+import { normalizeForDiff, type NormalizeDiffOptions } from '@/domain/text/normalize-diff';
 import type { ToolPlugin } from '@/types/plugin';
-import { failure, getSelectInput, success } from '@/utils';
+import { failure, getBooleanInput, getSelectInput, success } from '@/utils';
 
 export interface WordDiff {
   type: 'equal' | 'added' | 'removed';
@@ -162,6 +163,7 @@ const countChanges = pipe(
 const sanitizeInput = pipe((text: string | undefined) => text ?? '', trim);
 
 const VIEW_OPTIONS = ['inline', 'side-by-side'] as const;
+const NORMALIZE_FORMAT_OPTIONS = ['none', 'json', 'yaml'] as const;
 
 export const textDiff: ToolPlugin = {
   id: 'diff',
@@ -169,7 +171,19 @@ export const textDiff: ToolPlugin = {
   description: 'Compare two texts and highlight differences online',
   category: 'text',
   icon: <GitCompare className="h-4 w-4" />,
-  keywords: ['diff', 'compare', 'difference', 'merge', 'text', 'changes', 'line', 'word'],
+  keywords: [
+    'diff',
+    'compare',
+    'difference',
+    'merge',
+    'text',
+    'changes',
+    'line',
+    'word',
+    'normalize',
+    'json',
+    'yaml',
+  ],
   inputs: [
     {
       id: 'oldText',
@@ -201,6 +215,40 @@ export const textDiff: ToolPlugin = {
         { value: 'inline', label: 'Inline' },
       ],
     },
+    {
+      id: 'normalizeFormat',
+      label: 'Normalize format',
+      type: 'select',
+      defaultValue: 'none',
+      options: [
+        { value: 'none', label: 'None (raw text)' },
+        { value: 'json', label: 'JSON (sort keys + pretty-print)' },
+        { value: 'yaml', label: 'YAML (reformat)' },
+      ],
+      helpText:
+        'Reformat both sides before diffing so equivalent structures match. Falls back to raw text if parsing fails.',
+    },
+    {
+      id: 'ignoreCase',
+      label: 'Ignore case',
+      type: 'checkbox',
+      defaultValue: false,
+      helpText: 'Lowercase both sides so casing differences are not shown.',
+    },
+    {
+      id: 'trimWhitespace',
+      label: 'Trim whitespace',
+      type: 'checkbox',
+      defaultValue: false,
+      helpText: 'Trim each line and normalize line endings (CRLF -> LF) before comparing.',
+    },
+    {
+      id: 'sortLines',
+      label: 'Sort lines',
+      type: 'checkbox',
+      defaultValue: false,
+      helpText: 'Sort lines alphabetically on each side before comparing (ignores reordering).',
+    },
   ],
   transformer: (inputs) => {
     const oldText = sanitizeInput(inputs.oldText as string | undefined);
@@ -211,8 +259,18 @@ export const textDiff: ToolPlugin = {
       return failure('Please enter text to compare');
     }
 
+    const normalizeOpts: NormalizeDiffOptions = {
+      format: getSelectInput(inputs, 'normalizeFormat', NORMALIZE_FORMAT_OPTIONS, 'none'),
+      ignoreCase: getBooleanInput(inputs, 'ignoreCase'),
+      trimWhitespace: getBooleanInput(inputs, 'trimWhitespace'),
+      sortLines: getBooleanInput(inputs, 'sortLines'),
+    };
+
     // Process lines and add word-level diffs using Ramda
-    const processedLines = processLinesWithWordDiff(oldText, newText);
+    const processedLines = processLinesWithWordDiff(
+      normalizeForDiff(oldText, normalizeOpts),
+      normalizeForDiff(newText, normalizeOpts)
+    );
 
     // Generate statistics using Ramda
     const stats = countChanges(processedLines);
