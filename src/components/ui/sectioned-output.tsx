@@ -25,7 +25,7 @@ export interface SectionedOutputProps {
   perLineCopy?: boolean;
 }
 
-const getVariantClasses = (variant: OutputStat['variant'] = 'default'): string => {
+export const getVariantClasses = (variant: OutputStat['variant'] = 'default'): string => {
   switch (variant) {
     case 'success': {
       return 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400';
@@ -49,7 +49,7 @@ const getProgressColor = (progress: number): string => {
   return 'bg-green-500';
 };
 
-function StatItem({ stat }: { stat: OutputStat }) {
+export function StatItem({ stat }: { stat: OutputStat }) {
   const { label, value, type = 'text', progress = 0, variant, tooltip } = stat;
 
   return (

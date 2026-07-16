@@ -1,6 +1,7 @@
 import { DefaultStrategy } from './default-strategy';
 import { DiffStrategy } from './diff-strategy';
 import { JsonStrategy } from './json-strategy';
+import { JwtStrategy } from './jwt-strategy';
 import { SectionStrategy } from './section-strategy';
 import type { OutputStrategy } from './types';
 
@@ -15,6 +16,11 @@ export const STRATEGIES: OutputStrategy[] = [
     id: 'json',
     component: JsonStrategy,
     shouldHandle: (result) => result.meta?._viewMode === 'tree' && !!result.meta._parsedJson,
+  },
+  {
+    id: 'jwt',
+    component: JwtStrategy,
+    shouldHandle: (result) => result.meta?._viewMode === 'jwt' && !!result.meta._jwt,
   },
   {
     id: 'sections',

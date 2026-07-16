@@ -196,15 +196,22 @@ export const jwtDecoder: ToolPlugin = {
 
         const token = `${dataToSign}.${signature}`;
         return success(token, {
-          _viewMode: 'sections',
-          _sections: {
+          _viewMode: 'jwt',
+          _jwt: {
             stats: [
               { label: 'Algorithm', value: alg },
-              { label: 'Header', value: JSON.stringify(header) },
-              { label: 'Status', value: secret ? 'Signed' : 'Unsigned', type: 'badge' },
+              {
+                label: 'Status',
+                value: secret ? 'Signed' : 'Unsigned',
+                type: 'badge',
+                variant: secret ? 'success' : 'warning',
+              },
             ],
-            content: token,
-            contentLabel: 'Generated JWT',
+            header: JSON.stringify(header, null, 2),
+            payload: JSON.stringify(payload, null, 2),
+            signature,
+            token,
+            alg,
           },
         });
       }
@@ -290,11 +297,14 @@ export const jwtDecoder: ToolPlugin = {
       ].join('\n');
 
       return success(content, {
-        _viewMode: 'sections',
-        _sections: {
+        _viewMode: 'jwt',
+        _jwt: {
           stats,
-          content,
-          contentLabel: 'Decoded Token',
+          header: formatJson(parts.header),
+          payload: formatJson(parts.payload),
+          signature: parts.signature,
+          token: input,
+          alg: typeof header.alg === 'string' ? header.alg : 'unknown',
         },
       });
     } catch (error) {
