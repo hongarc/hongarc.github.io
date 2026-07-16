@@ -1,0 +1,41 @@
+src/components/layout/header.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 131-132
+src/components/ui/searchable-select.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 153,190,203
+index.html
+  s_f2957c71ac7697::t_816c8e4c5bb479 12-15,20-23,29-32
+src/domain/text/invisible-char.ts
+  s_f2957c71ac7697::t_816c8e4c5bb479 1,37-42,120,137,157,193-194,196
+src/components/tool/tool-output.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 63
+.prettierrc
+  s_f2957c71ac7697::t_816c8e4c5bb479 10
+src/components/tool/tool-input.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 129,148,176,182
+public/404.html
+  s_f2957c71ac7697::t_816c8e4c5bb479 1
+src/plugins/text/invisible-char-inspector.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 68,75-78,90,93-95,100,108,146,153-167,169-170,188-193
+src/__tests__/invisible-char.test.ts
+  s_f2957c71ac7697::t_816c8e4c5bb479 51,57,63,82,88,161,167
+scripts/lighthouse.mjs
+  s_f2957c71ac7697::t_816c8e4c5bb479 6,74-75
+src/plugins/dev/qr-generator.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 452-453,459
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "87c873eb508513a4ac22af3e051af8a77eb31ba1",
+  "prompts": {},
+  "sessions": {
+    "s_f2957c71ac7697": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f389f5ce-b77d-40b8-abe3-d87741202025",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "hongarc <hongtu@everfit.io>"
+    }
+  }
+}
