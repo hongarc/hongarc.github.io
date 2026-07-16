@@ -1,0 +1,31 @@
+src/__tests__/normalize-diff.test.ts
+  s_f2957c71ac7697::t_2ba0d24ae78fa5 1-53
+src/__tests__/text-diff.test.ts
+  s_f2957c71ac7697::t_f4eb99b3dd9bc1 101-115
+src/domain/text/normalize-diff.ts
+  s_f2957c71ac7697::t_e145aaad77a573 42-43
+  s_f2957c71ac7697::t_23f58f06046679 1-39,45-56
+  s_f2957c71ac7697::t_072f85f427a6b3 40-41,44
+src/plugins/text/text-diff.tsx
+  s_f2957c71ac7697::t_391fec80051bf6 166
+  s_f2957c71ac7697::t_79a1917d5bd1cd 174-186
+  s_f2957c71ac7697::t_3fbbbe7ca44847 262-268,270-273
+  s_f2957c71ac7697::t_aa076ea8815f79 5,7
+  s_f2957c71ac7697::t_7acb6c09f70cc7 218-251
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9fe99cbacb6ffcd0848d2362a322fcae0ba3a0ce",
+  "prompts": {},
+  "sessions": {
+    "s_f2957c71ac7697": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f389f5ce-b77d-40b8-abe3-d87741202025",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "hongarc <hongtu@everfit.io>"
+    }
+  }
+}
