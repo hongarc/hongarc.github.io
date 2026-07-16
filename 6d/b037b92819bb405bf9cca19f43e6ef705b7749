@@ -1,0 +1,28 @@
+src/domain/crypto/hash.ts
+  s_f2957c71ac7697::t_816c8e4c5bb479 1,6-27,71-140
+package.json
+  s_f2957c71ac7697::t_816c8e4c5bb479 26
+src/plugins/crypto/hash-generator.tsx
+  s_f2957c71ac7697::t_816c8e4c5bb479 1,3-9,18,24-25,28-29,34-61,66-68,70-83,121-122,124-127,132,135,138,142-143,146-148,151,160-185,188-198,202-204
+src/__tests__/crypto.test.ts
+  s_f2957c71ac7697::t_816c8e4c5bb479 4-10,52-129
+  s_f2957c71ac7697::t_1b6c8e5a38e9a1 3,130-131
+package-lock.json
+  s_f2957c71ac7697::t_2657124a53502a 14,8117-8122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "6db037b92819bb405bf9cca19f43e6ef705b7749",
+  "prompts": {},
+  "sessions": {
+    "s_f2957c71ac7697": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f389f5ce-b77d-40b8-abe3-d87741202025",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "hongarc <hongtu@everfit.io>"
+    }
+  }
+}
