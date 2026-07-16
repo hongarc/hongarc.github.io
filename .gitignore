@@ -45,3 +45,7 @@ coverage/
 # Lighthouse reports
 lighthouse-report.*
 
+
+# Harness (plugin-factory) runtime workspace / audit trail
+_workspace/
+_workspace_prev/
