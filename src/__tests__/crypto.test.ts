@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { bufferToHex, computeHash, secureCompare } from '../domain/crypto/hash';
+import {
+  bufferToHex,
+  CHECKSUM_ALGOS,
+  computeAllHashes,
+  computeHash,
+  matchChecksum,
+  secureCompare,
+} from '../domain/crypto/hash';
 import {
   buildCharPool,
   calculatePassphraseEntropy,
@@ -39,6 +46,86 @@ describe('Crypto Domain', () => {
     it('secureCompare should return false for different strings', () => {
       expect(secureCompare('secret', 'public')).toBe(false);
       expect(secureCompare('short', 'longer')).toBe(false);
+    });
+  });
+
+  describe('Checksum Verifier', () => {
+    // Canonical known vectors for 'abc'
+    const ABC_MD5 = '900150983cd24fb0d6963f7d28e17f72';
+    const ABC_SHA1 = 'a9993e364706816aba3e25717850c26c9cd0d89d';
+    const ABC_SHA256 = 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';
+    const ABC_SHA512 =
+      'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f';
+
+    it('computeAllHashes returns correct shape and known vectors for "abc"', async () => {
+      const result = await computeAllHashes('abc');
+      expect(Object.keys(result)).toHaveLength(4);
+      expect(Object.keys(result)).toEqual(expect.arrayContaining(['md5', 'sha1', 'sha256', 'sha512']));
+      expect(result.md5).toBe(ABC_MD5);
+      expect(result.sha1).toBe(ABC_SHA1);
+      expect(result.sha256).toBe(ABC_SHA256);
+      expect(result.sha512).toBe(ABC_SHA512);
+    });
+
+    it('computeAllHashes accepts Uint8Array and returns same result as string', async () => {
+      const fromString = await computeAllHashes('abc');
+      const fromBytes = await computeAllHashes(new TextEncoder().encode('abc'));
+      expect(fromBytes).toEqual(fromString);
+    });
+
+    it('computeAllHashes returns correct hashes for empty string', async () => {
+      const result = await computeAllHashes('');
+      expect(result.md5).toBe('d41d8cd98f00b204e9800998ecf8427e');
+      expect(result.sha256).toBe(
+        'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+      );
+    });
+
+    it('matchChecksum detects SHA-256', async () => {
+      const hashes = await computeAllHashes('abc');
+      expect(matchChecksum(ABC_SHA256, hashes).algo).toBe('SHA-256');
+    });
+
+    it('matchChecksum detects each algorithm by its known vector', async () => {
+      const hashes = await computeAllHashes('abc');
+      const vectors: Record<string, string> = {
+        MD5: ABC_MD5,
+        'SHA-1': ABC_SHA1,
+        'SHA-256': ABC_SHA256,
+        'SHA-512': ABC_SHA512,
+      };
+      for (const algo of CHECKSUM_ALGOS) {
+        const vec = vectors[algo] ?? '';
+        expect(matchChecksum(vec, hashes).algo).toBe(algo);
+      }
+    });
+
+    it('matchChecksum is case-insensitive', async () => {
+      const hashes = await computeAllHashes('abc');
+      expect(matchChecksum(ABC_SHA256.toUpperCase(), hashes).algo).toBe('SHA-256');
+    });
+
+    it('matchChecksum tolerates leading and trailing whitespace', async () => {
+      const hashes = await computeAllHashes('abc');
+      expect(matchChecksum(`  ${ABC_SHA1}\n`, hashes).algo).toBe('SHA-1');
+    });
+
+    it('matchChecksum returns null for a wrong value', async () => {
+      const hashes = await computeAllHashes('abc');
+      expect(matchChecksum('deadbeef', hashes).algo).toBeNull();
+    });
+
+    it('matchChecksum returns null for empty expected', async () => {
+      const hashes = await computeAllHashes('abc');
+      expect(matchChecksum('', hashes).algo).toBeNull();
+      expect(matchChecksum('   ', hashes).algo).toBeNull();
+    });
+
+    it('matchChecksum returns null for wrong-length-but-right-format garbage (64 chars, no match)', async () => {
+      const hashes = await computeAllHashes('abc');
+      // 64 hex chars — same length as SHA-256, but wrong value
+      const garbage = '0'.repeat(64);
+      expect(matchChecksum(garbage, hashes).algo).toBeNull();
     });
   });
 
