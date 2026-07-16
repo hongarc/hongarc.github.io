@@ -211,7 +211,7 @@ export function Sidebar() {
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
-            className="bg-ctp-base border-ctp-surface1 text-ctp-text placeholder-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue\/10 w-full rounded-xl border py-2.5 pr-16 pl-10 text-sm shadow-sm transition-all focus:ring-4 focus:outline-none"
+            className="bg-ctp-base border-ctp-surface0 text-ctp-text placeholder-ctp-overlay0 focus:border-ctp-blue focus:ring-ctp-blue/10 w-full rounded-xl border py-2.5 pr-16 pl-10 text-sm shadow-sm transition-all focus:ring-4 focus:outline-none"
           />
           <kbd className="bg-ctp-surface0 border-ctp-surface1 text-ctp-subtext1 absolute top-1/2 right-3 hidden -translate-y-1/2 items-center gap-0.5 rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium select-none sm:flex">
             <span className="text-xs">⌘</span>K
