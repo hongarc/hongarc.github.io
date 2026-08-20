@@ -8,7 +8,7 @@
  * - Escape: Exit search or go back to list
  */
 
-import { blogRegistry } from '@/blog';
+import { blogRegistry, ensureBlogPosts } from '@/blog';
 
 import type { ShortcutCommand } from '../types';
 
@@ -16,6 +16,8 @@ import type { ShortcutCommand } from '../types';
  * Get published blog posts sorted by date
  */
 function getPublishedPosts() {
+  // Blog shortcuts can fire before anything has needed the posts
+  void ensureBlogPosts();
   return blogRegistry.getPublished();
 }
 

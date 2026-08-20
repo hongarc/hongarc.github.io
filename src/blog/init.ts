@@ -256,8 +256,8 @@ This is a draft post that won't be shown in the public listing.
 /**
  * Parse a markdown string and create a BlogPost object
  */
-function createBlogPost(slug: string, rawContent: string): BlogPost {
-  const parsed = markdownProcessor.parse(rawContent);
+async function createBlogPost(slug: string, rawContent: string): Promise<BlogPost> {
+  const parsed = await markdownProcessor.parse(rawContent);
   const readingTime = readingTimeCalculator.calculate(rawContent);
   const excerpt = markdownProcessor.extractExcerpt(parsed.content, 160);
 
@@ -276,16 +276,20 @@ function createBlogPost(slug: string, rawContent: string): BlogPost {
   };
 }
 
-// Register all sample posts
-for (const { slug, content } of samplePosts) {
-  try {
-    const post = createBlogPost(slug, content);
-    blogRegistry.register(post);
-  } catch (error) {
-    console.error(`Failed to register blog post "${slug}":`, error);
+// Register all sample posts. Registration is async because parsing frontmatter
+// loads the YAML parser on demand; the registry notifies its subscribers as
+// posts land, so the sidebar and command palette fill in on the next render.
+export async function registerSamplePosts(): Promise<void> {
+  for (const { slug, content } of samplePosts) {
+    try {
+      const post = await createBlogPost(slug, content);
+      blogRegistry.register(post);
+    } catch (error) {
+      console.error(`Failed to register blog post "${slug}":`, error);
+    }
   }
-}
 
-console.info(
-  `Blog initialized: ${String(blogRegistry.publishedCount)} published posts, ${String(blogRegistry.count)} total`
-);
+  console.info(
+    `Blog initialized: ${String(blogRegistry.publishedCount)} published posts, ${String(blogRegistry.count)} total`
+  );
+}

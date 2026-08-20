@@ -1,5 +1,5 @@
 import { Link } from 'lucide-react';
-import qs from 'qs';
+import type qs from 'qs';
 
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getTrimmedInput, success } from '@/utils';
@@ -61,7 +61,9 @@ const formatValue = (value: ParsedValue): string => {
 };
 
 // Pure function: parse and format query parameters using qs
-const parseAndFormatParams = (search: string): { formatted: string; count: number } => {
+const parseAndFormatParams = async (
+  search: string
+): Promise<{ formatted: string; count: number }> => {
   if (!search || search === '(none)') {
     return { formatted: '(no query parameters)', count: 0 };
   }
@@ -69,8 +71,10 @@ const parseAndFormatParams = (search: string): { formatted: string; count: numbe
   // Remove leading ? if present
   const queryString = search.startsWith('?') ? search.slice(1) : search;
 
-  // Parse with qs to handle arrays and nested objects
-  const parsed = qs.parse(queryString, {
+  // qs is only needed by this tool, so it is imported on demand rather than
+  // bundled into the entry chunk.
+  const { parse } = await import('qs');
+  const parsed = parse(queryString, {
     allowDots: true,
     parseArrays: true,
   });
@@ -104,7 +108,8 @@ export const urlParser: ToolPlugin = {
       sensitive: true,
     },
   ],
-  transformer: (inputs) => {
+  isAsync: true,
+  transformer: async (inputs) => {
     const input = getTrimmedInput(inputs, 'input');
 
     if (!input) {
@@ -116,7 +121,7 @@ export const urlParser: ToolPlugin = {
       return failure('Invalid URL format');
     }
 
-    const { formatted, count } = parseAndFormatParams(components.search ?? '');
+    const { formatted, count } = await parseAndFormatParams(components.search ?? '');
 
     return success(formatted, {
       _viewMode: 'sections',

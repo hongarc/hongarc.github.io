@@ -1,4 +1,3 @@
-import { createMD5, createSHA1, createSHA256, createSHA512 } from 'hash-wasm';
 import { join, map } from 'ramda';
 
 export type AlgorithmType = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
@@ -75,6 +74,10 @@ export const secureCompare = (a: string, b: string): boolean => {
  * The returned object is single-use: call update() for each chunk, then digest().
  */
 export const createHashers = async (): Promise<IncrementalHashers> => {
+  // hash-wasm is ~265 kB of source and only the hash tools need it, so it is
+  // imported on demand rather than bundled into the entry chunk.
+  const { createMD5, createSHA1, createSHA256, createSHA512 } = await import('hash-wasm');
+
   const [md5h, sha1h, sha256h, sha512h] = await Promise.all([
     createMD5(),
     createSHA1(),

@@ -68,8 +68,8 @@ describe('Format Domain', () => {
   });
 
   describe('SQL Service', () => {
-    it('should format SQL query', () => {
-      const formatted = new SqlFormatterBuilder()
+    it('should format SQL query', async () => {
+      const formatted = await new SqlFormatterBuilder()
         .withSql('SELECT * FROM users WHERE id=1')
         .format();
 

@@ -15,11 +15,8 @@ export class SqlFormatterBuilder {
     return this;
   }
 
-  format(): string {
-    // We invoke the domain service directly here for simplicity in test
-    // Or just return the config?
-    // Let's return the formatted result to make usage supersimple:
-    // expect(new SqlBuilder().withSql('select 1').build()).toBe(...)
+  // formatSql is async because sql-formatter is loaded on demand
+  async format(): Promise<string> {
     return formatSql(this.sql, this.options);
   }
 

@@ -1,5 +1,3 @@
-import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
-
 import { sortObjectKeys } from '@/domain/format/json';
 
 export interface NormalizeDiffOptions {
@@ -20,9 +18,12 @@ const canonicalizeJson = (text: string): string => {
 };
 
 // yaml: parse -> stringify (reformat only). Raw text on parse failure.
-const canonicalizeYaml = (text: string): string => {
+// The YAML parser is ~260 kB of source and only the 'yaml' format needs it, so
+// it is imported on demand — which makes this async.
+const canonicalizeYaml = async (text: string): Promise<string> => {
   if (text.trim() === '') return text;
   try {
+    const { parse: parseYaml, stringify: stringifyYaml } = await import('yaml');
     return stringifyYaml(parseYaml(text));
   } catch {
     return text;
@@ -43,11 +44,14 @@ const sortTextLines = (text: string): string =>
     .sort((a, b) => a.localeCompare(b))
     .join('\n');
 
-export const normalizeForDiff = (text: string, opts: NormalizeDiffOptions): string => {
+export const normalizeForDiff = async (
+  text: string,
+  opts: NormalizeDiffOptions
+): Promise<string> => {
   let out = text;
   // Structural format first...
   if (opts.format === 'json') out = canonicalizeJson(out);
-  else if (opts.format === 'yaml') out = canonicalizeYaml(out);
+  else if (opts.format === 'yaml') out = await canonicalizeYaml(out);
   // ...then line-level ops in fixed order.
   if (opts.trimWhitespace) out = trimLines(out);
   if (opts.ignoreCase) out = out.toLowerCase();

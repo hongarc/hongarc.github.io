@@ -1,5 +1,3 @@
-import { format as formatSqlLib } from 'sql-formatter';
-
 export type SqlLanguage =
   | 'sql'
   | 'mysql'
@@ -18,9 +16,12 @@ export interface SqlFormatOptions {
 }
 
 /**
- * Format SQL query using sql-formatter library
+ * Format SQL query using sql-formatter library.
+ * The library is ~420 kB of source and only this tool needs it, so it is
+ * imported on demand — which makes this function async.
  */
-export const formatSql = (input: string, options: SqlFormatOptions): string => {
+export const formatSql = async (input: string, options: SqlFormatOptions): Promise<string> => {
+  const { format: formatSqlLib } = await import('sql-formatter');
   return formatSqlLib(input, {
     language: options.language,
     keywordCase: options.keywordCase,

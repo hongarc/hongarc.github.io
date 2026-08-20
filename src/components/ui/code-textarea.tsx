@@ -1,7 +1,13 @@
-import { Highlight, themes } from 'prism-react-renderer';
-import { useCallback, useRef } from 'react';
+import { lazy, Suspense, useCallback, useRef } from 'react';
 
 import { type HighlightLanguage, HighlightStrategyFactory, useIsDarkMode } from './code-highlight';
+
+const PrismHighlight = lazy(() => import('./prism-highlight'));
+
+// The textarea itself renders transparent text, so the fallback <pre> must show
+// the value unhighlighted while the Prism chunk loads.
+const HIGHLIGHT_CLASSES =
+  'border-ctp-surface1 pointer-events-none absolute inset-0 overflow-auto rounded-lg border p-3.5 font-mono text-[13px] leading-relaxed break-words whitespace-pre-wrap';
 
 export interface CodeTextareaProps {
   id: string;
@@ -35,7 +41,6 @@ export function CodeTextarea({
   const highlightRef = useRef<HTMLPreElement>(null);
 
   const strategy = HighlightStrategyFactory.create(language);
-  const prismTheme = isDarkMode ? themes.nightOwl : themes.nightOwlLight;
 
   // Sync scroll between textarea and highlight
   const handleScroll = useCallback(() => {
@@ -51,27 +56,26 @@ export function CodeTextarea({
   return (
     <div className={`relative ${className}`} style={{ minHeight }}>
       {/* Syntax highlighted display */}
-      <Highlight theme={prismTheme} code={value || ' '} language={strategy.language}>
-        {({ style, tokens, getLineProps, getTokenProps }) => (
+      <Suspense
+        fallback={
           <pre
             ref={highlightRef}
-            className="border-ctp-surface1 pointer-events-none absolute inset-0 overflow-auto rounded-lg border p-3.5 font-mono text-[13px] leading-relaxed break-words whitespace-pre-wrap"
-            style={{
-              ...style,
-              margin: 0,
-              minHeight,
-            }}
+            className={`${HIGHLIGHT_CLASSES} bg-ctp-mantle text-ctp-text`}
+            style={{ margin: 0, minHeight }}
           >
-            {tokens.map((line, i) => (
-              <div key={i} {...getLineProps({ line })}>
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
-                ))}
-              </div>
-            ))}
+            {value}
           </pre>
-        )}
-      </Highlight>
+        }
+      >
+        <PrismHighlight
+          code={value}
+          language={strategy.language}
+          isDarkMode={isDarkMode}
+          className={HIGHLIGHT_CLASSES}
+          style={{ margin: 0, minHeight }}
+          preRef={highlightRef}
+        />
+      </Suspense>
 
       {/* Actual textarea for editing - positioned on top */}
       <textarea

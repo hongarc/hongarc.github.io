@@ -2,7 +2,7 @@ import { Calendar, Clock, Tag } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { blogRegistry, formatReadingTime } from '@/blog';
+import { formatReadingTime, useBlogPosts, useBlogTags, useEnsureBlogPosts } from '@/blog';
 import type { BlogPost } from '@/blog/types';
 
 function formatDate(date: Date): string {
@@ -84,10 +84,15 @@ export function BlogListPage() {
   const { tagName } = useParams<{ tagName?: string }>();
   const [searchQuery, setSearchQuery] = useState('');
 
+  useEnsureBlogPosts();
+  const publishedPosts = useBlogPosts();
+
   const posts = useMemo(() => {
     let filteredPosts: BlogPost[];
 
-    filteredPosts = tagName ? blogRegistry.getPublishedByTag(tagName) : blogRegistry.getPublished();
+    filteredPosts = tagName
+      ? publishedPosts.filter((post) => post.tags.includes(tagName))
+      : publishedPosts;
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -100,9 +105,9 @@ export function BlogListPage() {
     }
 
     return filteredPosts;
-  }, [tagName, searchQuery]);
+  }, [tagName, searchQuery, publishedPosts]);
 
-  const allTags = useMemo(() => blogRegistry.getAllTags(), []);
+  const allTags = useBlogTags();
 
   return (
     <div className="mx-auto max-w-4xl">

@@ -1,6 +1,4 @@
-import jsQR from 'jsqr';
 import { Download, QrCode, ScanLine, Upload } from 'lucide-react';
-import QRCode from 'qrcode';
 import { useCallback, useRef, useState } from 'react';
 
 import type { ToolPlugin } from '@/types/plugin';
@@ -83,6 +81,10 @@ const generateVietQRContent = (
 
 // Decode QR from image file
 const decodeQRFromFile = async (file: File): Promise<string> => {
+  // jsqr is ~250 kB of source and only this tool needs it. Resolve it before
+  // the promise so the synchronous image-load callback can use it directly.
+  const { default: jsQR } = await import('jsqr');
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -183,6 +185,7 @@ function QRToolComponent() {
         qrData = generateVietQRContent(bankBin, accountNumber, amount, description, accountName);
       }
 
+      const { default: QRCode } = await import('qrcode');
       const dataUrl = await QRCode.toDataURL(qrData, {
         width: 512,
         margin: 2,

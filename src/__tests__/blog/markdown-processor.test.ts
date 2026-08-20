@@ -10,7 +10,7 @@ describe('MarkdownProcessor', () => {
   });
 
   describe('parse', () => {
-    it('should parse valid markdown with frontmatter', () => {
+    it('should parse valid markdown with frontmatter', async () => {
       const content = `---
 title: "Test Post"
 description: "A test blog post"
@@ -24,7 +24,7 @@ author: "Test Author"
 
 This is a test post.`;
 
-      const result = processor.parse(content);
+      const result = await processor.parse(content);
 
       expect(result.metadata).toEqual({
         title: 'Test Post',
@@ -37,7 +37,7 @@ This is a test post.`;
       expect(result.content).toBe('\n# Test Content\n\nThis is a test post.');
     });
 
-    it('should handle minimal required frontmatter', () => {
+    it('should handle minimal required frontmatter', async () => {
       const content = `---
 title: "Minimal Post"
 description: "Minimal description"
@@ -46,7 +46,7 @@ publishedAt: "2024-01-15"
 
 Content here.`;
 
-      const result = processor.parse(content);
+      const result = await processor.parse(content);
 
       expect(result.metadata).toEqual({
         title: 'Minimal Post',
@@ -59,7 +59,7 @@ Content here.`;
       });
     });
 
-    it('should throw error for missing required fields', () => {
+    it('should throw error for missing required fields', async () => {
       const content = `---
 title: "Test Post"
 # Missing description and publishedAt
@@ -67,11 +67,11 @@ title: "Test Post"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow('Missing required field: description');
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow('Missing required field: description');
     });
 
-    it('should throw error for invalid date format', () => {
+    it('should throw error for invalid date format', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -80,11 +80,11 @@ publishedAt: "invalid-date"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow('must be a valid date string');
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow('must be a valid date string');
     });
 
-    it('should throw error for invalid tags format', () => {
+    it('should throw error for invalid tags format', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -94,11 +94,11 @@ tags: "not-an-array"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow('must be an array');
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow('must be an array');
     });
 
-    it('should throw error for empty required fields', () => {
+    it('should throw error for empty required fields', async () => {
       const content = `---
 title: ""
 description: "Test description"
@@ -107,11 +107,11 @@ publishedAt: "2024-01-15"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow('must be a non-empty string');
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow('must be a non-empty string');
     });
 
-    it('should throw error for invalid updatedAt date', () => {
+    it('should throw error for invalid updatedAt date', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -121,13 +121,13 @@ updatedAt: "not-a-date"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow(
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow(
         "Field 'updatedAt' must be a valid date string"
       );
     });
 
-    it('should throw error for invalid isDraft type', () => {
+    it('should throw error for invalid isDraft type', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -137,11 +137,11 @@ isDraft: "yes"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow("Field 'isDraft' must be a boolean");
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow("Field 'isDraft' must be a boolean");
     });
 
-    it('should throw error for empty tag strings', () => {
+    it('should throw error for empty tag strings', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -151,11 +151,11 @@ tags: ["valid", ""]
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow('All tags must be non-empty strings');
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow('All tags must be non-empty strings');
     });
 
-    it('should throw error for empty author string', () => {
+    it('should throw error for empty author string', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -165,21 +165,23 @@ author: ""
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow("Field 'author' must be a non-empty string");
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow(
+        "Field 'author' must be a non-empty string"
+      );
     });
 
-    it('should throw error for non-object frontmatter', () => {
+    it('should throw error for non-object frontmatter', async () => {
       const content = `---
 invalid frontmatter
 ---
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
     });
 
-    it('should handle valid updatedAt date', () => {
+    it('should handle valid updatedAt date', async () => {
       const content = `---
 title: "Test Post"
 description: "Test description"
@@ -189,11 +191,11 @@ updatedAt: "2024-02-20"
 
 Content`;
 
-      const result = processor.parse(content);
+      const result = await processor.parse(content);
       expect(result.metadata.updatedAt).toBe('2024-02-20');
     });
 
-    it('should handle null required fields', () => {
+    it('should handle null required fields', async () => {
       const content = `---
 title: null
 description: "Test description"
@@ -202,8 +204,8 @@ publishedAt: "2024-01-15"
 
 Content`;
 
-      expect(() => processor.parse(content)).toThrow(BlogMetadataError);
-      expect(() => processor.parse(content)).toThrow('Missing required field: title');
+      await expect(processor.parse(content)).rejects.toThrow(BlogMetadataError);
+      await expect(processor.parse(content)).rejects.toThrow('Missing required field: title');
     });
   });
 

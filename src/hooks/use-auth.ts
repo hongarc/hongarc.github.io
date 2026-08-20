@@ -1,14 +1,14 @@
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut as firebaseSignOut,
-  type User,
-} from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import type { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
 
-import { auth, db, googleProvider } from '@/lib/firebase';
+import { getAuthInstance, getDb, getGoogleProvider } from '@/lib/firebase';
 import { useToolStore } from '@/store/tool-store';
+
+/**
+ * Every Firebase call below imports its SDK module on demand. Auth loads once
+ * the app mounts; Firestore only loads for a signed-in user, so visitors who
+ * never sign in never download it.
+ */
 
 export interface AuthState {
   user: User | null;
@@ -43,6 +43,10 @@ export function useAuth() {
       // Sync with Firestore in background (don't block auth state)
       if (user) {
         try {
+          const [{ doc, getDoc, setDoc }, db] = await Promise.all([
+            import('firebase/firestore'),
+            getDb(),
+          ]);
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             const data = userDoc.data();
@@ -65,12 +69,23 @@ export function useAuth() {
       }
     };
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      void handleAuthChange(user);
-    });
+    // The subscription only exists once the auth SDK has loaded, so teardown
+    // waits on the same promise. Tearing down before it resolves subscribes and
+    // immediately unsubscribes, which is harmless.
+    const subscribing = (async () => {
+      const [{ onAuthStateChanged }, auth] = await Promise.all([
+        import('firebase/auth'),
+        getAuthInstance(),
+      ]);
+      return onAuthStateChanged(auth, (user) => {
+        void handleAuthChange(user);
+      });
+    })();
 
     return () => {
-      unsubscribe();
+      void subscribing.then((unsubscribe) => {
+        unsubscribe();
+      });
     };
   }, [setPinnedToolIds, setRecentToolIds, setTheme]);
 
@@ -78,6 +93,11 @@ export function useAuth() {
   const signIn = async () => {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
+      const [{ signInWithPopup }, auth, googleProvider] = await Promise.all([
+        import('firebase/auth'),
+        getAuthInstance(),
+        getGoogleProvider(),
+      ]);
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign in failed';
@@ -89,6 +109,10 @@ export function useAuth() {
   const signOut = async () => {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
+      const [{ signOut: firebaseSignOut }, auth] = await Promise.all([
+        import('firebase/auth'),
+        getAuthInstance(),
+      ]);
       await firebaseSignOut(auth);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign out failed';
@@ -116,6 +140,7 @@ export async function syncToFirestore(
   }
 ) {
   try {
+    const [{ doc, setDoc }, db] = await Promise.all([import('firebase/firestore'), getDb()]);
     await setDoc(
       doc(db, 'users', userId),
       {

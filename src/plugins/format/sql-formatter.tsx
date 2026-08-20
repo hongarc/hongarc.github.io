@@ -89,7 +89,8 @@ export const sqlFormatter: ToolPlugin = {
       group: 'row2',
     },
   ],
-  transformer: (inputs) => {
+  isAsync: true,
+  transformer: async (inputs) => {
     const input = getTrimmedInput(inputs, 'input');
     const language = getSelectInput(inputs, 'language', LANGUAGE_OPTIONS, 'sql');
     const keywordCase = getSelectInput(inputs, 'keywordCase', CASE_OPTIONS, 'upper');
@@ -101,7 +102,7 @@ export const sqlFormatter: ToolPlugin = {
     }
 
     try {
-      const formatted = formatSql(input, {
+      const formatted = await formatSql(input, {
         language: language as SqlLanguage,
         keywordCase: keywordCase as KeywordCase,
         tabWidth: Number(indent),

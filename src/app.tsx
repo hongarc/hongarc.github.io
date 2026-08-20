@@ -7,9 +7,6 @@ import { ToolPage } from '@/components/tool/tool-page';
 // Initialize plugins (side effect - registers all plugins)
 import '@/plugins';
 
-// Initialize blog (side effect - registers all blog posts)
-import '@/blog/init';
-
 function App() {
   return (
     <Routes>

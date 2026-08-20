@@ -1,8 +1,14 @@
 import { ArrowLeft, Calendar, Clock, Tag, User } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { blogRegistry, formatReadingTime, markdownProcessor } from '@/blog';
+import {
+  blogRegistry,
+  formatReadingTime,
+  markdownProcessor,
+  useBlogVersion,
+  useEnsureBlogPosts,
+} from '@/blog';
 import type { BlogPost } from '@/blog/types';
 
 function formatDate(date: Date): string {
@@ -106,10 +112,11 @@ export function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const post = useMemo(() => {
-    if (!slug) return null;
-    return blogRegistry.get(slug);
-  }, [slug]);
+  useEnsureBlogPosts();
+  // Subscribing re-renders once posts register; the lookup itself is a Map hit,
+  // and returns a stable reference, so it needs no memo.
+  useBlogVersion();
+  const post = slug ? blogRegistry.get(slug) : null;
 
   // If post is a draft, redirect to blog list
   useEffect(() => {

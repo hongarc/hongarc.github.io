@@ -7,6 +7,7 @@ export * from './registry';
 export * from './markdown-processor';
 export * from './reading-time-calculator';
 export * from './utils';
+export * from './use-blog';
 
 // Re-export singleton instances
 export { blogRegistry } from './registry';

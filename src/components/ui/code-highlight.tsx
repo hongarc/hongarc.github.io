@@ -1,7 +1,10 @@
-import { Highlight, themes } from 'prism-react-renderer';
-import { useSyncExternalStore } from 'react';
+import { lazy, Suspense, useSyncExternalStore } from 'react';
 
 import { useToolStore } from '@/store/tool-store';
+
+// Syntax colour is progressive enhancement, so the Prism renderer is fetched
+// only once highlighted code is actually on screen.
+const PrismHighlight = lazy(() => import('./prism-highlight'));
 
 /**
  * Supported languages for syntax highlighting
@@ -224,7 +227,6 @@ export function CodeHighlight({
 }: CodeHighlightProps) {
   const isDarkMode = useIsDarkMode();
   const strategy = HighlightStrategyFactory.create(language);
-  const prismTheme = isDarkMode ? themes.nightOwl : themes.nightOwlLight;
 
   // Plain text doesn't need Prism highlighting
   if (language === 'plain') {
@@ -254,28 +256,28 @@ export function CodeHighlight({
           {strategy.getDisplayLanguage()}
         </div>
       )}
-      <Highlight theme={prismTheme} code={code || ' '} language={strategy.language}>
-        {({ style, tokens, getLineProps, getTokenProps }) => (
+      <Suspense
+        fallback={
           <pre
-            className={`border-ctp-surface1 overflow-auto rounded-lg border p-4 font-mono text-[13px] leading-relaxed ${
+            className={`bg-ctp-mantle border-ctp-surface1 text-ctp-text overflow-auto rounded-lg border p-4 font-mono text-[13px] leading-relaxed ${
               wrap ? 'break-words whitespace-pre-wrap' : 'whitespace-pre'
             }`}
-            style={{
-              ...style,
-              maxHeight,
-              margin: 0,
-            }}
+            style={{ maxHeight, margin: 0 }}
           >
-            {tokens.map((line, i) => (
-              <div key={i} {...getLineProps({ line })}>
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
-                ))}
-              </div>
-            ))}
+            {code}
           </pre>
-        )}
-      </Highlight>
+        }
+      >
+        <PrismHighlight
+          code={code}
+          language={strategy.language}
+          isDarkMode={isDarkMode}
+          className={`border-ctp-surface1 overflow-auto rounded-lg border p-4 font-mono text-[13px] leading-relaxed ${
+            wrap ? 'break-words whitespace-pre-wrap' : 'whitespace-pre'
+          }`}
+          style={{ maxHeight, margin: 0 }}
+        />
+      </Suspense>
     </div>
   );
 }

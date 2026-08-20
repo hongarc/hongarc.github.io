@@ -1,5 +1,4 @@
 import { ArrowLeftRight } from 'lucide-react';
-import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
@@ -7,14 +6,19 @@ import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
 const FORMAT_OPTIONS = ['json', 'yaml', 'csv', 'tsv'] as const;
 type Format = (typeof FORMAT_OPTIONS)[number];
 
+// yaml is ~260 kB of source and only the formats below need it, so it loads on
+// demand — which makes parsing and conversion async.
+const loadYaml = () => import('yaml');
+
 // Parse input based on format
-const parseInput = (input: string, format: Format): unknown => {
+const parseInput = async (input: string, format: Format): Promise<unknown> => {
   switch (format) {
     case 'json': {
       return JSON.parse(input);
     }
     case 'yaml': {
-      return parseYaml(input);
+      const { parse } = await loadYaml();
+      return parse(input);
     }
     case 'csv':
     case 'tsv': {
@@ -39,13 +43,14 @@ const parseInput = (input: string, format: Format): unknown => {
 };
 
 // Convert data to output format
-const convertTo = (data: unknown, format: Format, indent: number): string => {
+const convertTo = async (data: unknown, format: Format, indent: number): Promise<string> => {
   switch (format) {
     case 'json': {
       return JSON.stringify(data, null, indent);
     }
     case 'yaml': {
-      return stringifyYaml(data, { indent });
+      const { stringify } = await loadYaml();
+      return stringify(data, { indent });
     }
     case 'csv':
     case 'tsv': {
@@ -174,7 +179,8 @@ export const dataConverter: ToolPlugin = {
       group: 'row1',
     },
   ],
-  transformer: (inputs) => {
+  isAsync: true,
+  transformer: async (inputs) => {
     const input = getTrimmedInput(inputs, 'input');
     const fromFormat = getSelectInput(inputs, 'fromFormat', FORMAT_OPTIONS, 'json');
     const toFormat = getSelectInput(inputs, 'toFormat', FORMAT_OPTIONS, 'yaml');
@@ -187,8 +193,8 @@ export const dataConverter: ToolPlugin = {
     }
 
     try {
-      const data = parseInput(input, fromFormat);
-      const output = convertTo(data, toFormat, indent);
+      const data = await parseInput(input, fromFormat);
+      const output = await convertTo(data, toFormat, indent);
 
       // Map format to highlight language
       const languageMap: Record<Format, string> = {

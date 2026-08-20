@@ -9,8 +9,6 @@
  * - Type-safe event definitions
  */
 
-import { logEvent } from 'firebase/analytics';
-
 import { getAnalyticsInstance } from '../firebase';
 
 // ============================================================================
@@ -46,6 +44,8 @@ async function logSafe(event: AnalyticsEvent): Promise<void> {
   try {
     const analytics = await getAnalyticsInstance();
     if (analytics) {
+      // Imported here so firebase/analytics stays out of the entry chunk
+      const { logEvent } = await import('firebase/analytics');
       logEvent(analytics, event.name, event.params);
       console.info('📊', event.name, event.params);
     }

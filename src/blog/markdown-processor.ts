@@ -1,6 +1,4 @@
-import { marked } from 'marked';
 import * as R from 'ramda';
-import { parse as parseYaml } from 'yaml';
 
 import type { BlogMetadata, ParsedMarkdown } from './types';
 
@@ -47,10 +45,12 @@ const stripMarkdown = R.pipe(
 );
 
 /**
- * Browser-compatible frontmatter parser
- * Extracts YAML frontmatter from markdown content
+ * Browser-compatible frontmatter parser.
+ * Extracts YAML frontmatter from markdown content. The YAML parser is ~260 kB
+ * of source and frontmatter is the only thing the app needs it for at startup,
+ * so it is imported on demand — which makes this async.
  */
-function parseFrontmatter(content: string): { data: unknown; content: string } {
+async function parseFrontmatter(content: string): Promise<{ data: unknown; content: string }> {
   const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
   const match = frontmatterRegex.exec(content);
 
@@ -61,6 +61,7 @@ function parseFrontmatter(content: string): { data: unknown; content: string } {
   try {
     const yamlContent = match[1] ?? '';
     const markdownContent = match[2] ?? '';
+    const { parse: parseYaml } = await import('yaml');
     const data: unknown = parseYaml(yamlContent);
     return { data, content: markdownContent };
   } catch {
@@ -156,29 +157,45 @@ function validateMetadata(data: unknown): BlogMetadata {
  * Markdown processor interface
  */
 export interface MarkdownProcessorInterface {
-  parse(content: string): ParsedMarkdown;
+  parse(content: string): Promise<ParsedMarkdown>;
   renderToHtml(markdown: string): Promise<string>;
   extractExcerpt(content: string, maxLength?: number): string;
 }
 
 /**
+ * marked is only needed to render a post body, which happens on the blog post
+ * page — never during startup registration, which only reads frontmatter. So it
+ * is imported on demand and configured once, on first render.
+ */
+const loadMarked = async () => {
+  const { marked } = await import('marked');
+  marked.setOptions(MARKED_OPTIONS);
+  return marked;
+};
+
+let markedPromise: ReturnType<typeof loadMarked> | null = null;
+
+const getMarked = (): ReturnType<typeof loadMarked> => {
+  markedPromise ??= loadMarked();
+  return markedPromise;
+};
+
+/** Options applied to marked once it has been loaded. */
+const MARKED_OPTIONS = {
+  gfm: true, // GitHub Flavored Markdown
+  breaks: false, // Don't convert \n to <br>
+};
+
+/**
  * Markdown processor implementation
  */
 export class MarkdownProcessor implements MarkdownProcessorInterface {
-  constructor() {
-    // Configure marked for better security and features
-    marked.setOptions({
-      gfm: true, // GitHub Flavored Markdown
-      breaks: false, // Don't convert \n to <br>
-    });
-  }
-
   /**
    * Parse markdown content with frontmatter
    */
-  parse(content: string): ParsedMarkdown {
+  async parse(content: string): Promise<ParsedMarkdown> {
     try {
-      const parsed = parseFrontmatter(content);
+      const parsed = await parseFrontmatter(content);
       const metadata = validateMetadata(parsed.data);
 
       return {
@@ -200,6 +217,7 @@ export class MarkdownProcessor implements MarkdownProcessorInterface {
    */
   async renderToHtml(markdown: string): Promise<string> {
     try {
+      const marked = await getMarked();
       return await marked(markdown);
     } catch (error) {
       throw new Error(

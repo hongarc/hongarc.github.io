@@ -1,4 +1,4 @@
-import { diffWords, diffLines } from 'diff';
+import type { Change } from 'diff';
 import { GitCompare } from 'lucide-react';
 import { pipe, map, filter, reduce, join, trim, reject, curry, equals, prop, sum } from 'ramda';
 
@@ -36,11 +36,26 @@ const transformDiffChange = (change: {
   value: change.value,
 });
 
+/**
+ * The 'diff' package is only needed by this tool, so it is imported on first
+ * comparison instead of being bundled into the entry chunk. The module is
+ * cached, so repeated comparisons pay the cost once.
+ */
+const loadDiff = () => import('diff');
+let diffModulePromise: ReturnType<typeof loadDiff> | null = null;
+const getDiff = (): ReturnType<typeof loadDiff> => {
+  diffModulePromise ??= loadDiff();
+  return diffModulePromise;
+};
+
+type DiffWordsFn = (oldStr: string, newStr: string) => Change[];
+
 // Pure function: compute word-level diff for a line pair using Ramda
-const computeWordDiff = pipe(
-  ({ oldLine, newLine }: { oldLine: string; newLine: string }) => diffWords(oldLine, newLine),
-  map(transformDiffChange)
-);
+const computeWordDiff = (diffWords: DiffWordsFn) =>
+  pipe(
+    ({ oldLine, newLine }: { oldLine: string; newLine: string }) => diffWords(oldLine, newLine),
+    map(transformDiffChange)
+  );
 
 // Pure function: filter out word diffs by type using Ramda
 const filterWordDiffsByType = curry((excludeType: string, wordDiffs: WordDiff[]) =>
@@ -69,7 +84,12 @@ const ensureTrailingNewline = (text: string): string =>
   text.length > 0 && !text.endsWith('\n') ? `${text}\n` : text;
 
 // Pure function: process lines and add word-level diffs
-const processLinesWithWordDiff = (oldText: string, newText: string): LineDiffResult[] => {
+const processLinesWithWordDiff = async (
+  oldText: string,
+  newText: string
+): Promise<LineDiffResult[]> => {
+  const { diffLines, diffWords } = await getDiff();
+  const computeWordDiffWith = computeWordDiff(diffWords);
   const diffResults = diffLines(ensureTrailingNewline(oldText), ensureTrailingNewline(newText));
   const lines: LineDiffResult[] = [];
   let oldLineNum = 1;
@@ -120,7 +140,7 @@ const processLinesWithWordDiff = (oldText: string, newText: string): LineDiffRes
     const next = lines[i + 1];
 
     if (current?.type === 'removed' && next?.type === 'added') {
-      const wordDiffs = computeWordDiff({
+      const wordDiffs = computeWordDiffWith({
         oldLine: current.content,
         newLine: next.content,
       });
@@ -250,7 +270,8 @@ export const textDiff: ToolPlugin = {
       helpText: 'Sort lines alphabetically on each side before comparing (ignores reordering).',
     },
   ],
-  transformer: (inputs) => {
+  isAsync: true,
+  transformer: async (inputs) => {
     const oldText = sanitizeInput(inputs.oldText as string | undefined);
     const newText = sanitizeInput(inputs.newText as string | undefined);
     const diffView = getSelectInput(inputs, 'diffView', VIEW_OPTIONS, 'side-by-side');
@@ -267,10 +288,11 @@ export const textDiff: ToolPlugin = {
     };
 
     // Process lines and add word-level diffs using Ramda
-    const processedLines = processLinesWithWordDiff(
+    const [normalizedOld, normalizedNew] = await Promise.all([
       normalizeForDiff(oldText, normalizeOpts),
-      normalizeForDiff(newText, normalizeOpts)
-    );
+      normalizeForDiff(newText, normalizeOpts),
+    ]);
+    const processedLines = await processLinesWithWordDiff(normalizedOld, normalizedNew);
 
     // Generate statistics using Ramda
     const stats = countChanges(processedLines);

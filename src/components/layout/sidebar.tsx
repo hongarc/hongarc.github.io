@@ -2,7 +2,7 @@ import { BookOpen, ChevronLeft, ChevronRight, Pin, Search, Sparkles, Tag, X } fr
 import { useEffect, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
-import { blogRegistry } from '@/blog';
+import { ensureBlogPosts, useBlogPosts, useBlogTags } from '@/blog';
 import { UserMenu, UserMenuCompact } from '@/components/layout/user-menu';
 import { useDebounce } from '@/hooks/use-debounce';
 import { trackToolSearch } from '@/lib/analytics';
@@ -63,9 +63,15 @@ export function Sidebar() {
       .filter((p) => p !== undefined);
   }, [pinnedToolIds, allPlugins]);
 
-  // Get blog posts and tags for blog section
-  const allBlogPosts = useMemo(() => blogRegistry.getPublished(), []);
-  const blogTags = useMemo(() => blogRegistry.getAllTags(), []);
+  // Blog posts register on demand, so subscribe to the registry rather than
+  // reading it once on first render.
+  const allBlogPosts = useBlogPosts();
+  const blogTags = useBlogTags();
+
+  // Only pay for the blog machinery once the blog section is actually showing
+  useEffect(() => {
+    if (effectiveSection === 'blog') void ensureBlogPosts();
+  }, [effectiveSection]);
 
   // Filter blog posts by search query
   const filteredBlogPosts = useMemo(() => {

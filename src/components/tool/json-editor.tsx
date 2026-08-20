@@ -1,4 +1,3 @@
-import { JSONPath } from 'jsonpath-plus';
 import {
   ArrowDownAZ,
   ArrowUpZA,
@@ -11,10 +10,27 @@ import {
   WrapText,
   X,
 } from 'lucide-react';
-import { Highlight, themes } from 'prism-react-renderer';
-import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 
 import { useToolStore } from '@/store/tool-store';
+
+const PrismHighlight = lazy(() => import('../ui/prism-highlight'));
+
+// Shared by the editor overlay and its Suspense fallback — the textarea on top
+// renders transparent text, so the fallback must still show the JSON.
+const EDITOR_PRE_CLASSES =
+  'border-ctp-surface1 absolute inset-0 overflow-auto rounded-lg border p-4 font-mono text-sm';
+const PATH_RESULT_PRE_CLASSES =
+  'border-ctp-mauve/30 bg-ctp-mantle max-h-48 overflow-auto rounded-lg border p-3 font-mono text-sm';
 
 interface JsonEditorProps {
   initialValue?: string;
@@ -107,16 +123,22 @@ function validateJson(input: string): string | null {
   }
 }
 
-// Execute JSONPath query
-function executeJsonPath(
-  input: string,
-  path: string
-): { result: string | null; error: string | null } {
+interface JsonPathOutcome {
+  result: string | null;
+  error: string | null;
+}
+
+const EMPTY_PATH_OUTCOME: JsonPathOutcome = { result: null, error: null };
+
+// Execute JSONPath query. jsonpath-plus is only needed once the user actually
+// types a path, so it is imported on demand instead of shipped in the entry chunk.
+async function executeJsonPath(input: string, path: string): Promise<JsonPathOutcome> {
   if (!path.trim() || !input.trim()) {
-    return { result: null, error: null };
+    return EMPTY_PATH_OUTCOME;
   }
 
   try {
+    const { JSONPath } = await import('jsonpath-plus');
     const parsed = JSON.parse(input) as object;
     // Convert dot notation to JSONPath if needed
     let jsonPathQuery = path.trim();
@@ -153,10 +175,19 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
 
   // Computed values
   const error = useMemo(() => validateJson(input), [input]);
-  const { result: pathResult, error: pathError } = useMemo(
-    () => executeJsonPath(input, jsonPath),
-    [input, jsonPath]
-  );
+  const [pathOutcome, setPathOutcome] = useState<JsonPathOutcome>(EMPTY_PATH_OUTCOME);
+  const { result: pathResult, error: pathError } = pathOutcome;
+
+  // JSONPath evaluation is async because the library loads on first use
+  useEffect(() => {
+    let cancelled = false;
+    void executeJsonPath(input, jsonPath).then((outcome) => {
+      if (!cancelled) setPathOutcome(outcome);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [input, jsonPath]);
 
   // Sync scroll between textarea and highlight
   const handleScroll = useCallback(() => {
@@ -271,7 +302,6 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
   }, [input, pathResult, jsonPath]);
 
   // Theme for Prism
-  const prismTheme = isDarkMode ? themes.nightOwl : themes.nightOwlLight;
 
   const indentLabel = indent === 'tab' ? 'Tab' : `${String(indent)}sp`;
 
@@ -443,28 +473,30 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
       {/* Editor Area */}
       <div className="relative min-h-[400px]">
         {/* Syntax highlighted display */}
-        <Highlight theme={prismTheme} code={displayContent || ' '} language="json">
-          {({ style, tokens, getLineProps, getTokenProps }) => (
+        <Suspense
+          fallback={
             <pre
               ref={highlightRef}
-              className={`border-ctp-surface1 absolute inset-0 overflow-auto rounded-lg border p-4 font-mono text-sm ${
+              className={`${EDITOR_PRE_CLASSES} bg-ctp-mantle text-ctp-text ${
                 wrap ? 'break-words whitespace-pre-wrap' : 'whitespace-pre'
               }`}
-              style={{
-                ...style,
-                margin: 0,
-              }}
+              style={{ margin: 0 }}
             >
-              {tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token })} />
-                  ))}
-                </div>
-              ))}
+              {displayContent}
             </pre>
-          )}
-        </Highlight>
+          }
+        >
+          <PrismHighlight
+            code={displayContent}
+            language="json"
+            isDarkMode={isDarkMode}
+            className={`${EDITOR_PRE_CLASSES} ${
+              wrap ? 'break-words whitespace-pre-wrap' : 'whitespace-pre'
+            }`}
+            style={{ margin: 0 }}
+            preRef={highlightRef}
+          />
+        </Suspense>
 
         {/* Actual textarea for editing - positioned on top */}
         <textarea
@@ -513,22 +545,21 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
               {jsonPath}
             </span>
           </div>
-          <Highlight theme={prismTheme} code={pathResult} language="json">
-            {({ style, tokens, getLineProps, getTokenProps }) => (
-              <pre
-                className="border-ctp-mauve/30 bg-ctp-mantle max-h-48 overflow-auto rounded-lg border p-3 font-mono text-sm"
-                style={{ ...style, margin: 0 }}
-              >
-                {tokens.map((line, i) => (
-                  <div key={i} {...getLineProps({ line })}>
-                    {line.map((token, key) => (
-                      <span key={key} {...getTokenProps({ token })} />
-                    ))}
-                  </div>
-                ))}
+          <Suspense
+            fallback={
+              <pre className={`${PATH_RESULT_PRE_CLASSES} text-ctp-text`} style={{ margin: 0 }}>
+                {pathResult}
               </pre>
-            )}
-          </Highlight>
+            }
+          >
+            <PrismHighlight
+              code={pathResult}
+              language="json"
+              isDarkMode={isDarkMode}
+              className={PATH_RESULT_PRE_CLASSES}
+              style={{ margin: 0 }}
+            />
+          </Suspense>
         </div>
       )}
 

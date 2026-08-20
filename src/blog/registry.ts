@@ -8,6 +8,44 @@ export class BlogRegistry implements BlogRegistryInterface {
   private posts = new Map<string, BlogPost>();
 
   /**
+   * Posts are registered asynchronously (parsing frontmatter loads the YAML
+   * parser on demand), so consumers subscribe instead of reading once. The
+   * snapshots below are cached so useSyncExternalStore sees a stable reference
+   * between registrations and does not re-render forever.
+   */
+  private listeners = new Set<() => void>();
+
+  private publishedSnapshot: BlogPost[] = [];
+
+  private tagsSnapshot: string[] = [];
+
+  private version = 0;
+
+  /** Subscribe to registration changes. Returns an unsubscribe function. */
+  subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  /** Cached list of published posts — stable identity between registrations. */
+  getPublishedSnapshot = (): BlogPost[] => this.publishedSnapshot;
+
+  /** Cached list of tags — stable identity between registrations. */
+  getTagsSnapshot = (): string[] => this.tagsSnapshot;
+
+  /** Bumped on every registration, for reads that are not a plain list. */
+  getVersionSnapshot = (): number => this.version;
+
+  private notify(): void {
+    this.version += 1;
+    this.publishedSnapshot = this.getPublished();
+    this.tagsSnapshot = this.getAllTags();
+    for (const listener of this.listeners) listener();
+  }
+
+  /**
    * Register a blog post
    */
   register(post: BlogPost): void {
@@ -16,6 +54,7 @@ export class BlogRegistry implements BlogRegistryInterface {
       return;
     }
     this.posts.set(post.slug, post);
+    this.notify();
   }
 
   /**
