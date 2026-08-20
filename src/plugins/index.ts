@@ -4,6 +4,7 @@ import { passwordGenerator } from './crypto/password-generator';
 import { chmodCalculator } from './dev/chmod-calculator';
 import { colorConverter } from './dev/color-converter';
 import { cronParser } from './dev/cron-parser';
+import { fileInspector } from './dev/file-inspector';
 import { jsonToTs } from './dev/json-to-ts';
 import { jwtDecoder } from './dev/jwt-decoder';
 import { objectIdConverter } from './dev/objectid-converter';
@@ -46,6 +47,7 @@ registry.registerAll([
   regexTester,
   jsonToTs,
   qrGenerator,
+  fileInspector,
   timestampConverter,
   objectIdConverter,
   jwtDecoder,
