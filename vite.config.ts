@@ -128,6 +128,10 @@ export default defineConfig({
               name: 'firebase-app',
               test: /node_modules[/\\](@firebase[/\\](app|util|component|logger)|idb)[/\\]/,
             },
+            // Firestore 12.18 pulled in re2js, a distinct ~246 kB regular expression
+            // engine. Kept in its own chunk so neither piece is oversized; both are
+            // still fetched only when a signed-in user reaches Firestore.
+            { name: 're2js', test: /node_modules[/\\]re2js[/\\]/ },
             {
               name: 'firebase-firestore',
               test: /node_modules[/\\](@firebase[/\\](firestore|webchannel-wrapper)|firebase[/\\]firestore)/,
