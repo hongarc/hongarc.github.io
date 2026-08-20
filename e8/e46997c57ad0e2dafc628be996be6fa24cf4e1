@@ -1,0 +1,30 @@
+src/plugins/dev/file-inspector.tsx
+  s_02c466e00f3741::t_3cd95ba4cb5a2d 1-184,194
+  s_02c466e00f3741::t_6e9bbec6c23ee9 185-193
+src/domain/file/inspect.ts
+  s_02c466e00f3741::t_cf9e6fb99c2b0c 1-95,101-225,227-341
+  s_02c466e00f3741::t_33301a4c8d72b2 96-100
+  s_02c466e00f3741::t_381296bd352b1b 226
+src/__tests__/file-inspect.test.ts
+  s_02c466e00f3741::t_bfef9766f541e1 1-296
+src/domain/file/signature.ts
+  s_02c466e00f3741::t_aba6240000e78c 1-333
+src/plugins/index.ts
+  s_02c466e00f3741::t_a1f3489c5791a9 7,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e8e46997c57ad0e2dafc628be996be6fa24cf4e1",
+  "prompts": {},
+  "sessions": {
+    "s_02c466e00f3741": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "525ecb06-7cd2-413f-bd93-253ced4c8131",
+        "model": "claude-opus-5"
+      },
+      "human_author": "hongarc <hongtu@everfit.io>"
+    }
+  }
+}
