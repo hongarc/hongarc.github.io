@@ -180,10 +180,16 @@ export default defineConfig({
         'vite.config.ts',
         'tailwind.config.js',
       ],
-      // Enforce high coverage
-      statements: 90,
-      branches: 80,
-      functions: 90,
+      // Thresholds must live under `thresholds` to be enforced. Written at the
+      // top level they were silently ignored, so coverage was never gated.
+      // These are floors at today's measured level: raise them as coverage
+      // improves rather than lowering them to fit a regression.
+      thresholds: {
+        statements: 88,
+        branches: 75,
+        functions: 93,
+        lines: 91,
+      },
     },
   },
 });
