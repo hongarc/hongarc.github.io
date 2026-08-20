@@ -1,11 +1,5 @@
 export type SqlLanguage =
-  | 'sql'
-  | 'mysql'
-  | 'postgresql'
-  | 'mariadb'
-  | 'sqlite'
-  | 'bigquery'
-  | 'spark';
+  'sql' | 'mysql' | 'postgresql' | 'mariadb' | 'sqlite' | 'bigquery' | 'spark';
 export type KeywordCase = 'preserve' | 'upper' | 'lower';
 
 export interface SqlFormatOptions {

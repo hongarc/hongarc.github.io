@@ -68,7 +68,7 @@ const convertTo = async (data: unknown, format: Format, indent: number): Promise
         throw new Error('Array items must be objects for CSV/TSV output');
       }
 
-      const headers = Object.keys(firstItem as Record<string, unknown>);
+      const headers = Object.keys(firstItem);
       const lines: string[] = [headers.join(delimiter)];
 
       for (const item of arrayData) {

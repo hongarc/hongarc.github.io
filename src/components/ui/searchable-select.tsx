@@ -89,7 +89,7 @@ export function SearchableSelect({
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (!isOpen) {
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+        if (['Enter', ' ', 'ArrowDown'].includes(e.key)) {
           e.preventDefault();
           setIsOpen(true);
         }

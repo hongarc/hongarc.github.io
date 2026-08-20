@@ -39,7 +39,7 @@ describe('blog utils', () => {
   describe('guards', () => {
     it('recognises non-empty strings', () => {
       expect(isNonEmptyString('a')).toBe(true);
-      expect(isNonEmptyString('   ')).toBe(false);
+      expect(isNonEmptyString(' '.repeat(3))).toBe(false);
       expect(isNonEmptyString(3)).toBe(false);
     });
 
@@ -107,7 +107,7 @@ describe('blog utils', () => {
   describe('search', () => {
     it('returns every post when the query is blank', () => {
       const input = [older, newer];
-      expect(searchPosts('   ')(input)).toStrictEqual(input);
+      expect(searchPosts(' '.repeat(3))(input)).toStrictEqual(input);
     });
 
     it('matches on title, description, content and tags', () => {

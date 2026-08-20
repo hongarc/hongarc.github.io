@@ -168,9 +168,9 @@ export class ShortcutManager implements IShortcutManager {
 
     for (const command of sortedCommands) {
       // Check if any binding matches
-      const matchingBinding = command.bindings.find((binding) => matchesBinding(event, binding));
+      const hasMatchingBinding = command.bindings.some((binding) => matchesBinding(event, binding));
 
-      if (matchingBinding && command.canExecute(ctx)) {
+      if (hasMatchingBinding && command.canExecute(ctx)) {
         event.preventDefault();
         void command.execute(ctx);
 

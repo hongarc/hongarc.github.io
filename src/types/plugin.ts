@@ -4,14 +4,7 @@ import type { ComponentType, ReactNode } from 'react';
  * Categories for grouping tools in the sidebar
  */
 export type Category =
-  | 'text'
-  | 'format'
-  | 'encoding'
-  | 'crypto'
-  | 'dev'
-  | 'network'
-  | 'math'
-  | 'security';
+  'text' | 'format' | 'encoding' | 'crypto' | 'dev' | 'network' | 'math' | 'security';
 
 export const CATEGORY_LABELS: Record<Category, string> = {
   text: 'Text & String',

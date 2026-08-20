@@ -60,7 +60,9 @@ describe('Crypto Domain', () => {
     it('computeAllHashes returns correct shape and known vectors for "abc"', async () => {
       const result = await computeAllHashes('abc');
       expect(Object.keys(result)).toHaveLength(4);
-      expect(Object.keys(result)).toEqual(expect.arrayContaining(['md5', 'sha1', 'sha256', 'sha512']));
+      expect(Object.keys(result)).toEqual(
+        expect.arrayContaining(['md5', 'sha1', 'sha256', 'sha512'])
+      );
       expect(result.md5).toBe(ABC_MD5);
       expect(result.sha1).toBe(ABC_SHA1);
       expect(result.sha256).toBe(ABC_SHA256);
@@ -118,7 +120,7 @@ describe('Crypto Domain', () => {
     it('matchChecksum returns null for empty expected', async () => {
       const hashes = await computeAllHashes('abc');
       expect(matchChecksum('', hashes).algo).toBeNull();
-      expect(matchChecksum('   ', hashes).algo).toBeNull();
+      expect(matchChecksum(' '.repeat(3), hashes).algo).toBeNull();
     });
 
     it('matchChecksum returns null for wrong-length-but-right-format garbage (64 chars, no match)', async () => {

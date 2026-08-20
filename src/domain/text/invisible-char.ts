@@ -160,8 +160,7 @@ export const removeInvisibleChars: (text: string) => string = piped(
 
 /** A segment is either a run of normal text or a single invisible char */
 export type Segment =
-  | { type: 'text'; value: string }
-  | { type: 'invisible'; info: InvisibleCharInfo; index: number };
+  { type: 'text'; value: string } | { type: 'invisible'; info: InvisibleCharInfo; index: number };
 
 interface SegmentAccumulator {
   segments: Segment[];

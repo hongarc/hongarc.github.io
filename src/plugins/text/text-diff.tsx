@@ -64,7 +64,10 @@ const filterWordDiffsByType = (excludeType: string, wordDiffs: WordDiff[]): Word
 // Pure function: compute similarity ratio between two lines via word diff
 // Returns 0..1 where 1 means identical, 0 means completely different
 const computeSimilarity = (wordDiffs: WordDiff[]): number => {
-  const lengths = map(wordDiffs, piped(prop('value'), (v: string) => v.length));
+  const lengths = map(
+    wordDiffs,
+    piped(prop('value'), (v: string) => v.length)
+  );
   const totalLen = sum(lengths);
   if (totalLen === 0) return 0;
   const equalLen = sum(map(wordDiffs, (d) => (d.type === 'equal' ? d.value.length : 0)));
@@ -89,6 +92,7 @@ const processLinesWithWordDiff = async (
   const diffResults = diffLines(ensureTrailingNewline(oldText), ensureTrailingNewline(newText));
   const lines: LineDiffResult[] = [];
   let oldLineNum = 1;
+  // eslint-disable-next-line unicorn/consistent-compound-words -- this is the "new" line number paired with oldLineNum, not the compound word "newline"
   let newLineNum = 1;
 
   // Convert diff results to line results
@@ -179,7 +183,10 @@ const countChanges = (lines: LineDiffResult[]): { insertions: number; deletions:
   );
 
 // Pure function: sanitize input text
-const sanitizeInput = piped((text: string | undefined) => text ?? '', (text) => text.trim());
+const sanitizeInput = piped(
+  (text: string | undefined) => text ?? '',
+  (text) => text.trim()
+);
 
 const VIEW_OPTIONS = ['inline', 'side-by-side'] as const;
 const NORMALIZE_FORMAT_OPTIONS = ['none', 'json', 'yaml'] as const;

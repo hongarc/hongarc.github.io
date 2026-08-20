@@ -105,7 +105,7 @@ export const uuidGenerator: ToolPlugin = {
 
     try {
       const result = generateIds(type, count, uppercase, noDashes);
-      const sampleId = result.split('\n')[0] ?? '';
+      const sampleId = result.split('\n', 1)[0] ?? '';
 
       return success(result, {
         _viewMode: 'sections',

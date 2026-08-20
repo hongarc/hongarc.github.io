@@ -41,7 +41,7 @@ export const executeTransformer = async (
     if (plugin.isAsync) {
       return await plugin.transformer(inputs);
     }
-    return plugin.transformer(inputs) as TransformResult;
+    return await plugin.transformer(inputs);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error occurred';
     return failure(message);

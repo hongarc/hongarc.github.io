@@ -45,7 +45,7 @@ export const urlEncoder: ToolPlugin = {
     }
 
     try {
-      const result = processUrl(input, mode as UrlMode);
+      const result = processUrl(input, mode);
       const modeLabels: Record<UrlMode, string> = {
         encode: 'Encode (encodeURI)',
         decode: 'Decode (decodeURI)',
@@ -57,7 +57,7 @@ export const urlEncoder: ToolPlugin = {
         _viewMode: 'sections',
         _sections: {
           stats: [
-            { label: 'Mode', value: modeLabels[mode as UrlMode] },
+            { label: 'Mode', value: modeLabels[mode] },
             { label: 'Input', value: `${String(input.length)} chars` },
             { label: 'Output', value: `${String(result.length)} chars` },
           ],

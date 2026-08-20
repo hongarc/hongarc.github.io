@@ -26,10 +26,7 @@ export const formatByteSize = (bytes: number): string => {
 };
 
 export type TextEncodingName =
-  | 'UTF-8, no byte order mark'
-  | 'UTF-8 with byte order mark'
-  | 'UTF-16LE'
-  | 'UTF-16BE';
+  'UTF-8, no byte order mark' | 'UTF-8 with byte order mark' | 'UTF-16LE' | 'UTF-16BE';
 
 export interface DelimiterFacts {
   /** Delimiter name, e.g. `comma`. */

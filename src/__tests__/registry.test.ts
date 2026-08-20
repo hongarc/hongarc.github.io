@@ -3,17 +3,21 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { registry } from '@/plugins/registry';
 import type { Category, ToolPlugin } from '@/types/plugin';
 
-const plugin = (id: string, category: Category, label = id, keywords: string[] = []): ToolPlugin =>
-  ({
-    id,
-    label,
-    description: `${label} description`,
-    category,
-    icon: undefined,
-    keywords,
-    inputs: [],
-    transformer: () => ({ success: true, output: '' }),
-  }) as unknown as ToolPlugin;
+const plugin = (
+  id: string,
+  category: Category,
+  label = id,
+  keywords: string[] = []
+): ToolPlugin => ({
+  id,
+  label,
+  description: `${label} description`,
+  category,
+  icon: undefined,
+  keywords,
+  inputs: [],
+  transformer: () => ({ success: true, output: '' }),
+});
 
 describe('plugin registry', () => {
   beforeEach(() => {

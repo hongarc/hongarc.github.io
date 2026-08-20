@@ -49,7 +49,7 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
       general: [],
     };
     for (const shortcut of SHORTCUTS) {
-      const category = shortcut.category as keyof GroupedShortcuts;
+      const category = shortcut.category;
       groups[category].push(shortcut);
     }
     return groups;

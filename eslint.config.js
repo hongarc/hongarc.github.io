@@ -116,6 +116,16 @@ export default tseslint.config(
     },
   },
 
+  // The `__tests__` directory name is the Vitest/Jest convention, which
+  // unicorn's kebab-case check flags from version 65 onwards. Test file names
+  // themselves stay kebab-case by convention.
+  {
+    files: ['src/__tests__/**'],
+    rules: {
+      'unicorn/filename-case': 'off',
+    },
+  },
+
   // Disable type-checked rules for JS files
   {
     files: ['**/*.js'],

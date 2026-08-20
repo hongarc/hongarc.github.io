@@ -8,16 +8,7 @@
 
 /** Broad content families a signature can prove. Several mimetypes share one. */
 export type TypeFamily =
-  | 'pdf'
-  | 'ole2'
-  | 'ooxml'
-  | 'zip'
-  | 'image'
-  | 'archive'
-  | 'executable'
-  | 'rtf'
-  | 'text'
-  | 'binary';
+  'pdf' | 'ole2' | 'ooxml' | 'zip' | 'image' | 'archive' | 'executable' | 'rtf' | 'text' | 'binary';
 
 export interface DetectedType {
   /** The family the bytes prove. */

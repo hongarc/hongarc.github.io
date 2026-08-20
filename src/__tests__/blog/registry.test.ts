@@ -156,7 +156,7 @@ describe('BlogRegistry', () => {
       const post = createMockPost({ slug: 'post1' });
       registry.register(post);
 
-      const results = registry.search('   ');
+      const results = registry.search(' '.repeat(3));
       expect(results).toHaveLength(1);
     });
   });

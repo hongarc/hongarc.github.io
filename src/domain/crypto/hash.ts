@@ -53,7 +53,7 @@ export const computeHashFromBuffer = async (
 export const computeHash = async (text: string, algorithm: AlgorithmType): Promise<string> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
-  return computeHashFromBuffer(data.buffer as ArrayBuffer, algorithm);
+  return computeHashFromBuffer(data.buffer, algorithm);
 };
 
 /**

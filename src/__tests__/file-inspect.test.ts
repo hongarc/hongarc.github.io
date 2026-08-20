@@ -143,7 +143,7 @@ describe('parseAllowList and checkAllowList', () => {
   });
 
   it('returns null when no allow-list was supplied', () => {
-    expect(checkAllowList('   ', 'a.csv', 'text/csv')).toBeNull();
+    expect(checkAllowList(' '.repeat(3), 'a.csv', 'text/csv')).toBeNull();
   });
 
   it('matches an exact mimetype', () => {

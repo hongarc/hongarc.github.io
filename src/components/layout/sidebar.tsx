@@ -92,7 +92,9 @@ export function Sidebar() {
     if (!selectedToolId || !navRef.current) return;
 
     // Find the active link element
-    const activeLink = navRef.current.querySelector(`[data-tool-id="${selectedToolId}"]`);
+    const activeLink = navRef.current.querySelector(
+      `[data-tool-id="${CSS.escape(selectedToolId)}"]`
+    );
     if (activeLink) {
       activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
