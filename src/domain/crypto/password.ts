@@ -1,4 +1,4 @@
-import { join, map, pipe, range } from 'ramda';
+import { join, map, pipe, range } from 'remeda';
 
 import effWordlist from './eff-wordlist.json';
 
@@ -68,10 +68,10 @@ export const getRandomNumber = (): string => {
 // Pure function: generate single password
 export const generatePassword = (length: number, pool: string): string =>
   pipe(
-    () => range(0, length),
+    range(0, length),
     map(() => getRandomChar(pool)),
     join('')
-  )();
+  );
 
 // Passphrase options
 export interface PassphraseOptions {
@@ -87,12 +87,12 @@ export const generatePassphrase = (options: PassphraseOptions): string => {
   const sep = SEPARATORS[separator];
 
   const words = pipe(
-    () => range(0, wordCount),
+    range(0, wordCount),
     map(() => {
       const word = getRandomWord();
       return capitalize ? word.charAt(0).toUpperCase() + word.slice(1) : word;
     })
-  )();
+  );
 
   // Optionally add a random number at random position
   if (includeNumber) {
@@ -174,15 +174,15 @@ export const getStrengthVariant = (
 // Generate multiple passwords
 export const generateMultiplePasswords = (count: number, length: number, pool: string): string =>
   pipe(
-    () => range(0, count),
+    range(0, count),
     map(() => generatePassword(length, pool)),
     join('\n')
-  )();
+  );
 
 // Generate multiple passphrases
 export const generateMultiplePassphrases = (count: number, options: PassphraseOptions): string =>
   pipe(
-    () => range(0, count),
+    range(0, count),
     map(() => generatePassphrase(options)),
     join('\n')
-  )();
+  );

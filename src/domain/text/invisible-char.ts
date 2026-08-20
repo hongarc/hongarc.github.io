@@ -1,4 +1,4 @@
-import { filter, groupBy, join, length, map, pipe, prop, reject } from 'ramda';
+import { filter, groupBy, join, length, map, pipe, piped, prop, values } from 'remeda';
 
 // ---------------------------------------------------------------------------
 // Invisible character database
@@ -91,7 +91,7 @@ const lookupInfo = (ic: IndexedChar): InvisibleCharInfo =>
   CHAR_LOOKUP.get(ic.codePoint)!;
 
 // ---------------------------------------------------------------------------
-// Pure analysis (Ramda pipelines)
+// Pure analysis pipelines
 // ---------------------------------------------------------------------------
 
 export interface InvisibleCharFinding {
@@ -115,7 +115,7 @@ export interface AnalysisResult {
 }
 
 /** Extract findings from indexed chars */
-const toFindings: (chars: IndexedChar[]) => InvisibleCharFinding[] = pipe(
+const toFindings: (chars: IndexedChar[]) => InvisibleCharFinding[] = piped(
   filter(isInvisible),
   map((ic: IndexedChar) => ({ index: ic.index, char: ic.char, info: lookupInfo(ic) }))
 );
@@ -123,19 +123,16 @@ const toFindings: (chars: IndexedChar[]) => InvisibleCharFinding[] = pipe(
 /** Group findings by code point */
 const groupFindings = (findings: InvisibleCharFinding[]): GroupedFinding[] =>
   pipe(
+    findings,
     groupBy((f: InvisibleCharFinding) => String(f.info.codePoint)),
-    Object.values,
-    filter((g): g is InvisibleCharFinding[] => Array.isArray(g)),
-    map((group: InvisibleCharFinding[]) => {
-      const [first] = group;
-      if (!first) throw new Error('Unexpected empty group');
-      return {
-        info: first.info,
-        count: length(group),
-        positions: map(prop('index'), group),
-      };
-    })
-  )(findings);
+    // Remeda types each group as non-empty, so the first element needs no guard
+    values(),
+    map((group) => ({
+      info: group[0].info,
+      count: length(group),
+      positions: map(group, prop('index')),
+    }))
+  );
 
 export function analyzeText(text: string): AnalysisResult {
   const chars = toIndexedChars(text);
@@ -150,15 +147,15 @@ export function analyzeText(text: string): AnalysisResult {
 }
 
 /** Remove invisible chars — keep only visible indexed chars, join back */
-export const removeInvisibleChars: (text: string) => string = pipe(
+export const removeInvisibleChars: (text: string) => string = piped(
   toIndexedChars,
-  reject(isInvisible),
+  filter((ic: IndexedChar) => !isInvisible(ic)),
   map(prop('char')),
   join('')
 );
 
 // ---------------------------------------------------------------------------
-// Character map segments (Ramda reduce)
+// Character map segments
 // ---------------------------------------------------------------------------
 
 /** A segment is either a run of normal text or a single invisible char */
@@ -188,7 +185,7 @@ const segmentReducer = (acc: SegmentAccumulator, ic: IndexedChar): SegmentAccumu
   return { ...acc, run: acc.run + ic.char };
 };
 
-export const buildSegments: (text: string) => Segment[] = pipe(
+export const buildSegments: (text: string) => Segment[] = piped(
   toIndexedChars,
   (chars: IndexedChar[]) =>
     chars.reduce((acc, ic) => segmentReducer(acc, ic), { segments: [] as Segment[], run: '' }),

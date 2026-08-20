@@ -112,7 +112,7 @@ export default defineConfig({
               name: 'vendor',
               test: /node_modules[/\\](react|react-dom|react-router|react-router-dom|scheduler)[/\\]/,
             },
-            { name: 'ramda', test: /node_modules[/\\]ramda[/\\]/ },
+            { name: 'remeda', test: /node_modules[/\\]remeda[/\\]/ },
             // Firebase is loaded on demand (see src/lib/firebase.ts). Naming the
             // groups keeps the build output readable and each SDK separately
             // cacheable — Firestore alone is bigger than everything else.

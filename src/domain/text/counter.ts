@@ -1,37 +1,40 @@
-import { filter, length, pipe, split, trim } from 'ramda';
+import { filter, length, pipe, split } from 'remeda';
 
 export const countCharacters = (text: string): number => text.length;
 
 export const countCharactersNoSpaces = (text: string): number =>
   pipe(
+    text,
     split(''),
     filter((c: string) => c !== ' ' && c !== '\n' && c !== '\t'),
-    length
-  )(text);
+    length()
+  );
 
 export const countWords = (text: string): number =>
   pipe(
-    trim,
+    text.trim(),
     split(/\s+/),
     filter((w: string) => w.length > 0),
-    length
-  )(text);
+    length()
+  );
 
-export const countLines = (text: string): number => pipe(split('\n'), length)(text);
+export const countLines = (text: string): number => pipe(text, split('\n'), length());
 
 export const countParagraphs = (text: string): number =>
   pipe(
+    text,
     split(/\n\s*\n/),
     filter((p: string) => p.trim().length > 0),
-    length
-  )(text);
+    length()
+  );
 
 export const countSentences = (text: string): number =>
   pipe(
+    text,
     split(/[.!?]+/),
     filter((s: string) => s.trim().length > 0),
-    length
-  )(text);
+    length()
+  );
 
 // Calculate reading time (average 200 words per minute)
 export const calculateReadingTime = (wordCount: number): string => {

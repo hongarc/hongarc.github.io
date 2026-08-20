@@ -1,8 +1,8 @@
 /**
- * Blog utility functions using Ramda for functional programming
+ * Blog utility functions, written in a functional style with Remeda
  */
 
-import * as R from 'ramda';
+import { filter, flatMap, length, piped, split, take, unique } from 'remeda';
 
 import type { BlogPost } from './types';
 
@@ -23,7 +23,7 @@ export const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === 'string');
 
 /**
- * Blog post utilities using Ramda
+ * Blog post utilities
  */
 
 // Sort posts by date (newest first)
@@ -32,46 +32,55 @@ export const sortByDateDesc = (posts: BlogPost[]): BlogPost[] =>
   [...posts].sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
 
 // Filter published posts
-export const filterPublished = R.filter<BlogPost>((post) => !post.isDraft);
+// Remeda's curried forms infer their element type from a surrounding pipe, so
+// standalone helpers take their data explicitly (Remeda's data-first style).
+export const filterPublished = (posts: BlogPost[]): BlogPost[] =>
+  filter(posts, (post) => !post.isDraft);
 
 // Filter by tag
-export const filterByTag = (tag: string) => R.filter<BlogPost>((post) => post.tags.includes(tag));
+export const filterByTag =
+  (tag: string) =>
+  (posts: BlogPost[]): BlogPost[] =>
+    filter(posts, (post) => post.tags.includes(tag));
 
 // Get unique tags from posts
-export const extractUniqueTags = R.pipe(
-  R.chain<BlogPost, string>((post) => post.tags),
-  R.uniq,
+export const extractUniqueTags = piped(
+  flatMap((post: BlogPost) => post.tags),
+  unique(),
   // eslint-disable-next-line unicorn/no-array-sort -- toSorted has type issues
   (tags: string[]) => [...tags].sort()
 );
 
 // Search posts by query
-export const searchPosts = (query: string) => {
-  if (!query.trim()) {
-    return R.identity<BlogPost[]>;
+export const searchPosts = (query: string): ((posts: BlogPost[]) => BlogPost[]) => {
+  const normalizedQuery = query.toLowerCase().trim();
+
+  if (!normalizedQuery) {
+    return (posts) => posts;
   }
 
-  const normalizedQuery = query.toLowerCase().trim();
-  return R.filter<BlogPost>(
-    (post) =>
-      post.title.toLowerCase().includes(normalizedQuery) ||
-      post.description.toLowerCase().includes(normalizedQuery) ||
-      post.content.toLowerCase().includes(normalizedQuery) ||
-      post.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
-  );
+  return (posts) =>
+    filter(
+      posts,
+      (post) =>
+        post.title.toLowerCase().includes(normalizedQuery) ||
+        post.description.toLowerCase().includes(normalizedQuery) ||
+        post.content.toLowerCase().includes(normalizedQuery) ||
+        post.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
+    );
 };
 
 // Get published posts sorted by date
-export const getPublishedSorted = R.pipe(filterPublished, sortByDateDesc);
+export const getPublishedSorted = piped(filterPublished, sortByDateDesc);
 
 // Get posts by tag, sorted by date
-export const getByTagSorted = (tag: string) => R.pipe(filterByTag(tag), sortByDateDesc);
+export const getByTagSorted = (tag: string) => piped(filterByTag(tag), sortByDateDesc);
 
 // Count words in text
-export const countWords = R.pipe(
-  R.split(/\s+/),
-  R.filter((word: string) => word.length > 0),
-  R.length
+export const countWords = piped(
+  split(/\s+/),
+  filter((word: string) => word.length > 0),
+  length()
 );
 
 // Truncate text at word boundary
@@ -116,7 +125,7 @@ export const groupByTag = (posts: BlogPost[]): Record<string, BlogPost[]> => {
 
 // Get recent posts (limit)
 export const getRecentPosts = (limit: number): ((posts: BlogPost[]) => BlogPost[]) =>
-  R.pipe(getPublishedSorted, (posts: BlogPost[]) => R.take(limit, posts));
+  piped(getPublishedSorted, take(limit));
 
 // Check if post matches search criteria
 export const postMatchesSearch =

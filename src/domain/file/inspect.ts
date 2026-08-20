@@ -7,7 +7,7 @@
  * whole module is unit-testable without the File API.
  */
 
-import { filter, join, map, pipe, reject, split, trim } from 'ramda';
+import { filter, join, map, pipe, split } from 'remeda';
 
 import type { DetectedType, TypeFamily } from './signature';
 import { decodeUtf8, familyOfMimetype, mimetypeOfExtension, startsWithBytes } from './signature';
@@ -91,7 +91,7 @@ const describeLineEndings = (text: string): string => {
   ].filter((part) => part.length > 0);
 
   if (found.length === 0) return 'none in the sampled head';
-  if (found.length > 1) return `mixed — ${join(', ', found)}`;
+  if (found.length > 1) return `mixed — ${join(found, ', ')}`;
   if (crlf > 0) return 'CRLF (Windows)';
   return lf > 0 ? 'LF (Unix)' : 'CR (classic Mac)';
 };
@@ -102,7 +102,7 @@ export const detectDelimiter = (lines: readonly string[]): DelimiterFacts | null
   if (sample.length === 0) return null;
 
   const scored = DELIMITERS.map(({ name, character }) => {
-    const counts = sample.map((line) => split(character, line).length - 1);
+    const counts = sample.map((line) => split(line, character).length - 1);
     const first = counts[0] ?? 0;
     const consistent = counts.every((count) => count === first);
     return { name, columns: first + 1, consistent, score: first * (consistent ? 2 : 1) };
@@ -118,7 +118,8 @@ export const detectDelimiter = (lines: readonly string[]): DelimiterFacts | null
 
 /** Encoding, byte order mark, line endings and delimited-data shape. */
 export const readTextFacts = (bytes: Uint8Array, text: string): TextFacts => {
-  const lines = reject((line: string) => line.length === 0, split(/\r?\n/, text));
+  const allLines: string[] = split(text, /\r?\n/);
+  const lines = filter(allLines, (line) => line.length > 0);
 
   return {
     encoding: detectEncoding(bytes),
@@ -276,10 +277,11 @@ export const compareDeclared = (declaredMimetype: string, detected: DetectedType
 /** Split an allow-list input into comparable entries. */
 export const parseAllowList = (raw: string): string[] =>
   pipe(
+    raw,
     split(/[\s,]+/),
-    map((entry: string) => trim(entry).toLowerCase()),
+    map((entry: string) => entry.trim().toLowerCase()),
     filter((entry: string) => entry.length > 0)
-  )(raw);
+  );
 
 const matchesEntry = (entry: string, mimetype: string, extension: string): boolean => {
   if (entry.endsWith('/*')) return mimetype.startsWith(entry.slice(0, -1));

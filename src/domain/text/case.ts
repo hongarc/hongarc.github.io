@@ -1,5 +1,5 @@
 import { camelCase, constantCase, kebabCase, pascalCase, snakeCase } from 'change-case';
-import { join, map, pipe, split } from 'ramda';
+import { join, map, piped, split } from 'remeda';
 
 export type CaseType = 'camel' | 'pascal' | 'snake' | 'kebab' | 'constant' | 'upper' | 'lower';
 
@@ -17,4 +17,4 @@ export const caseConverters: Record<CaseType, (s: string) => string> = {
  * Convert each line using the selected case converter
  */
 export const convertLines = (caseType: CaseType) =>
-  pipe(split('\n'), map(caseConverters[caseType]), join('\n'));
+  piped(split('\n'), map(caseConverters[caseType]), join('\n'));

@@ -1,9 +1,9 @@
-import * as R from 'ramda';
+import * as R from 'remeda';
 
 import type { BlogMetadata, ParsedMarkdown } from './types';
 
 /**
- * Utility functions using Ramda
+ * Utility functions
  */
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim() !== '';
@@ -13,12 +13,12 @@ const isValidDateString = (value: string): boolean => !Number.isNaN(Date.parse(v
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === 'string');
 
-const allNonEmpty = R.all((tag: string) => tag.trim() !== '');
+const allNonEmpty = (tags: string[]): boolean => tags.every((tag) => tag.trim() !== '');
 
 /**
- * Strip markdown formatting using Ramda pipe
+ * Strip markdown formatting
  */
-const stripMarkdown = R.pipe(
+const stripMarkdown = R.piped(
   // Remove code blocks first (before inline code)
   (s: string) => s.replaceAll(/```[\s\S]*?```/g, ''),
   // Remove headers
@@ -41,7 +41,7 @@ const stripMarkdown = R.pipe(
   (s: string) => s.replaceAll(/\n+/g, ' '),
   // Normalize multiple spaces
   (s: string) => s.replaceAll(/\s+/g, ' '),
-  R.trim
+  (s: string) => s.trim()
 );
 
 /**

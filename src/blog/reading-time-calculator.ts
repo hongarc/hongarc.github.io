@@ -3,7 +3,7 @@
  * Calculates estimated reading time based on content analysis
  */
 
-import * as R from 'ramda';
+import * as R from 'remeda';
 
 /**
  * Reading time calculation configuration
@@ -41,23 +41,23 @@ export interface ReadingTimeResult {
 }
 
 /**
- * Utility functions using Ramda
+ * Utility functions
  */
 const isNonEmpty = (word: string): boolean => word.length > 0;
-const countWords = R.pipe(
+const countWords = R.piped(
   R.split(/\s+/),
   R.filter((word: string) => isNonEmpty(word)),
-  R.length
+  R.length()
 );
 
-const stripForWordCount = R.pipe(
+const stripForWordCount = R.piped(
   (s: string) => s.replaceAll(/```[\s\S]*?```/g, ''), // Remove code blocks
   (s: string) => s.replaceAll(/!\[[\d\w\s]*\]\([^)]+\)/g, ''), // Remove images
   (s: string) => s.replaceAll(/`[^`]+`/g, ''), // Remove inline code
   (s: string) => s.replaceAll(/\[([^\]]+)\]\([^)]+\)/g, '$1'), // Keep link text only
   (s: string) => s.replaceAll(/[#*_~`]/g, ''), // Remove markdown formatting
   (s: string) => s.replaceAll(/\s+/g, ' '), // Normalize whitespace
-  R.trim
+  (s: string) => s.trim()
 );
 
 const extractCodeBlockContent = (codeBlock: string): string =>
@@ -80,7 +80,7 @@ export function calculateReadingTime(
   const images = imageMatches.length;
 
   // Extract and count code blocks
-  const codeBlockMatches = contentWithoutFrontmatter.match(/```[\s\S]*?```/g) ?? [];
+  const codeBlockMatches: string[] = contentWithoutFrontmatter.match(/```[\s\S]*?```/g) ?? [];
   const codeBlocks = codeBlockMatches.length;
 
   // Remove code blocks and images for word counting
@@ -91,10 +91,11 @@ export function calculateReadingTime(
 
   // Count words in code blocks (they're read slower)
   const codeWords = R.pipe(
+    codeBlockMatches,
     R.map((block: string) => extractCodeBlockContent(block)),
     R.map((content: string) => countWords(content)),
-    R.sum
-  )(codeBlockMatches);
+    R.sum()
+  );
 
   // Calculate reading time
   const textReadingTime = words / finalConfig.wordsPerMinute;

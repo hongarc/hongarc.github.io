@@ -1,5 +1,5 @@
 import { Fingerprint } from 'lucide-react';
-import { join, pipe, times } from 'ramda';
+import { join, pipe, times } from 'remeda';
 
 import { generateId } from '@/domain/generators/id';
 import type { ToolPlugin } from '@/types/plugin';
@@ -28,9 +28,9 @@ const generateIds = (
   noDashes: boolean
 ): string =>
   pipe(
-    times(() => formatId(generateId(type), uppercase, noDashes)),
+    times(count, () => formatId(generateId(type), uppercase, noDashes)),
     join('\n')
-  )(count);
+  );
 
 // Get type label
 const getTypeLabel = (type: (typeof TYPE_OPTIONS)[number]): string => {

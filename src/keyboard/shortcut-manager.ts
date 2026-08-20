@@ -5,7 +5,7 @@
  * and dispatch key events to the appropriate commands.
  */
 
-import * as R from 'ramda';
+import * as R from 'remeda';
 
 import { trackInteraction } from '@/lib/analytics';
 
@@ -163,11 +163,8 @@ export class ShortcutManager implements IShortcutManager {
     const filteredCommands = this.getAll().filter(
       (cmd) => cmd.contexts.includes(currentContext) || cmd.contexts.includes('global')
     );
-    // Use Ramda sort to avoid mutating original array
-    const sortedCommands = R.sort(
-      R.descend((cmd: ShortcutCommand) => cmd.priority ?? 0),
-      filteredCommands
-    );
+    // Sorted without mutating the original array
+    const sortedCommands = R.sortBy(filteredCommands, [(cmd) => cmd.priority ?? 0, 'desc']);
 
     for (const command of sortedCommands) {
       // Check if any binding matches

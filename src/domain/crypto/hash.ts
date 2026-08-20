@@ -1,4 +1,4 @@
-import { join, map } from 'ramda';
+import { join, map, pipe } from 'remeda';
 
 export type AlgorithmType = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 
@@ -25,13 +25,14 @@ export interface IncrementalHashers {
 export const CHECKSUM_ALGOS: ChecksumAlgo[] = ['MD5', 'SHA-1', 'SHA-256', 'SHA-512'];
 
 /**
- * Convert ArrayBuffer to hex string using Ramda
+ * Convert ArrayBuffer to hex string
  */
 export const bufferToHex = (buffer: ArrayBuffer): string => {
   const bytes = [...new Uint8Array(buffer)];
-  return join(
-    '',
-    map((b: number) => b.toString(16).padStart(2, '0'), bytes)
+  return pipe(
+    bytes,
+    map((b: number) => b.toString(16).padStart(2, '0')),
+    join('')
   );
 };
 

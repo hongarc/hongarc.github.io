@@ -23,7 +23,7 @@ A fast, modern developer utility hub built with React 19, Domain-Driven Design (
 | Build | Vite 6 |
 | Styling | Tailwind CSS v4 |
 | State | Zustand |
-| Functional | Ramda.js |
+| Functional | Remeda |
 
 ## Architecture
 

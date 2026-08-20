@@ -1,4 +1,4 @@
-import { groupBy, map, pipe, prop, sort } from 'ramda';
+import { groupBy, map, pipe, prop, sort } from 'remeda';
 
 import type { Category, GroupedPlugins, ToolPlugin } from '@/types/plugin';
 import { CATEGORY_ORDER } from '@/types/plugin';
@@ -93,11 +93,11 @@ class PluginRegistry {
   }
 
   /**
-   * Get plugins grouped by category using Ramda
+   * Get plugins grouped by category
    */
   getGroupedByCategory(): GroupedPlugins {
     const plugins = this.getAll();
-    return groupBy(prop('category'), plugins);
+    return groupBy(plugins, prop('category'));
   }
 
   /**
@@ -126,10 +126,10 @@ class PluginRegistry {
 
     // Sort by score descending
     return pipe(
-      () => scored,
+      scored,
       sort((a, b) => b.score - a.score),
       map(({ plugin }) => plugin)
-    )();
+    );
   }
 
   /**

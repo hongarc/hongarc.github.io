@@ -1,4 +1,4 @@
-import { identity, sortBy } from 'ramda';
+import { identity, sortBy } from 'remeda';
 
 /**
  * Type guard for plain objects
@@ -14,7 +14,7 @@ export const sortObjectKeys = (obj: unknown): unknown => {
     return obj.map((item) => sortObjectKeys(item));
   }
   if (isPlainObject(obj)) {
-    const sortedKeys = sortBy(identity, Object.keys(obj));
+    const sortedKeys = sortBy(Object.keys(obj), identity());
     const sorted: Record<string, unknown> = {};
     for (const key of sortedKeys) {
       sorted[key] = sortObjectKeys(obj[key]);

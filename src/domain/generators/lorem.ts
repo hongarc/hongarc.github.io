@@ -1,4 +1,4 @@
-import { join, map, pipe, range } from 'ramda';
+import { join, map, pipe, range } from 'remeda';
 
 export const LOREM_WORDS = [
   'lorem',
@@ -101,7 +101,7 @@ export const capitalize = (s: string): string => s.charAt(0).toUpperCase() + s.s
 
 // Pure function: generate N words
 export const generateWords = (count: number): string =>
-  pipe(() => range(0, count), map(getRandomWord), join(' '))();
+  pipe(range(0, count), map(getRandomWord), join(' '));
 
 // Pure function: generate a sentence (8-15 words)
 export const generateSentence = (): string => {
@@ -111,7 +111,7 @@ export const generateSentence = (): string => {
 
 // Pure function: generate N sentences
 export const generateSentences = (count: number, wrapLine = false): string =>
-  pipe(() => range(0, count), map(generateSentence), join(wrapLine ? '\n' : ' '))();
+  pipe(range(0, count), map(generateSentence), join(wrapLine ? '\n' : ' '));
 
 // Pure function: generate a paragraph (4-7 sentences)
 export const generateParagraph = (wrapLine = false): string => {
@@ -122,10 +122,10 @@ export const generateParagraph = (wrapLine = false): string => {
 // Pure function: generate N paragraphs
 export const generateParagraphs = (count: number, wrapLine = false): string =>
   pipe(
-    () => range(0, count),
+    range(0, count),
     map(() => generateParagraph(wrapLine)),
     join('\n\n')
-  )();
+  );
 
 // Strategy pattern for generators
 export const loremGenerators: Record<LoremType, (count: number, wrapLine?: boolean) => string> = {

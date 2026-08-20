@@ -1,4 +1,4 @@
-import { pipe, toLower, trim } from 'ramda';
+import { piped, toLowerCase } from 'remeda';
 
 export type SeparatorType = 'dash' | 'underscore' | 'dot';
 
@@ -40,11 +40,11 @@ export const trimSeparators =
     return str.replaceAll(new RegExp(`^${escaped}+|${escaped}+$`, 'g'), '');
   };
 
-// Compose slug transformation using Ramda pipe
+// Compose slug transformation into a reusable function
 export const createSlug = (separator: string) =>
-  pipe(
-    trim,
-    toLower,
+  piped(
+    (str: string) => str.trim(),
+    toLowerCase(),
     removeAccents,
     removeSpecialChars,
     collapseWhitespace,

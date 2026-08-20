@@ -180,7 +180,7 @@ export interface ToolPlugin {
   icon: ReactNode;
   /** Array of input configurations */
   inputs: InputConfig[];
-  /** The transformer function (Ramda pipeline) */
+  /** The transformer function (a pure pipeline) */
   transformer: TransformerFn | AsyncTransformerFn;
   /** Whether the transformer is async */
   isAsync?: boolean;

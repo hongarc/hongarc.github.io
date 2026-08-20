@@ -1,6 +1,6 @@
 import type { Change } from 'diff';
 import { GitCompare } from 'lucide-react';
-import { pipe, map, filter, reduce, join, trim, reject, curry, equals, prop, sum } from 'ramda';
+import { filter, join, map, pipe, piped, prop, reduce, sum } from 'remeda';
 
 import { normalizeForDiff, type NormalizeDiffOptions } from '@/domain/text/normalize-diff';
 import type { ToolPlugin } from '@/types/plugin';
@@ -26,7 +26,7 @@ export interface DiffData {
   hasWordHighlighting?: boolean;
 }
 
-// Pure function: transform diff change to WordDiff using Ramda
+// Pure function: transform diff change to WordDiff
 const transformDiffChange = (change: {
   added?: boolean;
   removed?: boolean;
@@ -50,28 +50,24 @@ const getDiff = (): ReturnType<typeof loadDiff> => {
 
 type DiffWordsFn = (oldStr: string, newStr: string) => Change[];
 
-// Pure function: compute word-level diff for a line pair using Ramda
+// Pure function: compute word-level diff for a line pair
 const computeWordDiff = (diffWords: DiffWordsFn) =>
-  pipe(
+  piped(
     ({ oldLine, newLine }: { oldLine: string; newLine: string }) => diffWords(oldLine, newLine),
     map(transformDiffChange)
   );
 
-// Pure function: filter out word diffs by type using Ramda
-const filterWordDiffsByType = curry((excludeType: string, wordDiffs: WordDiff[]) =>
-  reject((diff: WordDiff) => equals(excludeType, diff.type), wordDiffs)
-);
+// Pure function: filter out word diffs by type
+const filterWordDiffsByType = (excludeType: string, wordDiffs: WordDiff[]): WordDiff[] =>
+  filter(wordDiffs, (diff) => diff.type !== excludeType);
 
 // Pure function: compute similarity ratio between two lines via word diff
 // Returns 0..1 where 1 means identical, 0 means completely different
 const computeSimilarity = (wordDiffs: WordDiff[]): number => {
-  const lengths = map(
-    pipe(prop('value'), (v: string) => v.length),
-    wordDiffs
-  );
+  const lengths = map(wordDiffs, piped(prop('value'), (v: string) => v.length));
   const totalLen = sum(lengths);
   if (totalLen === 0) return 0;
-  const equalLen = sum(map((d: WordDiff) => (d.type === 'equal' ? d.value.length : 0), wordDiffs));
+  const equalLen = sum(map(wordDiffs, (d) => (d.type === 'equal' ? d.value.length : 0)));
   return equalLen / totalLen;
 };
 
@@ -158,8 +154,9 @@ const processLinesWithWordDiff = async (
   return lines;
 };
 
-// Pure function: format diff output using Ramda
-const formatDiffOutput = pipe(
+// Pure function: format diff output.
+// The annotation is what tells Remeda's curried steps their element type.
+const formatDiffOutput: (lines: LineDiffResult[]) => string = piped(
   map((line: LineDiffResult) => {
     const prefix = line.type === 'added' ? '+ ' : line.type === 'removed' ? '- ' : '  ';
     return `${prefix}${line.content}`;
@@ -167,20 +164,22 @@ const formatDiffOutput = pipe(
   join('\n')
 );
 
-// Pure function: count changes using Ramda
-const countChanges = pipe(
-  filter((line: LineDiffResult) => line.type !== 'equal'),
-  reduce(
-    (acc: { insertions: number; deletions: number }, line: LineDiffResult) => ({
-      insertions: acc.insertions + (line.type === 'added' ? 1 : 0),
-      deletions: acc.deletions + (line.type === 'removed' ? 1 : 0),
-    }),
-    { insertions: 0, deletions: 0 }
-  )
-);
+// Pure function: count changes
+const countChanges = (lines: LineDiffResult[]): { insertions: number; deletions: number } =>
+  pipe(
+    lines,
+    filter((line) => line.type !== 'equal'),
+    reduce(
+      (acc, line) => ({
+        insertions: acc.insertions + (line.type === 'added' ? 1 : 0),
+        deletions: acc.deletions + (line.type === 'removed' ? 1 : 0),
+      }),
+      { insertions: 0, deletions: 0 }
+    )
+  );
 
-// Pure function: sanitize input text using Ramda
-const sanitizeInput = pipe((text: string | undefined) => text ?? '', trim);
+// Pure function: sanitize input text
+const sanitizeInput = piped((text: string | undefined) => text ?? '', (text) => text.trim());
 
 const VIEW_OPTIONS = ['inline', 'side-by-side'] as const;
 const NORMALIZE_FORMAT_OPTIONS = ['none', 'json', 'yaml'] as const;
@@ -287,17 +286,17 @@ export const textDiff: ToolPlugin = {
       sortLines: getBooleanInput(inputs, 'sortLines'),
     };
 
-    // Process lines and add word-level diffs using Ramda
+    // Process lines and add word-level diffs
     const [normalizedOld, normalizedNew] = await Promise.all([
       normalizeForDiff(oldText, normalizeOpts),
       normalizeForDiff(newText, normalizeOpts),
     ]);
     const processedLines = await processLinesWithWordDiff(normalizedOld, normalizedNew);
 
-    // Generate statistics using Ramda
+    // Generate statistics
     const stats = countChanges(processedLines);
 
-    // Format output for copy functionality using Ramda
+    // Format output for copy functionality
     const output = formatDiffOutput(processedLines);
 
     return success(output, {

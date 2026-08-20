@@ -1,7 +1,7 @@
 import { ArrowRight, Command, Pin, RotateCcw, Sparkles, Zap } from 'lucide-react';
-import { equals } from 'ramda';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isDeepEqual } from 'remeda';
 
 import { useDebounce } from '@/hooks/use-debounce';
 import { TrackingProvider } from '@/hooks/use-tracking';
@@ -65,7 +65,7 @@ export function ToolView() {
     }
 
     // Only transform if inputs have actually changed from last transform
-    if (equals(debouncedInputs, lastTransformedInputs.current)) {
+    if (isDeepEqual(debouncedInputs, lastTransformedInputs.current)) {
       return;
     }
 
