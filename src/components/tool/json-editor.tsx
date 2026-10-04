@@ -4,6 +4,7 @@ import {
   Check,
   ChevronDown,
   Copy,
+  Download,
   Filter,
   Minimize2,
   Sparkles,
@@ -21,6 +22,12 @@ import {
   useSyncExternalStore,
 } from 'react';
 
+import {
+  analyzeJson,
+  formatJsonWithOrder,
+  type IndentType,
+  type SortOrder,
+} from '@/domain/format/json';
 import { useToolStore } from '@/store/tool-store';
 
 const PrismHighlight = lazy(() => import('../ui/prism-highlight'));
@@ -38,55 +45,13 @@ interface JsonEditorProps {
 }
 
 type IndentSize = 2 | 4 | 'tab';
-type SortOrder = 'asc' | 'desc' | 'none';
 type FormatMode = 'beautify' | 'minify' | 'none';
 
-// Strategy Pattern for JSON transformations
-interface TransformStrategy {
-  transform(data: unknown): unknown;
-}
+const formatDocument = (input: string, indent: IndentSize | 0, order: SortOrder): string =>
+  formatJsonWithOrder(input, String(indent) as IndentType, order);
 
-class SortKeysStrategy implements TransformStrategy {
-  constructor(private order: 'asc' | 'desc') {}
-
-  transform(obj: unknown): unknown {
-    if (Array.isArray(obj)) {
-      return obj.map((item) => this.transform(item));
-    }
-    if (obj !== null && typeof obj === 'object') {
-      const sorted: Record<string, unknown> = {};
-      const objRecord = obj as Record<string, unknown>;
-      const keys = Object.keys(objRecord);
-      keys.sort((a, b) => (this.order === 'asc' ? a.localeCompare(b) : b.localeCompare(a)));
-      for (const key of keys) {
-        sorted[key] = this.transform(objRecord[key]);
-      }
-      return sorted;
-    }
-    return obj;
-  }
-}
-
-class IdentityStrategy implements TransformStrategy {
-  transform(data: unknown): unknown {
-    return data;
-  }
-}
-
-// Formatter using Strategy Pattern
-class JsonFormatter {
-  constructor(
-    private indent: IndentSize | 0,
-    private sortStrategy: TransformStrategy = new IdentityStrategy()
-  ) {}
-
-  format(input: string): string {
-    const parsed: unknown = JSON.parse(input);
-    const transformed = this.sortStrategy.transform(parsed);
-    const indentValue = this.indent === 'tab' ? '\t' : this.indent;
-    return JSON.stringify(transformed, null, indentValue);
-  }
-}
+const formatBytes = (bytes: number): string =>
+  bytes < 1024 ? `${bytes.toLocaleString()} B` : `${(bytes / 1024).toFixed(1)} KB`;
 
 // Use useSyncExternalStore for dark mode detection
 function subscribeToMediaQuery(callback: () => void): () => void {
@@ -110,17 +75,6 @@ function useIsDarkMode(): boolean {
   );
 
   return theme === 'system' ? systemDarkMode : theme === 'dark';
-}
-
-// Validate JSON and return error message if invalid
-function validateJson(input: string): string | null {
-  if (!input.trim()) return null;
-  try {
-    JSON.parse(input);
-    return null;
-  } catch (error_) {
-    return error_ instanceof Error ? error_.message : 'Invalid JSON';
-  }
 }
 
 interface JsonPathOutcome {
@@ -174,7 +128,8 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
   const highlightRef = useRef<HTMLPreElement>(null);
 
   // Computed values
-  const error = useMemo(() => validateJson(input), [input]);
+  const { issue, stats } = useMemo(() => analyzeJson(input), [input]);
+  const error = issue?.message ?? null;
   const [pathOutcome, setPathOutcome] = useState<JsonPathOutcome>(EMPTY_PATH_OUTCOME);
   const { result: pathResult, error: pathError } = pathOutcome;
 
@@ -205,52 +160,43 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
     [onChange]
   );
 
-  const getSortStrategy = useCallback((): TransformStrategy => {
-    if (sortOrder === 'asc' || sortOrder === 'desc') {
-      return new SortKeysStrategy(sortOrder);
-    }
-    return new IdentityStrategy();
-  }, [sortOrder]);
-
   const handleBeautify = useCallback(() => {
     if (!input.trim() || error) return;
-    try {
-      const formatter = new JsonFormatter(indent, getSortStrategy());
-      handleInputChange(formatter.format(input));
-      setLastFormatMode('beautify');
-    } catch {
-      // Error already handled by validation
-    }
-  }, [input, error, indent, getSortStrategy, handleInputChange]);
+    handleInputChange(formatDocument(input, indent, sortOrder));
+    setLastFormatMode('beautify');
+  }, [input, error, indent, sortOrder, handleInputChange]);
 
   const handleMinify = useCallback(() => {
     if (!input.trim() || error) return;
-    try {
-      const formatter = new JsonFormatter(0, getSortStrategy());
-      handleInputChange(formatter.format(input));
-      setLastFormatMode('minify');
-    } catch {
-      // Error already handled by validation
-    }
-  }, [input, error, getSortStrategy, handleInputChange]);
+    handleInputChange(formatDocument(input, 0, sortOrder));
+    setLastFormatMode('minify');
+  }, [input, error, sortOrder, handleInputChange]);
+
+  const handleGoToError = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea || !issue || issue.position === null) return;
+    textarea.focus();
+    textarea.setSelectionRange(issue.position, Math.min(issue.position + 1, input.length));
+  }, [issue, input.length]);
+
+  const handleDownload = useCallback(() => {
+    if (!input || error) return;
+    const url = URL.createObjectURL(new Blob([input], { type: 'application/json' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'data.json';
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [input, error]);
 
   // Auto-beautify helper - called when settings change
   const autoBeautifyIfNeeded = useCallback(
     (newIndent: IndentSize, newSortOrder: SortOrder) => {
       if (lastFormatMode !== 'beautify' || !input.trim() || error) return;
-      try {
-        const sortStrategy =
-          newSortOrder === 'asc' || newSortOrder === 'desc'
-            ? new SortKeysStrategy(newSortOrder)
-            : new IdentityStrategy();
-        const formatter = new JsonFormatter(newIndent, sortStrategy);
-        const formatted = formatter.format(input);
-        if (formatted !== input) {
-          setInput(formatted);
-          onChange?.(formatted);
-        }
-      } catch {
-        // Ignore formatting errors
+      const formatted = formatDocument(input, newIndent, newSortOrder);
+      if (formatted !== input) {
+        setInput(formatted);
+        onChange?.(formatted);
       }
     },
     [lastFormatMode, input, error, onChange]
@@ -433,6 +379,18 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
           <span>{copied ? 'Copied!' : 'Copy'}</span>
         </button>
 
+        {/* Download */}
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={!input || !!error}
+          className="text-ctp-text hover:bg-ctp-surface1 disabled:text-ctp-overlay0 flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed"
+          title="Download as data.json"
+        >
+          <Download className="h-3.5 w-3.5" />
+          <span>Download</span>
+        </button>
+
         {/* Clear */}
         <button
           type="button"
@@ -523,9 +481,19 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
       </div>
 
       {/* Error Display */}
-      {error && (
-        <div className="bg-ctp-red/10 border-ctp-red/30 text-ctp-red rounded-lg border px-3 py-2 text-sm">
-          {error}
+      {issue && (
+        <div className="bg-ctp-red/10 border-ctp-red/30 text-ctp-red flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-sm">
+          {issue.position !== null && (
+            <button
+              type="button"
+              onClick={handleGoToError}
+              className="bg-ctp-red/20 hover:bg-ctp-red/30 cursor-pointer rounded px-2 py-0.5 text-xs font-medium"
+              title="Select the offending character"
+            >
+              Line {issue.line}, column {issue.column}
+            </button>
+          )}
+          <span>{issue.message}</span>
         </div>
       )}
 
@@ -564,24 +532,14 @@ export function JsonEditor({ initialValue = '', onChange }: JsonEditorProps) {
       )}
 
       {/* Stats */}
-      {input && !error && (
+      {stats && (
         <div className="text-ctp-overlay1 flex flex-wrap gap-3 text-xs">
-          <span>{input.length.toLocaleString()} characters</span>
-          <span>{input.split('\n').length.toLocaleString()} lines</span>
-          {(() => {
-            try {
-              const parsed: unknown = JSON.parse(input);
-              if (Array.isArray(parsed)) {
-                return <span>{parsed.length.toLocaleString()} items</span>;
-              }
-              if (typeof parsed === 'object' && parsed !== null) {
-                return <span>{Object.keys(parsed).length.toLocaleString()} keys</span>;
-              }
-            } catch {
-              // ignore
-            }
-            return null;
-          })()}
+          <span>{stats.type}</span>
+          <span>{formatBytes(stats.bytes)}</span>
+          <span>{stats.lines.toLocaleString()} lines</span>
+          {stats.type === 'array' && <span>{stats.size.toLocaleString()} items</span>}
+          {stats.type === 'object' && <span>{stats.size.toLocaleString()} keys</span>}
+          {stats.depth > 0 && <span>depth {stats.depth.toLocaleString()}</span>}
         </div>
       )}
     </div>
