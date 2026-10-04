@@ -1,25 +1,8 @@
 import { Clock } from 'lucide-react';
 
+import { parseTimestampInput } from '@/domain/time/timestamp';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getStringInput, success } from '@/utils';
-
-// Pure function: check if string is valid timestamp
-const isValidTimestamp = (str: string): boolean => {
-  const num = Number(str);
-  return !Number.isNaN(num) && num > 0;
-};
-
-// Pure function: detect timestamp unit (seconds or milliseconds)
-const detectUnit = (timestamp: number): 'seconds' | 'milliseconds' => {
-  // If timestamp is greater than year 3000 in seconds, it's likely milliseconds
-  return timestamp > 32_503_680_000 ? 'milliseconds' : 'seconds';
-};
-
-// Pure function: convert to milliseconds
-const toMilliseconds = (timestamp: number): number => {
-  const unit = detectUnit(timestamp);
-  return unit === 'seconds' ? timestamp * 1000 : timestamp;
-};
 
 // Pure function: format date to various formats
 interface DateFormats {
@@ -65,25 +48,6 @@ const getRelativeTime = (date: Date): string => {
   return isPast ? `${value} ago` : `in ${value}`;
 };
 
-// Pure function: parse various date formats
-const parseInput = (input: string): Date | null => {
-  const trimmed = input.trim();
-
-  // Check if it's a timestamp (number)
-  if (isValidTimestamp(trimmed)) {
-    const ms = toMilliseconds(Number(trimmed));
-    return new Date(ms);
-  }
-
-  // Try parsing as date string
-  const parsed = new Date(trimmed);
-  if (!Number.isNaN(parsed.getTime())) {
-    return parsed;
-  }
-
-  return null;
-};
-
 export const timestampConverter: ToolPlugin = {
   id: 'timestamp',
   label: 'Timestamp Converter',
@@ -105,7 +69,7 @@ export const timestampConverter: ToolPlugin = {
     const input = getStringInput(inputs, 'input');
 
     // If no input, show current timestamp
-    const date = !input || input.trim() === '' ? new Date() : parseInput(input);
+    const date = !input || input.trim() === '' ? new Date() : parseTimestampInput(input);
 
     if (!date) {
       return failure('Invalid timestamp or date format');
