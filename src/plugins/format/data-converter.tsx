@@ -1,5 +1,6 @@
 import { ArrowLeftRight } from 'lucide-react';
 
+import { parseDelimited } from '@/domain/format/csv';
 import { toDelimited } from '@/domain/format/delimited';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
@@ -23,22 +24,7 @@ const parseInput = async (input: string, format: Format): Promise<unknown> => {
     }
     case 'csv':
     case 'tsv': {
-      const delimiter = format === 'csv' ? ',' : '\t';
-      const lines = input.trim().split('\n');
-      if (lines.length === 0) return [];
-
-      const headers = lines[0]?.split(delimiter).map((h) => h.trim()) ?? [];
-      const data: Record<string, string>[] = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i]?.split(delimiter) ?? [];
-        const row: Record<string, string> = {};
-        for (const [idx, header] of headers.entries()) {
-          row[header] = values[idx]?.trim() ?? '';
-        }
-        data.push(row);
-      }
-      return data;
+      return parseDelimited(input, format === 'csv' ? ',' : '\t');
     }
   }
 };
