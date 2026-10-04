@@ -51,6 +51,7 @@ const routes = [
   '/html-entity',
   '/base',
   '/number',
+  '/curl-to-fetch',
 ];
 
 // Prerendering all 29 routes through puppeteer is ~93% of build time. It is
