@@ -1,5 +1,6 @@
 import { ArrowLeftRight } from 'lucide-react';
 
+import { toDelimited } from '@/domain/format/delimited';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getSelectInput, getTrimmedInput, success } from '@/utils';
 
@@ -54,43 +55,7 @@ const convertTo = async (data: unknown, format: Format, indent: number): Promise
     }
     case 'csv':
     case 'tsv': {
-      const delimiter = format === 'csv' ? ',' : '\t';
-
-      if (!Array.isArray(data)) {
-        throw new TypeError('Data must be an array for CSV/TSV output');
-      }
-
-      if (data.length === 0) return '';
-
-      const arrayData = data as unknown[];
-      const firstItem = arrayData[0];
-      if (typeof firstItem !== 'object' || firstItem === null) {
-        throw new Error('Array items must be objects for CSV/TSV output');
-      }
-
-      const headers = Object.keys(firstItem);
-      const lines: string[] = [headers.join(delimiter)];
-
-      for (const item of arrayData) {
-        if (typeof item !== 'object' || item === null) continue;
-        const record = item as Record<string, unknown>;
-        const row = headers.map((h) => {
-          const val = record[h];
-          if (val === null || val === undefined) return '';
-          if (typeof val === 'object') return JSON.stringify(val);
-          if (typeof val === 'string') {
-            if (val.includes(delimiter) || val.includes('"') || val.includes('\n')) {
-              return `"${val.replaceAll('"', '""')}"`;
-            }
-            return val;
-          }
-          // number, boolean, bigint, symbol - convert via native toString
-          return (val as number | boolean).toString();
-        });
-        lines.push(row.join(delimiter));
-      }
-
-      return lines.join('\n');
+      return toDelimited(data, format === 'csv' ? ',' : '\t');
     }
   }
 };
