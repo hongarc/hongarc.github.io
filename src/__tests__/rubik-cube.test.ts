@@ -77,6 +77,12 @@ describe('Rubik cube', () => {
     expect(() => applyMove(`${SOLVED}U`, 'R')).toThrow(RangeError);
   });
 
+  it('is not solved when the state is not 54 characters long', () => {
+    expect(isSolved(SOLVED.slice(0, 53))).toBe(false);
+    expect(isSolved(`${SOLVED}B`)).toBe(false);
+    expect(isSolved('')).toBe(false);
+  });
+
   it('returns the state unchanged for an empty move list', () => {
     expect(applyMoves(DISTINCT, [])).toBe(DISTINCT);
   });
