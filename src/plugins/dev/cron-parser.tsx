@@ -1,5 +1,6 @@
 import { Clock } from 'lucide-react';
 
+import { nextRuns } from '@/domain/cron/next-runs';
 import type { ToolPlugin } from '@/types/plugin';
 import { failure, getTrimmedInput, success } from '@/utils';
 
@@ -119,57 +120,14 @@ const generateSummary = (parts: CronParts): string => {
   return summaryParts.join(' ');
 };
 
-// Pure function: get next run times
-const getNextRuns = (parts: CronParts, count = 5): string[] => {
-  // Simple implementation for common cases
-  const runs: string[] = [];
-  const now = new Date();
-
-  for (let i = 0; i < count * 100 && runs.length < count; i++) {
-    const candidate = new Date(now.getTime() + i * 60 * 1000);
-
-    const minute = candidate.getMinutes();
-    const hour = candidate.getHours();
-    const dayOfMonth = candidate.getDate();
-    const month = candidate.getMonth() + 1;
-    const dayOfWeek = candidate.getDay();
-
-    const matchesMinute = parts.minute === '*' || matchesValue(parts.minute, minute);
-    const matchesHour = parts.hour === '*' || matchesValue(parts.hour, hour);
-    const matchesDom = parts.dayOfMonth === '*' || matchesValue(parts.dayOfMonth, dayOfMonth);
-    const matchesMonth = parts.month === '*' || matchesValue(parts.month, month);
-    const matchesDow = parts.dayOfWeek === '*' || matchesValue(parts.dayOfWeek, dayOfWeek);
-
-    if (matchesMinute && matchesHour && matchesDom && matchesMonth && matchesDow) {
-      const formatted = candidate.toLocaleString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      runs.push(formatted);
-    }
-  }
-
-  return runs;
-};
-
-// Helper: check if value matches cron field
-const matchesValue = (field: string, value: number): boolean => {
-  if (field.includes('/')) {
-    const [, step] = field.split('/');
-    return value % Number(step) === 0;
-  }
-  if (field.includes('-')) {
-    const [start, end] = field.split('-');
-    return value >= Number(start) && value <= Number(end);
-  }
-  if (field.includes(',')) {
-    return field.split(',').map(Number).includes(value);
-  }
-  return Number(field) === value;
-};
+const formatRun = (run: Date): string =>
+  run.toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
 export const cronParser: ToolPlugin = {
   id: 'cron',
@@ -201,8 +159,9 @@ export const cronParser: ToolPlugin = {
     }
 
     const summary = generateSummary(parts);
-    const nextRuns = getNextRuns(parts);
-    const nextRunsContent = nextRuns.join('\n');
+    const nextRunsContent = nextRuns(input, new Date())
+      .map((run) => formatRun(run))
+      .join('\n');
 
     return success(nextRunsContent, {
       _viewMode: 'sections',
