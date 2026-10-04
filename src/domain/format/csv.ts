@@ -32,16 +32,16 @@ export const parseDelimited = (text: string, delimiter: Delimiter): Record<strin
   };
 
   while (i < text.length) {
-    const char = text[i];
+    const char = text.charAt(i);
     if (char === QUOTE && field === '' && !wasQuoted) {
       const startLine = line;
       wasQuoted = true;
       i++;
       for (;;) {
         if (i >= text.length) {
-          throw new Error(`Unterminated quoted field on line ${startLine}`);
+          throw new Error(`Unterminated quoted field on line ${String(startLine)}`);
         }
-        const inner = text[i];
+        const inner = text.charAt(i);
         if (inner === QUOTE) {
           if (text[i + 1] === QUOTE) {
             field += QUOTE;

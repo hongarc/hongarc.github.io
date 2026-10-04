@@ -4,10 +4,10 @@ import { parseDelimited } from '@/domain/format/csv';
 import { toDelimited } from '@/domain/format/delimited';
 import { dataConverter } from '@/plugins/format/data-converter';
 
-describe('Data Converter CSV reading', () => {
-  const convert = async (input: string, fromFormat: string, toFormat: string) =>
-    dataConverter.transformer({ input, fromFormat, toFormat, indent: '2' });
+const convert = async (input: string, fromFormat: string, toFormat: string) =>
+  dataConverter.transformer({ input, fromFormat, toFormat, indent: '2' });
 
+describe('Data Converter CSV reading', () => {
   it('reads back the CSV it wrote for commas and quotes', async () => {
     const json = JSON.stringify([{ name: 'Smith, John', note: 'said "hi"' }]);
     const csv = await convert(json, 'json', 'csv');
