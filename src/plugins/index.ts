@@ -20,6 +20,7 @@ import { jsonFormatter } from './format/json-formatter';
 import { sqlFormatter } from './format/sql-formatter';
 import { baseConverter } from './math/base-converter';
 import { numberFormatter } from './math/number-formatter';
+import { curlToFetch } from './network/curl-to-fetch';
 import { httpStatus } from './network/http-status';
 import { registry } from './registry';
 import { caseConverter } from './text/case-converter';
@@ -78,6 +79,7 @@ registry.registerAll([
 
   // Network tools
   httpStatus,
+  curlToFetch,
 ]);
 
 // Export registry for use in components
